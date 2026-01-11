@@ -2,9 +2,6 @@
 
 A high-performance, immersive developer portfolio built with the latest web technologies. This project showcases my skills, experience, and selected works through fluid animations and a modern, minimalist design.
 
-🔗 **Live Demo:** [abhijeet-portfolio.vercel.app](https://abhijeet-portfolio.vercel.app) *(Coming Soon)*
-
-![Portfolio Preview](public/og-image.png) *(Note: Add a preview image to public folder if available)*
 
 ## 🚀 Tech Stack
 
