@@ -37,7 +37,7 @@ const modules: ModuleData[] = [
     { id: "Pd", label: "PANDAS", status: "active", desc: "Data Manipulation. Analysis.", color: "#150458" }, // Navy (Pandas brand is dark blue/white, adjusting for dark mode: #3b82f6) -> let's use a distinct Indigo
     { id: "Np", label: "NUMPY", status: "active", desc: "Numerical Computing. Matrix Ops.", color: "#38bdf8" }, // Sky
     { id: "Pbi", label: "POWER BI", status: "active", desc: "Visual Analytics. Business Intel.", color: "#eab308" }, // Yellow
-    { id: "Da", label: "DATA ANA", status: "active", desc: "EDA. Statistical Inference.", color: "#a855f7" }, // Purple
+    { id: "Da", label: "DATA ANALYSIS", status: "active", desc: "EDA. Statistical Inference.", color: "#a855f7" }, // Purple
     { id: "Skl", label: "SKI-LEARN", status: "active", desc: "Classic ML Algorithms. Tools.", color: "#f97316" }, // Orange
 
     // ROW 4: BACKEND / CLOUD
