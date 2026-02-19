@@ -15,54 +15,52 @@ type ModuleData = {
     label: string;
     status: "active" | "standby" | "warning";
     desc: string;
-    color: string; // Dynamic theme color
+    color: string; 
 };
 
 const modules: ModuleData[] = [
     // ROW 1: CORE
-    { id: "Py", label: "PYTHON", status: "active", desc: "Core Language. Data Science Stack.", color: "#3b82f6" }, // Blue
-    { id: "Sql", label: "SQL", status: "active", desc: "Complex Querying. Database Management.", color: "#f97316" }, // Orange
-    { id: "Dsa", label: "DSA", status: "active", desc: "Algorithmic Efficiency. Optimization.", color: "#8b5cf6" }, // Violet
-    { id: "Cpp", label: "C++", status: "active", desc: "Low-level Systems. Memory Mgmt.", color: "#60a5fa" }, // Blue-400
-    { id: "Git", label: "GIT", status: "active", desc: "Version Control. CI/CD Workflows.", color: "#f43f5e" }, // Rose
+    { id: "Py", label: "PYTHON", status: "active", desc: "Core Language. Data Science Stack.", color: "#3b82f6" }, 
+    { id: "Sql", label: "SQL", status: "active", desc: "Complex Querying. Database Management.", color: "#f97316" }, 
+    { id: "Dsa", label: "DSA", status: "active", desc: "Algorithmic Efficiency. Optimization.", color: "#8b5cf6" },
+    { id: "Cpp", label: "C++", status: "active", desc: "Low-level Systems. Memory Mgmt.", color: "#60a5fa" }, 
+    { id: "Git", label: "GIT", status: "active", desc: "Version Control. CI/CD Workflows.", color: "#f43f5e" }, 
 
     // ROW 2: ML
-    { id: "Ml", label: "ML", status: "active", desc: "Predictive Modeling. Feature Eng.", color: "#10b981" }, // Emerald
-    { id: "Reg", label: "REGRESSION", status: "active", desc: "Linear/Logistic. Trend Analysis.", color: "#14b8a6" }, // Teal
-    { id: "Clf", label: "CLASSIFY", status: "active", desc: "Decision Trees. SVM. Random Forest.", color: "#06b6d4" }, // Cyan
-    { id: "Pt", label: "PYTORCH", status: "active", desc: "Deep Learning. Neural Networks.", color: "#ef4444" }, // Red
-    { id: "Nlp", label: "NLP", status: "active", desc: "Text Processing. Tokenization. Spacy.", color: "#d946ef" }, // Fuchsia (Replaced Transformers)
+    { id: "Ml", label: "ML", status: "active", desc: "Predictive Modeling. Feature Eng.", color: "#10b981" }, 
+    { id: "Reg", label: "REGRESSION", status: "active", desc: "Linear/Logistic. Trend Analysis.", color: "#14b8a6" }, 
+    { id: "Clf", label: "CLASSIFY", status: "active", desc: "Decision Trees. SVM. Random Forest.", color: "#06b6d4" }, 
+    { id: "Pt", label: "PYTORCH", status: "active", desc: "Deep Learning. Neural Networks.", color: "#ef4444" }, 
+    { id: "Nlp", label: "NLP", status: "active", desc: "Text Processing. Tokenization. Spacy.", color: "#d946ef" }, 
 
     // ROW 3: DATA
-    { id: "Pd", label: "PANDAS", status: "active", desc: "Data Manipulation. Analysis.", color: "#150458" }, // Navy (Pandas brand is dark blue/white, adjusting for dark mode: #3b82f6) -> let's use a distinct Indigo
-    { id: "Np", label: "NUMPY", status: "active", desc: "Numerical Computing. Matrix Ops.", color: "#38bdf8" }, // Sky
-    { id: "Pbi", label: "POWER BI", status: "active", desc: "Visual Analytics. Business Intel.", color: "#eab308" }, // Yellow
-    { id: "Da", label: "DATA ANALYSIS", status: "active", desc: "EDA. Statistical Inference.", color: "#a855f7" }, // Purple
-    { id: "Skl", label: "SKI-LEARN", status: "active", desc: "Classic ML Algorithms. Tools.", color: "#f97316" }, // Orange
+    { id: "Pd", label: "PANDAS", status: "active", desc: "Data Manipulation. Analysis.", color: "#150458" }, 
+    { id: "Np", label: "NUMPY", status: "active", desc: "Numerical Computing. Matrix Ops.", color: "#38bdf8" }, 
+    { id: "Pbi", label: "POWER BI", status: "active", desc: "Visual Analytics. Business Intel.", color: "#eab308" }, 
+    { id: "Da", label: "DATA ANALYSIS", status: "active", desc: "EDA. Statistical Inference.", color: "#a855f7" }, 
+    { id: "Skl", label: "SKI-LEARN", status: "active", desc: "Classic ML Algorithms. Tools.", color: "#f97316" }, 
 
     // ROW 4: BACKEND / CLOUD
-    { id: "Api", label: "FASTAPI", status: "active", desc: "High-perf Async APIs. Swagger.", color: "#009688" }, // Teal
-    { id: "Rst", label: "REST API", status: "active", desc: "Standard Protocol. Integration.", color: "#64748b" }, // Slate
-    { id: "Gcp", label: "G-CLOUD", status: "active", desc: "Vertex AI. Cloud Functions.", color: "#4285F4" }, // Google Blue
-    { id: "Fab", label: "MS FABRIC", status: "active", desc: "Big Data Analytics. Data Lake.", color: "#00a4ef" }, // Microsoft Blue
-    { id: "Dp", label: "DP-600", status: "active", desc: "Fabric Analytics Engineer Cert.", color: "#ffd700" }, // Gold
+    { id: "Api", label: "FASTAPI", status: "active", desc: "High-perf Async APIs. Swagger.", color: "#009688" }, 
+    { id: "Rst", label: "REST API", status: "active", desc: "Standard Protocol. Integration.", color: "#64748b" }, 
+    { id: "Gcp", label: "G-CLOUD", status: "active", desc: "Vertex AI. Cloud Functions.", color: "#4285F4" }, 
+    { id: "Fab", label: "MS FABRIC", status: "active", desc: "Big Data Analytics. Data Lake.", color: "#00a4ef" }, 
+    { id: "Dp", label: "DP-600", status: "active", desc: "Fabric Analytics Engineer Cert.", color: "#ffd700" }, 
 
-    // ROW 5: ADVANCED / OPTIONAL
-    { id: "Gai", label: "GEN AI", status: "active", desc: "LLMs. RAG. Prompt Engineering.", color: "#a855f7" }, // Purple
-    { id: "Rl", label: "RL", status: "standby", desc: "Reinforcement Learning. Agents.", color: "#ec4899" }, // Pink
-    { id: "Etl", label: "ETL", status: "active", desc: "Extract Transform Load Pipelines.", color: "#84cc16" }, // Lime (Default)
-    { id: "Pg", label: "POSTGRE", status: "active", desc: "Adv Relational DB. Extensions.", color: "#336791" }, // Postgres Blue
-    { id: "Sb", label: "SUPABASE", status: "active", desc: "Open Source Firebase. Realtime.", color: "#3ecf8e" }, // Supabase Green
-];
+    // ROW 5: ADVANCED 
+    { id: "Gai", label: "GEN AI", status: "active", desc: "LLMs. RAG. Prompt Engineering.", color: "#a855f7" }, 
+    { id: "Rl", label: "RL", status: "standby", desc: "Reinforcement Learning. Agents.", color: "#ec4899" }, 
+    { id: "Etl", label: "ETL", status: "active", desc: "Extract Transform Load Pipelines.", color: "#84cc16" }, 
+    { id: "Pg", label: "POSTGRESS", status: "active", desc: "Adv Relational DB. Extensions.", color: "#336791" },
+    { id: "Sb", label: "SUPABASE", status: "active", desc: "Open Source Firebase. Realtime.", color: "#3ecf8e" },
 
 export default function SystemDeck() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [activeModule, setActiveModule] = useState<ModuleData | null>(null);
 
-    // Boot Sequence Animation
-    // Boot Sequence & Entry Animation
+  \
     useGSAP(() => {
-        // Deck Rotation Entry (Tilted High -> Straight/Readable)
+       
         gsap.fromTo(".deck-container",
             {
                 rotationX: 60,
@@ -79,9 +77,9 @@ export default function SystemDeck() {
                     end: "top 20%",
                     scrub: 1.5, // Smooth scrub interaction
                 },
-                rotationX: 20, // Settles at a readable but still 3D angle
-                rotationZ: 0, // Straighter
-                rotationY: 0, // Straighter
+                rotationX: 20, 
+                rotationZ: 0, 
+                rotationY: 0, 
                 y: 0,
                 opacity: 1,
                 scale: 1,
@@ -89,7 +87,7 @@ export default function SystemDeck() {
             }
         );
 
-        // Initial flickers (Modules pop up)
+      
         gsap.from(".module-key", {
             scrollTrigger: {
                 trigger: ".deck-container",
@@ -107,7 +105,7 @@ export default function SystemDeck() {
         });
     }, {});
 
-    // Isometric tilt based on mouse position
+
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!containerRef.current) return;
         const { left, top, width, height } = containerRef.current.getBoundingClientRect();
@@ -115,7 +113,7 @@ export default function SystemDeck() {
         const y = (e.clientY - top) / height - 0.5;
 
         gsap.to(".deck-container", {
-            rotationY: x * 15, // Increased rotation for 3D emphasis
+            rotationY: x * 15, 
             rotationX: -y * 15,
             duration: 0.5,
             ease: "power2.out",
@@ -138,7 +136,7 @@ export default function SystemDeck() {
             onMouseLeave={handleMouseLeave}
             ref={containerRef}
             style={{
-                // @ts-ignore
+                
                 "--active-color": activeModule ? activeModule.color : "#84cc16"
             }}
         >
