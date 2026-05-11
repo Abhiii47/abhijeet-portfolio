@@ -1,110 +1,111 @@
 "use client";
 
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef, useEffect, useState } from "react";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const EXPERIENCE = [
+const experiences = [
   {
-    year: "2024",
-    role: "Amazon ML Summer School",
-    org: "Amazon",
-    type: "Selective Program",
-    tags: ["Deep Learning", "NLP", "Probabilistic Graphical Models", "Reinforcement Learning"],
-    detail: "Selected in the top 0.1% of 100,000+ applicants. Completed 5 intensive ML modules covering advanced deep learning, NLP, PGMs and RL — directly from Amazon scientists.",
+    role: "Data Science Intern",
+    company: "Microsoft (MS Fabric)",
+    period: "2024",
+    color: "#00a4ef",
+    points: [
+      "Built Bronze→Silver→Gold ETL pipelines on Microsoft Fabric",
+      "Automated daily refresh for 2M+ row datasets",
+      "Created Power BI semantic models and executive dashboards",
+      "Earned DP-600 Fabric Analytics Engineer certification",
+    ],
   },
   {
-    year: "2022–2026",
-    role: "B.E. Computer Engineering",
-    org: "Sanjivani College of Engineering",
-    type: "Education",
-    tags: ["AI/ML", "DSA", "Cloud Computing", "DBMS"],
-    detail: "CGPA 8.3 · Core coursework in machine learning, algorithms, cloud computing, and database systems. Active in hackathons and competitive programming.",
+    role: "ML Competition — Amazon",
+    company: "Amazon ML Summer School",
+    period: "2024",
+    color: "#f97316",
+    points: [
+      "Top 0.1% of 100,000+ participants nationally",
+      "Stacked XGBoost + LightGBM + CatBoost ensemble",
+      "Custom SMOTE oversampling for class imbalance",
+      "Selected for Amazon ML Summer School program",
+    ],
   },
   {
-    year: "2024–25",
-    role: "Microsoft Fabric Analytics Engineer",
-    org: "Microsoft",
-    type: "Certification",
-    tags: ["DP-600", "Microsoft Fabric", "Data Lake", "ETL"],
-    detail: "Industry-certified in Microsoft Fabric Analytics Engineering (DP-600). Hands-on with big data analytics, semantic models, and enterprise ETL pipelines.",
+    role: "Full-Stack Developer",
+    company: "Room & Food Finder",
+    period: "2023",
+    color: "#84cc16",
+    points: [
+      "Next.js + Supabase + Google Maps full-stack app",
+      "Realtime DB with sub-300ms query response",
+      "Auth, geo-search, filter system for student housing",
+      "Live product with active user base",
+    ],
   },
 ];
 
 export default function Experience() {
   const containerRef = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
 
-  useGSAP(() => {
-    gsap.from(".exp-card", {
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 75%",
-      },
-      y: 40, opacity: 0, duration: 0.8,
-      stagger: 0.15, ease: "power3.out",
-    });
-  }, { scope: containerRef });
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    if (containerRef.current) obs.observe(containerRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <section
-      id="experience"
-      ref={containerRef}
-      className="relative w-full py-28 px-6 md:px-12"
-    >
-      {/* Ghost number */}
+    <section id="experience" ref={containerRef} className="relative w-full py-32 px-6 md:px-12">
       <span
-        className="absolute right-6 top-20 font-serif text-[18vw] font-black text-white/[0.025] select-none pointer-events-none leading-none"
+        className="absolute right-0 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none"
+        style={{ WebkitTextStroke: "1px rgba(132,204,22,0.03)", color: "transparent" }}
         aria-hidden
-      >
-        04
-      </span>
+      >05</span>
 
-      <div className="max-w-7xl mx-auto">
-        <h2 className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-16">
-          04 / Experience &amp; Education
-        </h2>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-16">
+          <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">05 / Experience</p>
+          <h2
+            className="font-serif font-black leading-tight"
+            style={{ fontSize: "clamp(2rem, 5vw, 4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}
+          >Where I've</h2>
+          <h2 className="font-serif font-black leading-tight -mt-2" style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}>Shipped.</h2>
+        </div>
 
-        <div className="space-y-0 divide-y divide-white/[0.05]">
-          {EXPERIENCE.map((item, i) => (
+        <div className="space-y-8">
+          {experiences.map((exp, i) => (
             <div
               key={i}
-              className="exp-card group py-10 grid grid-cols-1 md:grid-cols-[120px_1fr] gap-6 md:gap-12"
+              className="relative pl-8 border-l transition-all duration-700"
+              style={{
+                borderColor: `${exp.color}30`,
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateX(0)" : "translateX(-30px)",
+                transitionDelay: `${i * 120}ms`,
+              }}
             >
-              {/* Year */}
-              <div className="font-mono text-[11px] text-gray-600 pt-1">{item.year}</div>
-
-              {/* Content */}
-              <div>
-                <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-3">
-                  <div>
-                    <h3 className="font-serif text-xl md:text-2xl font-black text-white group-hover:text-accent transition-colors duration-300">
-                      {item.role}
-                    </h3>
-                    <p className="font-mono text-[11px] text-gray-500 mt-0.5">{item.org}</p>
-                  </div>
-                  <span className="px-2.5 py-1 border border-white/10 rounded-full font-mono text-[9px] text-gray-600 uppercase tracking-widest self-start">
-                    {item.type}
-                  </span>
+              <div
+                className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full"
+                style={{ background: exp.color, boxShadow: `0 0 10px ${exp.color}` }}
+              />
+              <div className="flex items-start justify-between mb-3 flex-wrap gap-2">
+                <div>
+                  <h3 className="font-serif font-bold text-white text-xl">{exp.role}</h3>
+                  <p className="font-mono text-[11px] mt-0.5" style={{ color: exp.color }}>{exp.company}</p>
                 </div>
-
-                <p className="text-sm text-gray-500 leading-relaxed max-w-2xl mb-4">
-                  {item.detail}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map(tag => (
-                    <span
-                      key={tag}
-                      className="px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-full text-[10px] font-mono text-gray-500"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <span
+                  className="font-mono text-[10px] px-3 py-1 rounded-full border tracking-widest"
+                  style={{ borderColor: `${exp.color}30`, color: exp.color }}
+                >{exp.period}</span>
               </div>
+              <ul className="space-y-1.5">
+                {exp.points.map((pt, j) => (
+                  <li key={j} className="flex items-start gap-2">
+                    <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: exp.color }} />
+                    <span className="font-mono text-[11px] text-gray-400">{pt}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

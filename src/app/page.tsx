@@ -7,36 +7,27 @@ import Experience from "@/components/Experience";
 import Certifications from "@/components/Certifications";
 import Contact from "@/components/Contact";
 import TracingBeam from "@/components/TracingBeam";
+import LabubuBuddy from "@/components/LabubuBuddy";
 
 export default function Home() {
   return (
     <main className="relative w-full">
-      {/* Hero — full bleed, outside TracingBeam */}
+      {/* Hero — full bleed */}
       <Entry />
 
-      {/* TracingBeam spine connects all sections below hero */}
+      {/* TracingBeam spine */}
       <TracingBeam>
-        {/* 02 — About */}
         <About />
-
-        {/* 03 — Bento Skills Grid */}
         <BentoSkills />
-
-        {/* 03b — Interactive System Control Deck */}
         <SystemDeck />
-
-        {/* 04 — Projects */}
         <Projects />
-
-        {/* 05 — Experience */}
         <Experience />
-
-        {/* 06 — Certifications */}
         <Certifications />
-
-        {/* 07 — Contact */}
         <Contact />
       </TracingBeam>
+
+      {/* Labubu buddy — fixed overlay, outside TracingBeam */}
+      <LabubuBuddy />
     </main>
   );
 }

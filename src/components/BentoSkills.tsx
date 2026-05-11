@@ -1,12 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef, useState, useEffect } from "react";
 import CardSpotlight from "./CardSpotlight";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const skills = [
   {
@@ -75,21 +70,19 @@ function sizeToClass(size: string) {
 export default function BentoSkills() {
   const containerRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
 
-  useGSAP(() => {
-    gsap.from(".bento-card", {
-      opacity: 0, y: 40, scale: 0.96,
-      duration: 0.7, stagger: 0.08, ease: "power3.out",
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 70%",
-      },
-    });
-  }, { scope: containerRef });
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    if (containerRef.current) obs.observe(containerRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <section id="skills" ref={containerRef} className="relative w-full py-32 px-6 md:px-12 overflow-hidden">
-      {/* Ghost label */}
       <span
         className="absolute -right-4 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none"
         style={{ WebkitTextStroke: "1px rgba(132,204,22,0.03)", color: "transparent" }}
@@ -97,66 +90,50 @@ export default function BentoSkills() {
       >03</span>
 
       <div className="max-w-6xl mx-auto">
-        {/* Section header */}
         <div className="mb-16">
           <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">03 / Skills</p>
           <h2
             className="font-serif font-black leading-tight"
             style={{ fontSize: "clamp(2rem, 5vw, 4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}
-          >
-            Technical Arsenal
-          </h2>
+          >Technical Arsenal</h2>
           <h2
             className="font-serif font-black leading-tight -mt-2"
             style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
-          >
-            Built to Ship.
-          </h2>
+          >Built to Ship.</h2>
         </div>
 
-        {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[180px]">
-          {skills.map((skill) => (
+          {skills.map((skill, i) => (
             <CardSpotlight
               key={skill.id}
-              className={`bento-card cursor-pointer ${sizeToClass(skill.size)}`}
+              className={`bento-card cursor-pointer ${sizeToClass(skill.size)} transition-all duration-700`}
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0) scale(1)" : "translateY(40px) scale(0.96)",
+                transitionDelay: `${i * 80}ms`,
+              }}
               spotlightColor={`${skill.color}15`}
             >
               <div
                 className="relative h-full p-6 flex flex-col justify-between"
                 onClick={() => setActive(active === skill.id ? null : skill.id)}
               >
-                {/* Top row */}
                 <div className="flex items-start justify-between">
                   <div>
-                    <p
-                      className="font-mono text-[9px] tracking-[0.3em] uppercase mb-2"
-                      style={{ color: skill.color }}
-                    >
+                    <p className="font-mono text-[9px] tracking-[0.3em] uppercase mb-2" style={{ color: skill.color }}>
                       {skill.tags.join(" · ")}
                     </p>
-                    <h3 className="font-serif font-bold text-white/90 text-lg leading-tight">
-                      {skill.title}
-                    </h3>
+                    <h3 className="font-serif font-bold text-white/90 text-lg leading-tight">{skill.title}</h3>
                   </div>
-
-                  {/* Stat badge */}
                   {skill.stat && (
                     <div className="text-right flex-shrink-0 ml-4">
-                      <div
-                        className="font-mono font-black tabular-nums"
-                        style={{ fontSize: "clamp(1.2rem,2.5vw,1.8rem)", color: skill.color }}
-                      >
+                      <div className="font-mono font-black tabular-nums" style={{ fontSize: "clamp(1.2rem,2.5vw,1.8rem)", color: skill.color }}>
                         {skill.stat}
                       </div>
-                      <div className="font-mono text-[8px] text-gray-600 uppercase tracking-widest mt-0.5">
-                        {skill.statLabel}
-                      </div>
+                      <div className="font-mono text-[8px] text-gray-600 uppercase tracking-widest mt-0.5">{skill.statLabel}</div>
                     </div>
                   )}
                 </div>
-
-                {/* Description — shows on hover/active */}
                 <p
                   className="font-mono text-[11px] text-gray-500 leading-relaxed transition-all duration-300"
                   style={{
@@ -165,11 +142,7 @@ export default function BentoSkills() {
                     maxHeight: active === skill.id ? "80px" : "0",
                     overflow: "hidden",
                   }}
-                >
-                  {skill.desc}
-                </p>
-
-                {/* Bottom accent line */}
+                >{skill.desc}</p>
                 <div
                   className="absolute bottom-0 left-0 h-[2px] transition-all duration-500"
                   style={{
@@ -178,8 +151,6 @@ export default function BentoSkills() {
                     borderRadius: "0 0 12px 12px",
                   }}
                 />
-
-                {/* Corner dot */}
                 <div
                   className="absolute bottom-4 right-4 w-2 h-2 rounded-full transition-all duration-300"
                   style={{
