@@ -1,28 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #080808;
-  --color-foreground: #f0ede8;
-  --color-accent: #84cc16;
-  --color-accent-dim: #4d7c0f;
-  --color-muted: #525252;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
-  --font-mono: var(--font-mono-custom), 'Courier New', monospace;
+  --color-background: #04040F;
+  --color-foreground: #E8E6F0;
+  --color-accent: #7C3AED;
+  --color-accent-bright: #A78BFA;
+  --color-accent-dim: #3B1D7A;
+  --color-muted: #52496B;
+  --color-surface: #0C0B1A;
+  --color-border: rgba(124,58,237,0.18);
+  --font-sans: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), 'Courier New', monospace;
 }
 
-/* ---------- BASE ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #84cc16 #111;
+  scrollbar-color: #7C3AED #0C0B1A;
 }
 
 ::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: #111; }
-::-webkit-scrollbar-thumb { background: #84cc16; border-radius: 99px; }
+::-webkit-scrollbar-track { background: #0C0B1A; }
+::-webkit-scrollbar-thumb { background: #7C3AED; border-radius: 99px; }
 
 body {
   background: var(--color-background);
@@ -30,11 +31,17 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   cursor: none;
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-/* Ensure canvas sits behind everything */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.032'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
 canvas.neural-bg {
   position: fixed;
   inset: 0;
@@ -42,148 +49,19 @@ canvas.neural-bg {
   pointer-events: none;
 }
 
-/* All content above canvas */
-#__next > *,
-main > * {
-  position: relative;
-  z-index: 1;
-}
+#__next > *, main > * { position: relative; z-index: 1; }
 
-/* ---------- SELECTION ---------- */
-::selection {
-  background: rgba(132, 204, 22, 0.2);
-  color: #f0ede8;
-}
+::selection { background: rgba(124,58,237,0.28); color: #E8E6F0; }
 
-/* ---------- TYPOGRAPHY SYSTEM ---------- */
-.font-display {
-  font-family: var(--font-serif);
-  font-feature-settings: 'liga' 1, 'kern' 1;
-}
-
-/* ---------- MAGNETIC BUTTON ---------- */
-.magnetic-btn {
-  display: inline-flex;
-  transition: transform 0.15s cubic-bezier(0.16,1,0.3,1);
-  will-change: transform;
-}
-.magnetic-btn:active {
-  transform: scale(0.96) !important;
-}
-
-/* ---------- CUSTOM KEYFRAMES ---------- */
-@keyframes scan {
-  0%   { top: 0%; opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
-}
-
-@keyframes scanFast {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
-@keyframes ticker {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
-}
-
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  92%       { opacity: 1; }
-  93%       { opacity: 0.4; }
-  96%       { opacity: 0.9; }
-  97%       { opacity: 0.3; }
-  99%       { opacity: 1; }
-}
-
-@keyframes marqueeLeft {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
-@keyframes revealClip {
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0%   0 0); }
-}
-
-/* ---------- UTILITIES ---------- */
-.animate-scan        { animation: scan 2s linear infinite; }
-.animate-scan-fast   { animation: scanFast 1.5s linear infinite; }
-.animate-ticker      { animation: ticker 12s linear infinite; }
-.animate-flicker     { animation: flicker 8s ease-in-out infinite; }
-.animate-marquee     { animation: marqueeLeft 24s linear infinite; }
-.animate-slide-up    { animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
-.animate-reveal-clip { animation: revealClip 0.8s cubic-bezier(0.16,1,0.3,1) both; }
-
-/* 3D perspective utilities */
-.perspective-800  { perspective: 800px; }
-.perspective-1000 { perspective: 1000px; }
-.perspective-1200 { perspective: 1200px; }
-.transform-style-3d { transform-style: preserve-3d; }
-.backface-hidden    { backface-visibility: hidden; }
-.rotate-y-180       { transform: rotateY(180deg); }
-
-/* ---------- NOISE OVERLAY ---------- */
-.noise-overlay::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-/* ---------- PROJECT CARD HOVER IMAGE ---------- */
-.project-hover-img {
-  position: fixed;
-  pointer-events: none;
-  width: 340px;
-  aspect-ratio: 16/10;
-  object-fit: cover;
-  border-radius: 4px;
-  transform: translate(-50%, -50%) rotate(-3deg) scale(0.85);
-  opacity: 0;
-  transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1);
-  z-index: 9990;
-  filter: grayscale(20%);
-}
-.project-hover-img.visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(-2deg) scale(1);
-}
-
-/* ---------- CURSOR ---------- */
-.cursor-dot   { mix-blend-mode: difference; }
-.cursor-ring  {
+/* ── CURSOR ── */
+.cursor-dot  { mix-blend-mode: difference; }
+.cursor-ring {
   mix-blend-mode: normal;
-  transition:
-    width  0.35s cubic-bezier(0.16,1,0.3,1),
-    height 0.35s cubic-bezier(0.16,1,0.3,1),
-    border-color 0.25s ease,
-    opacity 0.3s ease;
+  transition: width .35s cubic-bezier(.16,1,.3,1), height .35s cubic-bezier(.16,1,.3,1), border-color .25s ease, opacity .3s ease;
 }
 
-/* ---------- FOCUS ---------- */
-:focus-visible {
-  outline: 1.5px solid rgba(132,204,22,0.6);
-  outline-offset: 3px;
-  border-radius: 3px;
-}
+/* ── FOCUS ── */
+:focus-visible { outline: 1.5px solid rgba(124,58,237,0.7); outline-offset: 3px; border-radius: 3px; }
 
-/* ---------- SCROLL PROGRESS ---------- */
-.scroll-progress {
-  position: fixed;
-  top: 0; left: 0;
-  height: 2px;
-  background: #84cc16;
-  transform-origin: left;
-  z-index: 9999;
-  transition: transform 0.05s linear;
-}
+/* ── MAGNETIC BUTTON ── */
+.magnetic-btn { display: i
