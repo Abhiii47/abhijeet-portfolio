@@ -30,9 +30,23 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   cursor: none;
-  /* Subtle noise texture */
   background-image:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Ensure canvas sits behind everything */
+canvas.neural-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* All content above canvas */
+#__next > *,
+main > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ---------- SELECTION ---------- */
@@ -45,6 +59,16 @@ body {
 .font-display {
   font-family: var(--font-serif);
   font-feature-settings: 'liga' 1, 'kern' 1;
+}
+
+/* ---------- MAGNETIC BUTTON ---------- */
+.magnetic-btn {
+  display: inline-flex;
+  transition: transform 0.15s cubic-bezier(0.16,1,0.3,1);
+  will-change: transform;
+}
+.magnetic-btn:active {
+  transform: scale(0.96) !important;
 }
 
 /* ---------- CUSTOM KEYFRAMES ---------- */
@@ -106,7 +130,7 @@ body {
 .backface-hidden    { backface-visibility: hidden; }
 .rotate-y-180       { transform: rotateY(180deg); }
 
-/* ---------- NOISE OVERLAY (applied to sections needing texture) ---------- */
+/* ---------- NOISE OVERLAY ---------- */
 .noise-overlay::after {
   content: '';
   position: absolute;
@@ -137,8 +161,14 @@ body {
 
 /* ---------- CURSOR ---------- */
 .cursor-dot   { mix-blend-mode: difference; }
-.cursor-ring  { mix-blend-mode: normal; transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease; }
-.cursor-ring.hovering { width: 56px !important; height: 56px !important; border-color: rgba(132,204,22,0.6) !important; }
+.cursor-ring  {
+  mix-blend-mode: normal;
+  transition:
+    width  0.35s cubic-bezier(0.16,1,0.3,1),
+    height 0.35s cubic-bezier(0.16,1,0.3,1),
+    border-color 0.25s ease,
+    opacity 0.3s ease;
+}
 
 /* ---------- FOCUS ---------- */
 :focus-visible {
@@ -147,7 +177,7 @@ body {
   border-radius: 3px;
 }
 
-/* ---------- SCROLLBAR-BASED PROGRESS (top bar) ---------- */
+/* ---------- SCROLL PROGRESS ---------- */
 .scroll-progress {
   position: fixed;
   top: 0; left: 0;
