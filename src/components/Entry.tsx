@@ -7,159 +7,162 @@ import { ArrowDown } from "lucide-react";
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
 
+const ROLES = [
+  "AI / ML Engineer",
+  "Applied Data Science",
+  "Competitive Programmer",
+  "Open to Opportunities",
+];
+
 export default function Entry() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const textRef = useRef<HTMLHeadingElement>(null);
-    const nameRef = useRef<HTMLHeadingElement>(null);
-    const subTextRef = useRef<HTMLParagraphElement>(null);
-    const softDevRef = useRef<HTMLHeadingElement>(null);
-    const lineRef = useRef<HTMLDivElement>(null);
-    const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const nameRef       = useRef<HTMLHeadingElement>(null);
+  const roleTickerRef = useRef<HTMLDivElement>(null);
+  const lineRef       = useRef<HTMLDivElement>(null);
+  const scrollRef     = useRef<HTMLDivElement>(null);
+  const taglineRef    = useRef<HTMLParagraphElement>(null);
+  const locationRef   = useRef<HTMLParagraphElement>(null);
 
-    // Playful Scramble Effect Hook
-    const useScramble = (targetHeader: string) => {
-        // ... hook implementation same ...
-        const [text, setText] = useState(targetHeader);
-        const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // ── Scramble hook ──
+  const [nameText, setNameText] = useState("ABHIJEET KADU");
+  const scramble = (target: string) => {
+    let pos = 0;
+    const id = setInterval(() => {
+      setNameText(
+        target.split("").map((ch, i) =>
+          i < pos ? ch : CHARS[Math.floor(Math.random() * CHARS.length)]
+        ).join("")
+      );
+      pos += 1 / 3;
+      if (pos > target.length) clearInterval(id);
+    }, 30);
+  };
 
-        const scramble = () => {
-            let pos = 0;
-            clearInterval(intervalRef.current!);
+  // ── Role ticker ──
+  const [roleIdx, setRoleIdx] = useState(0);
+  const [roleVisible, setRoleVisible] = useState(true);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setRoleVisible(false);
+      setTimeout(() => {
+        setRoleIdx(p => (p + 1) % ROLES.length);
+        setRoleVisible(true);
+      }, 400);
+    }, 2800);
+    return () => clearInterval(id);
+  }, []);
 
-            intervalRef.current = setInterval(() => {
-                const scrambled = targetHeader.split("").map((char, index) => {
-                    if (index < pos) {
-                        return targetHeader[index];
-                    }
-                    return CHARS[Math.floor(Math.random() * CHARS.length)];
-                }).join("");
+  useGSAP(() => {
+    const tl = gsap.timeline();
 
-                setText(scrambled);
-                pos += 1 / 3;
+    gsap.set([nameRef.current, taglineRef.current, locationRef.current,
+               lineRef.current, roleTickerRef.current, scrollRef.current],
+      { opacity: 0 });
+    gsap.set(nameRef.current,    { y: 60, filter: "blur(12px)" });
+    gsap.set(taglineRef.current, { y: 30 });
+    gsap.set(locationRef.current,{ y: 20 });
+    gsap.set(lineRef.current,    { scaleX: 0 });
 
-                if (pos > targetHeader.length) {
-                    clearInterval(intervalRef.current!);
-                }
-            }, 30);
-        };
+    tl
+      .to(nameRef.current, {
+        opacity: 1, y: 0, filter: "blur(0px)",
+        duration: 1.4, ease: "power3.out",
+        delay: 0.3,
+        onStart: () => scramble("ABHIJEET KADU"),
+      })
+      .to(lineRef.current, {
+        opacity: 1, scaleX: 1,
+        duration: 0.9, ease: "power2.inOut"
+      }, "-=0.6")
+      .to(roleTickerRef.current, {
+        opacity: 1, duration: 0.6, ease: "power2.out",
+      }, "-=0.4")
+      .to(taglineRef.current, {
+        opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+      }, "-=0.3")
+      .to(locationRef.current, {
+        opacity: 1, y: 0, duration: 0.6, ease: "power2.out",
+      }, "-=0.4")
+      .to(scrollRef.current, {
+        opacity: 0.5, duration: 0.8, ease: "power2.out",
+      }, "-=0.2");
+  }, { scope: containerRef });
 
-        return { text, scramble };
-    };
+  return (
+    <section
+      id="hero"
+      ref={containerRef}
+      className="relative h-screen flex flex-col justify-end pb-20 md:pb-28 px-6 md:px-12 overflow-hidden"
+    >
+      {/* Background large number */}
+      <span
+        className="absolute right-6 top-1/2 -translate-y-1/2 font-serif text-[22vw] font-black text-white/[0.025] select-none pointer-events-none leading-none"
+        aria-hidden
+      >
+        01
+      </span>
 
-    const { text: nameText, scramble: scrambleName } = useScramble("ABHIJEET KADU");
+      {/* Top label row */}
+      <p
+        ref={locationRef}
+        className="absolute top-28 left-6 md:left-12 font-mono text-[10px] tracking-[0.3em] text-gray-600 uppercase"
+      >
+        Mumbai, India &nbsp;·&nbsp; 20°41&apos;N 74°02&apos;E
+      </p>
 
-    useGSAP(
-        () => {
-            const tl = gsap.timeline();
-
-            // Initial state
-            gsap.set(textRef.current, { filter: "blur(10px)", opacity: 0, y: 20 });
-            gsap.set(nameRef.current, { opacity: 0, scale: 0.9 });
-            gsap.set(softDevRef.current, { opacity: 0, y: 20 });
-            gsap.set(lineRef.current, { scaleX: 0, opacity: 0 });
-            gsap.set(subTextRef.current, { opacity: 0, y: 10 });
-            gsap.set(scrollRef.current, { opacity: 0 });
-
-            // Cinematic Entry Sequence
-            tl.to(textRef.current, {
-                duration: 1.5,
-                filter: "blur(0px)",
-                opacity: 1,
-                y: 0,
-                ease: "power3.out",
-            })
-                .to(nameRef.current, {
-                    duration: 0.5,
-                    opacity: 1,
-                    scale: 1,
-                    ease: "back.out(1.7)",
-                    onStart: scrambleName // Trigger scramble on reveal
-                }, "-=0.5")
-                .to(softDevRef.current, { // NEW: Software Dev Text
-                    duration: 0.8,
-                    opacity: 1,
-                    y: 0,
-                    ease: "power2.out",
-                }, "-=0.2")
-                .to(lineRef.current, { // NEW: Line
-                    duration: 0.8,
-                    scaleX: 1,
-                    opacity: 1,
-                    ease: "power2.inOut",
-                }, "-=0.6")
-                .to(
-                    subTextRef.current,
-                    {
-                        duration: 1,
-                        opacity: 0.8,
-                        y: 0,
-                        ease: "power2.out",
-                    },
-                    "-=0.4"
-                )
-                .to(
-                    scrollRef.current,
-                    {
-                        duration: 1,
-                        opacity: 0.5,
-                        ease: "power2.out",
-                    },
-                    "-=0.5"
-                );
-        },
-        { scope: containerRef }
-    );
-
-    return (
-        <section
-            ref={containerRef}
-            className="relative h-screen flex flex-col items-center justify-center overflow-hidden"
+      {/* Main name — left-aligned, huge, Awwwards-style */}
+      <div className="relative z-10">
+        <h1
+          ref={nameRef}
+          onMouseEnter={() => scramble("ABHIJEET KADU")}
+          className="font-serif font-black leading-[0.88] tracking-tighter text-white cursor-pointer select-none"
+          style={{ fontSize: "clamp(3.5rem, 12vw, 10rem)" }}
         >
-            <div className="text-center z-10 px-4">
-                <p
-                    ref={textRef}
-                    className="text-sm md:text-xl text-gray-400 font-serif italic mb-4"
-                >
-                    Hello, I am
-                </p>
+          ABHIJEET<br />KADU
+        </h1>
 
-                <h1
-                    ref={nameRef}
-                    onMouseEnter={scrambleName}
-                    className="text-5xl md:text-8xl font-black tracking-tighter text-white mb-6 mix-blend-difference cursor-pointer"
-                >
-                    {nameText}
-                </h1>
+        {/* Horizontal rule */}
+        <div
+          ref={lineRef}
+          className="h-px w-full bg-gradient-to-r from-accent via-white/20 to-transparent origin-left mt-6 mb-5"
+        />
 
-                <h2
-                    ref={softDevRef}
-                    className="text-lg md:text-2xl text-gray-400 font-mono tracking-widest uppercase mb-6"
-                >
-                    SOFTWARE DEVELOPER
-                </h2>
-
-                <div
-                    ref={lineRef}
-                    className="h-[1px] w-24 bg-accent mb-8 mx-auto"
-                />
-                <p
-                    ref={subTextRef}
-                    className="text-base md:text-lg text-accent font-sans tracking-widest uppercase"
-                >
-                    AI / ML Engineer &middot; Applied Data Science
-                </p>
-            </div>
-
-            {/* Scroll Indicator */}
-            <div
-                ref={scrollRef}
-                className="absolute bottom-12 flex flex-col items-center gap-2"
+        {/* Bottom row — role ticker + tagline */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          {/* Role ticker */}
+          <div ref={roleTickerRef} className="flex items-center gap-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse flex-shrink-0" />
+            <p
+              className="font-mono text-xs md:text-sm tracking-[0.25em] uppercase transition-all duration-400"
+              style={{
+                color: roleVisible ? "#84cc16" : "transparent",
+                opacity: roleVisible ? 1 : 0,
+                transform: roleVisible ? "translateY(0)" : "translateY(6px)",
+                transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
+              }}
             >
-                <span className="text-[10px] uppercase tracking-widest text-gray-500">
-                    Scroll
-                </span>
-                <ArrowDown className="w-4 h-4 text-accent animate-bounce" />
-            </div>
-        </section>
-    );
+              {ROLES[roleIdx]}
+            </p>
+          </div>
+
+          {/* Tagline */}
+          <p
+            ref={taglineRef}
+            className="font-serif italic text-gray-500 text-sm md:text-base max-w-xs text-left md:text-right"
+          >
+            Building models that ship,<br />not just notebooks that run.
+          </p>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div
+        ref={scrollRef}
+        className="absolute bottom-10 right-6 md:right-12 flex flex-col items-center gap-2"
+      >
+        <span className="font-mono text-[9px] tracking-[0.3em] text-gray-600 uppercase [writing-mode:vertical-rl]">Scroll</span>
+        <ArrowDown className="w-3.5 h-3.5 text-accent animate-bounce" />
+      </div>
+    </section>
+  );
 }

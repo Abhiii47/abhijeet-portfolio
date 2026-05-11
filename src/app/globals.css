@@ -1,56 +1,159 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0a0a0a;
-  --color-foreground: #ededed;
+  --color-background: #080808;
+  --color-foreground: #f0ede8;
   --color-accent: #84cc16;
-  /* Lime */
-
+  --color-accent-dim: #4d7c0f;
+  --color-muted: #525252;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-playfair), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-mono: var(--font-mono-custom), 'Courier New', monospace;
 }
 
-/* Custom Utilities for GSAP / Animation */
-@utility text-balance {
-  text-wrap: balance;
+/* ---------- BASE ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #84cc16 #111;
 }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #84cc16; border-radius: 99px; }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
-  /* Prevent horizontal scroll from animations */
   cursor: none;
-  /* Custom cursor takes over */
-
-  /* Subtle Grid Background - Density Polish */
-  background-image: linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 50px 50px;
+  /* Subtle noise texture */
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-/* Custom keyframes */
+/* ---------- SELECTION ---------- */
+::selection {
+  background: rgba(132, 204, 22, 0.2);
+  color: #f0ede8;
+}
+
+/* ---------- TYPOGRAPHY SYSTEM ---------- */
+.font-display {
+  font-family: var(--font-serif);
+  font-feature-settings: 'liga' 1, 'kern' 1;
+}
+
+/* ---------- CUSTOM KEYFRAMES ---------- */
 @keyframes scan {
-  0% {
-    top: 0%;
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  90% {
-    opacity: 1;
-  }
-
-  100% {
-    top: 100%;
-    opacity: 0;
-  }
+  0%   { top: 0%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
 }
 
-.animate-scan {
-  animation: scan 2s linear infinite;
+@keyframes scanFast {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes ticker {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.4; }
+  96%       { opacity: 0.9; }
+  97%       { opacity: 0.3; }
+  99%       { opacity: 1; }
+}
+
+@keyframes marqueeLeft {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes revealClip {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0%   0 0); }
+}
+
+/* ---------- UTILITIES ---------- */
+.animate-scan        { animation: scan 2s linear infinite; }
+.animate-scan-fast   { animation: scanFast 1.5s linear infinite; }
+.animate-ticker      { animation: ticker 12s linear infinite; }
+.animate-flicker     { animation: flicker 8s ease-in-out infinite; }
+.animate-marquee     { animation: marqueeLeft 24s linear infinite; }
+.animate-slide-up    { animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-reveal-clip { animation: revealClip 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+
+/* 3D perspective utilities */
+.perspective-800  { perspective: 800px; }
+.perspective-1000 { perspective: 1000px; }
+.perspective-1200 { perspective: 1200px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.backface-hidden    { backface-visibility: hidden; }
+.rotate-y-180       { transform: rotateY(180deg); }
+
+/* ---------- NOISE OVERLAY (applied to sections needing texture) ---------- */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ---------- PROJECT CARD HOVER IMAGE ---------- */
+.project-hover-img {
+  position: fixed;
+  pointer-events: none;
+  width: 340px;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  border-radius: 4px;
+  transform: translate(-50%, -50%) rotate(-3deg) scale(0.85);
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  z-index: 9990;
+  filter: grayscale(20%);
+}
+.project-hover-img.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1);
+}
+
+/* ---------- CURSOR ---------- */
+.cursor-dot   { mix-blend-mode: difference; }
+.cursor-ring  { mix-blend-mode: normal; transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease; }
+.cursor-ring.hovering { width: 56px !important; height: 56px !important; border-color: rgba(132,204,22,0.6) !important; }
+
+/* ---------- FOCUS ---------- */
+:focus-visible {
+  outline: 1.5px solid rgba(132,204,22,0.6);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ---------- SCROLLBAR-BASED PROGRESS (top bar) ---------- */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: #84cc16;
+  transform-origin: left;
+  z-index: 9999;
+  transition: transform 0.05s linear;
 }

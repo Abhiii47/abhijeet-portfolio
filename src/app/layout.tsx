@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import HUDOverlay from "@/components/ui/HUDOverlay";
 import CustomCursor from "@/components/ui/CustomCursor";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,8 +18,28 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Abhijeet Kadu | Frontend Engineer",
-  description: "Senior Frontend Engineer & Motion Designer portfolio. Building systems, not just screens.",
+  title: "Abhijeet Kadu | AI/ML Engineer",
+  description: "AI/ML Engineer & Computer Engineering student. Top 0.1% Amazon ML Summer School. Building transformer-based models and scalable ML systems.",
+  openGraph: {
+    title: "Abhijeet Kadu | AI/ML Engineer",
+    description: "AI/ML Engineer specializing in Transformer models, ensemble learning, and production ML pipelines.",
+    url: "https://abhijeet-portfolio-tau.vercel.app",
+    siteName: "Abhijeet Kadu",
+    images: [{
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Abhijeet Kadu — AI/ML Engineer"
+    }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Abhijeet Kadu | AI/ML Engineer",
+    description: "AI/ML Engineer. Top 0.1% Amazon ML Summer School.",
+    images: ["/og-image.png"],
+  },
+  keywords: ["AI Engineer", "ML Engineer", "Machine Learning", "Python", "PyTorch", "FastAPI", "Next.js", "Computer Engineering"],
 };
 
 export default function RootLayout({
@@ -34,6 +55,7 @@ export default function RootLayout({
         <SmoothScroll>
           <CustomCursor />
           <HUDOverlay />
+          <Navbar />
           {children}
         </SmoothScroll>
         <Analytics />
