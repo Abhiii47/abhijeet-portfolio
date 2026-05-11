@@ -151,7 +151,7 @@ export default function Entry() {
           className="font-serif font-black leading-[0.88] tracking-tighter select-none"
           style={{ fontSize: "clamp(3.5rem, 13vw, 11rem)" }}
         >
-          {/* OUTLINE first name */}
+          {/* OUTLINE first name — JS style assignment uses camelCase webkitTextStroke */}
           <span
             className="block cursor-pointer transition-all duration-500 hover:tracking-wide"
             style={{
@@ -159,12 +159,15 @@ export default function Entry() {
               color: "transparent",
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.WebkitTextStroke = "1.5px #84cc16";
-              (e.currentTarget as HTMLElement).style.color = "transparent";
+              const el = e.currentTarget as HTMLElement;
+              // CSSStyleDeclaration requires camelCase (webkitTextStroke, not WebkitTextStroke)
+              (el.style as unknown as Record<string, string>)["webkitTextStroke"] = "1.5px #84cc16";
+              el.style.color = "transparent";
               playFirst();
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.WebkitTextStroke = "1.5px #f0ede8";
+              const el = e.currentTarget as HTMLElement;
+              (el.style as unknown as Record<string, string>)["webkitTextStroke"] = "1.5px #f0ede8";
             }}
             data-cursor-label="HOVER"
           >
