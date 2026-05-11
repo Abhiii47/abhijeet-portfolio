@@ -26,9 +26,7 @@ function useScramble(target: string, autoPlay = false) {
       setText(
         target.split("").map((ch, i) => {
           if (ch === " ") return " ";
-          return i < pos
-            ? ch
-            : CHARS[Math.floor(Math.random() * CHARS.length)];
+          return i < pos ? ch : CHARS[Math.floor(Math.random() * CHARS.length)];
         }).join("")
       );
       pos += 0.4;
@@ -41,7 +39,7 @@ function useScramble(target: string, autoPlay = false) {
 
   useEffect(() => {
     if (autoPlay) {
-      const t = setTimeout(play, 400);
+      const t = setTimeout(play, 900);
       return () => clearTimeout(t);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,20 +49,20 @@ function useScramble(target: string, autoPlay = false) {
 }
 
 export default function Entry() {
-  const containerRef  = useRef<HTMLDivElement>(null);
-  const nameRef       = useRef<HTMLHeadingElement>(null);
-  const roleRef       = useRef<HTMLDivElement>(null);
-  const lineRef       = useRef<HTMLDivElement>(null);
-  const scrollRef     = useRef<HTMLDivElement>(null);
-  const taglineRef    = useRef<HTMLParagraphElement>(null);
-  const locationRef   = useRef<HTMLParagraphElement>(null);
-  const ctaRef        = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nameRef      = useRef<HTMLHeadingElement>(null);
+  const roleRef      = useRef<HTMLDivElement>(null);
+  const lineRef      = useRef<HTMLDivElement>(null);
+  const scrollRef    = useRef<HTMLDivElement>(null);
+  const taglineRef   = useRef<HTMLParagraphElement>(null);
+  const locationRef  = useRef<HTMLElement>(null);
+  const ctaRef       = useRef<HTMLDivElement>(null);
 
   const { text: firstName, play: playFirst } = useScramble("ABHIJEET", true);
   const { text: lastName,  play: playLast  } = useScramble("KADU",     true);
 
   // Role ticker
-  const [roleIdx, setRoleIdx]       = useState(0);
+  const [roleIdx, setRoleIdx]         = useState(0);
   const [roleVisible, setRoleVisible] = useState(true);
   useEffect(() => {
     const id = setInterval(() => {
@@ -77,14 +75,13 @@ export default function Entry() {
     return () => clearInterval(id);
   }, []);
 
-  // Parallax on mouse
+  // Subtle name parallax
   useEffect(() => {
     const el = nameRef.current;
     if (!el) return;
     const onMove = (e: MouseEvent) => {
-      const { innerWidth: W, innerHeight: H } = window;
-      const x = (e.clientX / W - 0.5) * 18;
-      const y = (e.clientY / H - 0.5) * 10;
+      const x = (e.clientX / window.innerWidth  - 0.5) * 18;
+      const y = (e.clientY / window.innerHeight - 0.5) * 10;
       gsap.to(el, { x, y, duration: 1.2, ease: "power2.out" });
     };
     window.addEventListener("mousemove", onMove);
@@ -92,41 +89,27 @@ export default function Entry() {
   }, []);
 
   useGSAP(() => {
-    const tl = gsap.timeline();
-    gsap.set(
-      [nameRef.current, taglineRef.current, locationRef.current,
-       lineRef.current, roleRef.current, scrollRef.current, ctaRef.current],
-      { opacity: 0 }
-    );
+    const els = [
+      nameRef.current, taglineRef.current, locationRef.current,
+      lineRef.current, roleRef.current, scrollRef.current, ctaRef.current,
+    ];
+    gsap.set(els, { opacity: 0 });
     gsap.set(nameRef.current,    { y: 80, filter: "blur(16px)" });
     gsap.set(taglineRef.current, { y: 30 });
     gsap.set(ctaRef.current,     { y: 20 });
     gsap.set(lineRef.current,    { scaleX: 0 });
 
-    tl
+    gsap.timeline()
       .to(nameRef.current, {
         opacity: 1, y: 0, filter: "blur(0px)",
-        duration: 1.5, ease: "power3.out", delay: 0.2,
+        duration: 1.5, ease: "power3.out", delay: 0.4,
       })
-      .to(lineRef.current, {
-        opacity: 1, scaleX: 1,
-        duration: 1.0, ease: "expo.inOut",
-      }, "-=0.7")
-      .to(roleRef.current, {
-        opacity: 1, duration: 0.6, ease: "power2.out",
-      }, "-=0.5")
-      .to(taglineRef.current, {
-        opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-      }, "-=0.3")
-      .to(locationRef.current, {
-        opacity: 1, duration: 0.6, ease: "power2.out",
-      }, "-=0.4")
-      .to(ctaRef.current, {
-        opacity: 1, y: 0, duration: 0.7, ease: "power2.out",
-      }, "-=0.3")
-      .to(scrollRef.current, {
-        opacity: 0.5, duration: 0.8,
-      }, "-=0.3");
+      .to(lineRef.current,  { opacity: 1, scaleX: 1, duration: 1.0, ease: "expo.inOut" }, "-=0.7")
+      .to(roleRef.current,  { opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.5")
+      .to(taglineRef.current, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.3")
+      .to(locationRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.4")
+      .to(ctaRef.current,   { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, "-=0.3")
+      .to(scrollRef.current, { opacity: 0.5, duration: 0.8 }, "-=0.3");
   }, { scope: containerRef });
 
   return (
@@ -135,25 +118,25 @@ export default function Entry() {
       ref={containerRef}
       className="relative h-screen flex flex-col justify-end pb-20 md:pb-28 px-6 md:px-12 overflow-hidden"
     >
-      {/* Ghost number */}
+      {/* Accent ghost number */}
       <span
-        className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 font-serif text-[24vw] font-black select-none pointer-events-none leading-none"
-        style={{ color: "rgba(132,204,22,0.03)" }}
+        className="absolute right-4 md:right-16 top-1/2 -translate-y-1/2 font-serif text-[28vw] font-black select-none pointer-events-none leading-none"
+        style={{ WebkitTextStroke: "1px rgba(132,204,22,0.06)", color: "transparent" }}
         aria-hidden
       >
         01
       </span>
 
-      {/* Top location bar */}
+      {/* Top bar */}
       <p
-        ref={locationRef}
+        ref={locationRef as React.RefObject<HTMLParagraphElement>}
         className="absolute top-28 left-6 md:left-12 font-mono text-[10px] tracking-[0.3em] text-gray-600 uppercase"
       >
         Mumbai, India &nbsp;·&nbsp; 20°41&apos;N 74°02&apos;E
       </p>
 
-      {/* Vertical status strip — right side */}
-      <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3 hidden md:flex">
+      {/* Right status strip */}
+      <div className="absolute right-6 md:right-14 top-1/2 -translate-y-1/2 flex-col items-center gap-3 hidden md:flex">
         <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Status</span>
         <div className="w-px h-16 bg-gradient-to-b from-transparent via-accent to-transparent" />
         <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
@@ -161,52 +144,59 @@ export default function Entry() {
         <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Available</span>
       </div>
 
-      {/* Main name */}
+      {/* ── HERO NAME ── */}
       <div className="relative z-10">
         <h1
           ref={nameRef}
-          className="font-serif font-black leading-[0.88] tracking-tighter text-white select-none"
+          className="font-serif font-black leading-[0.88] tracking-tighter select-none"
           style={{ fontSize: "clamp(3.5rem, 13vw, 11rem)" }}
         >
-          {/* First name — scramble on hover */}
+          {/* OUTLINE first name */}
           <span
-            className="inline-block cursor-pointer hover:text-accent transition-colors duration-300"
-            onMouseEnter={playFirst}
-            data-cursor="text"
+            className="block cursor-pointer transition-all duration-500 hover:tracking-wide"
+            style={{
+              WebkitTextStroke: "1.5px #f0ede8",
+              color: "transparent",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.WebkitTextStroke = "1.5px #84cc16";
+              (e.currentTarget as HTMLElement).style.color = "transparent";
+              playFirst();
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.WebkitTextStroke = "1.5px #f0ede8";
+            }}
+            data-cursor-label="HOVER"
           >
             {firstName}
           </span>
-          <br />
-          {/* Last name + accent underline */}
-          <span className="relative inline-block">
+
+          {/* FILLED last name */}
+          <span className="relative block">
             <span
-              className="cursor-pointer hover:text-accent transition-colors duration-300"
+              className="cursor-pointer text-white hover:text-accent transition-colors duration-300"
               onMouseEnter={playLast}
-              data-cursor="text"
             >
               {lastName}
             </span>
-            {/* Accent underline stroke */}
+            {/* Accent underline */}
             <span
-              className="absolute -bottom-2 left-0 h-[3px] w-full origin-left"
+              className="absolute -bottom-3 left-0 h-[3px] w-3/4"
               style={{ background: "linear-gradient(90deg, #84cc16, transparent)" }}
             />
           </span>
         </h1>
 
-        {/* Horizontal divider */}
+        {/* Divider */}
         <div
           ref={lineRef}
-          className="h-px w-full origin-left mt-8 mb-6"
-          style={{
-            background:
-              "linear-gradient(90deg, #84cc16 0%, rgba(240,237,232,0.12) 40%, transparent 100%)",
-          }}
+          className="h-px w-full origin-left mt-10 mb-7"
+          style={{ background: "linear-gradient(90deg, #84cc16 0%, rgba(240,237,232,0.1) 50%, transparent 100%)" }}
         />
 
         {/* Bottom row */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          {/* Left — role ticker */}
+          {/* Role ticker */}
           <div ref={roleRef} className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse flex-shrink-0" />
             <p
@@ -222,7 +212,7 @@ export default function Entry() {
             </p>
           </div>
 
-          {/* Right — tagline + CTA */}
+          {/* Right — tagline + CTAs */}
           <div className="flex flex-col items-start md:items-end gap-4">
             <p
               ref={taglineRef}
@@ -231,20 +221,18 @@ export default function Entry() {
               Building models that ship,<br />not just notebooks that run.
             </p>
 
-            {/* CTA buttons — magnetic */}
             <div ref={ctaRef} className="flex items-center gap-3 flex-wrap">
               <MagneticButton
                 tag="a"
                 href="#projects"
-                data-cursor-label="VIEW"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-black font-mono text-[11px] tracking-[0.2em] uppercase rounded-full hover:bg-lime-400 transition-colors duration-200"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-black font-mono text-[11px] tracking-[0.2em] uppercase rounded-full hover:bg-lime-400 transition-colors duration-200 font-bold"
               >
                 View Work
               </MagneticButton>
               <MagneticButton
                 tag="a"
                 href="#contact"
-                className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/20 text-white font-mono text-[11px] tracking-[0.2em] uppercase rounded-full hover:border-accent hover:text-accent transition-colors duration-200"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 text-white font-mono text-[11px] tracking-[0.2em] uppercase rounded-full hover:border-accent hover:text-accent transition-colors duration-200"
               >
                 Contact
               </MagneticButton>
@@ -253,11 +241,8 @@ export default function Entry() {
         </div>
       </div>
 
-      {/* Scroll cue */}
-      <div
-        ref={scrollRef}
-        className="absolute bottom-10 left-6 md:left-12 flex items-center gap-3"
-      >
+      {/* Scroll cue — bottom left */}
+      <div ref={scrollRef} className="absolute bottom-10 left-6 md:left-12 flex items-center gap-3">
         <div className="w-px h-12 bg-gradient-to-b from-transparent to-accent/40" />
         <span className="font-mono text-[9px] tracking-[0.3em] text-gray-600 uppercase">Scroll</span>
         <ArrowDown className="w-3 h-3 text-accent animate-bounce" />
