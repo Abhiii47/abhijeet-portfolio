@@ -60,7 +60,6 @@ export default function Contact() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
 
-        /* ── Marquee ── */
         @keyframes marquee {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
@@ -99,19 +98,10 @@ export default function Contact() {
           transform-origin: left;
           transition: transform 0.32s cubic-bezier(0.16,1,0.3,1);
         }
-        .marquee-link:hover {
-          color: rgba(255,255,255,0.85);
-        }
-        .marquee-link:hover::after {
-          transform: scaleX(1);
-        }
-        .marquee-diamond {
-          color: ${ACCENT};
-          opacity: 0.4;
-          font-size: 0.5rem;
-        }
+        .marquee-link:hover { color: rgba(255,255,255,0.85); }
+        .marquee-link:hover::after { transform: scaleX(1); }
+        .marquee-diamond { color: ${ACCENT}; opacity: 0.4; font-size: 0.5rem; }
 
-        /* ── Social row ── */
         .social-item {
           display: flex;
           align-items: center;
@@ -121,35 +111,18 @@ export default function Contact() {
           border-bottom: 1px solid rgba(255,255,255,0.06);
           transition: border-color 0.2s;
         }
-        .social-item:hover {
-          border-color: ${ACCENT}50;
-        }
-        .social-item:hover .social-label {
-          color: white;
-        }
-        .social-item:hover .social-arrow {
-          transform: translate(2px,-2px);
-          color: ${ACCENT};
-        }
+        .social-item:hover { border-color: ${ACCENT}50; }
+        .social-item:hover .social-label { color: white; }
+        .social-item:hover .social-arrow { transform: translate(2px,-2px); color: ${ACCENT}; }
         .social-label {
           font-family: 'Inter', monospace;
-          font-size: 11px;
-          letter-spacing: 0.22em;
+          font-size: 11px; letter-spacing: 0.22em;
           text-transform: uppercase;
           color: rgba(255,255,255,0.35);
-          transition: color 0.2s;
-          flex: 1;
+          transition: color 0.2s; flex: 1;
         }
-        .social-handle {
-          font-family: 'Inter', sans-serif;
-          font-size: 12px;
-          color: rgba(255,255,255,0.18);
-        }
-        .social-arrow {
-          color: rgba(255,255,255,0.15);
-          transition: transform 0.2s, color 0.2s;
-          font-size: 14px;
-        }
+        .social-handle { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255,255,255,0.18); }
+        .social-arrow { color: rgba(255,255,255,0.15); transition: transform 0.2s, color 0.2s; font-size: 14px; }
       `}</style>
 
       <section
@@ -169,23 +142,21 @@ export default function Contact() {
           marginBottom: "clamp(56px,8vw,96px)",
         }} />
 
-        {/* Section label */}
+        {/* Section label — fixed to 06 */}
         <p className="ct-reveal" style={{
           fontFamily: "'Inter',monospace", fontSize: 10,
           letterSpacing: "0.38em", color: ACCENT,
           textTransform: "uppercase", marginBottom: 40,
-        }}>03 / Contact</p>
+        }}>06 / Contact</p>
 
-        {/* ── GIANT HEADING ── */}
+        {/* Giant heading */}
         <div className="ct-reveal" style={{ marginBottom: "clamp(24px,4vw,48px)" }}>
           <h2 style={{
             fontFamily: "'Bebas Neue','Arial Black',sans-serif",
             fontSize: "clamp(5rem,18vw,14rem)",
-            fontWeight: 400,
-            lineHeight: 0.88,
+            fontWeight: 400, lineHeight: 0.88,
             letterSpacing: "0.01em",
-            margin: 0,
-            color: "#f0ede8",
+            margin: 0, color: "#f0ede8",
           }}>
             <span style={{ display: "block" }}>LET&rsquo;S</span>
             <span style={{
@@ -196,12 +167,10 @@ export default function Contact() {
           </h2>
         </div>
 
-        {/* ── Marquee email ── */}
+        {/* Marquee email */}
         <div className="ct-reveal marquee-wrap" style={{
           overflow: "hidden",
           marginBottom: "clamp(48px,7vw,88px)",
-          marginLeft: "-clamp(20px,5vw,72px)",
-          paddingLeft: "clamp(20px,5vw,72px)",
         }}>
           <div className="marquee-track">
             {[...Array(6)].map((_, i) => (
@@ -213,7 +182,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* ── Bottom row: socials left | location right ── */}
+        {/* Bottom row */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
@@ -242,14 +211,11 @@ export default function Contact() {
             ))}
           </div>
 
-          {/* Right: location + availability + copyright */}
+          {/* Right col */}
           <div className="ct-reveal" style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-            gap: 24,
+            display: "flex", flexDirection: "column",
+            alignItems: "flex-end", gap: 24,
           }}>
-            {/* Availability badge */}
             <div style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "8px 18px",
@@ -259,8 +225,7 @@ export default function Contact() {
             }}>
               <span style={{
                 width: 6, height: 6, borderRadius: "50%",
-                background: "#4ade80",
-                display: "inline-block",
+                background: "#4ade80", display: "inline-block",
                 boxShadow: "0 0 6px #4ade8099",
               }} />
               <span style={{
@@ -271,22 +236,18 @@ export default function Contact() {
               }}>Open to opportunities</span>
             </div>
 
-            {/* Location */}
             <p style={{
               fontFamily: "'Inter',monospace",
               fontSize: 10, letterSpacing: "0.22em",
               color: "rgba(255,255,255,0.18)",
-              textTransform: "uppercase",
-              textAlign: "right",
+              textTransform: "uppercase", textAlign: "right",
             }}>
               Mumbai, IN&nbsp;&nbsp;·&nbsp;&nbsp;Available 2026
             </p>
 
-            {/* Copyright */}
             <p style={{
               fontFamily: "'Inter',sans-serif",
-              fontSize: 10,
-              color: "rgba(255,255,255,0.1)",
+              fontSize: 10, color: "rgba(255,255,255,0.1)",
               textAlign: "right",
             }}>
               &copy; {new Date().getFullYear()} Abhijeet Kadu
@@ -294,21 +255,17 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Ghost name watermark */}
+        {/* Ghost AK watermark */}
         <div aria-hidden style={{
-          position: "absolute",
-          bottom: 0, right: 0,
+          position: "absolute", bottom: 0, right: 0,
           fontFamily: "'Bebas Neue',sans-serif",
           fontSize: "clamp(6rem,18vw,20rem)",
-          lineHeight: 0.85,
-          color: "transparent",
-          WebkitTextStroke: `1px rgba(255,255,255,0.025)`,
-          pointerEvents: "none",
-          userSelect: "none",
+          lineHeight: 0.85, color: "transparent",
+          WebkitTextStroke: "1px rgba(255,255,255,0.025)",
+          pointerEvents: "none", userSelect: "none",
           letterSpacing: "0.01em",
         }}>AK</div>
 
-        {/* Mobile */}
         <style>{`
           @media(max-width:640px){
             .contact-grid { grid-template-columns: 1fr !important; }
