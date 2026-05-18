@@ -1,440 +1,431 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = "#00d4ff";
+/* ───────────────────  TYPES  ─────────────────── */
 
-const PROJECTS = [
+type Stat = { num: string; label: string };
+type Project = {
+  number: string;
+  org: string;
+  name: string;
+  hook: string;
+  description: string;
+  stats: Stat[];
+  hotTags: string[];
+  normalTags: string[];
+  links: { github?: string; live?: string };
+};
+
+/* ───────────────────  DATA  ─────────────────── */
+
+const PROJECTS: Project[] = [
   {
-    index: "01",
-    name: "SmartResume",
-    hook: "ATS scoring engine for 50,000+ resumes.",
+    number: "01",
+    org: "Personal Project · 2023",
+    name: "SmartResume — Resume Analysis Engine",
+    hook: "ATS scoring engine that processes and scores 50,000+ resumes.",
     description:
-      "FastAPI backend with an XGBoost classifier. Feature extraction from structure, keyword density, and section completeness. Production-grade with OAuth2 + JWT auth and clean architecture.",
-    stats: ["50,000+ resumes processed", "XGBoost + cross-validation", "OAuth2 / JWT auth"],
-    stack: ["Python", "FastAPI", "XGBoost", "OAuth2", "PostgreSQL"],
-    github: "https://github.com/Abhiii47",
-    live: "",
-    accent: ACCENT,
+      "FastAPI backend with XGBoost classifier. Feature extraction from structure, keyword density, and section completeness. Secure OAuth2 + JWT auth. Clean modular architecture.",
+    stats: [
+      { num: "50K+", label: "Resumes processed" },
+      { num: "Live", label: "In production" },
+    ],
+    hotTags:    ["FastAPI", "XGBoost", "Python"],
+    normalTags: ["OAuth2", "JWT", "PostgreSQL", "Clean Architecture"],
+    links: { github: "https://github.com/Abhiii47", live: "https://github.com/Abhiii47" },
   },
   {
-    index: "02",
+    number: "02",
+    org: "Personal Project · 2023",
     name: "Room & Food Finder",
-    hook: "Live hyperlocal platform with real-time chat.",
+    hook: "Live hyperlocal platform — students use it daily to find housing and food near campus.",
     description:
-      "Multi-role system (User / Provider / Admin) with real-time Socket.io messaging, map-centric search, and full RBAC. Dockerized with GitHub Actions CI/CD. Students use it daily.",
-    stats: ["Live in production", "Multi-role RBAC", "Real-time messaging"],
-    stack: ["Node.js", "Socket.io", "MongoDB", "Docker", "GitHub Actions"],
-    github: "https://github.com/Abhiii47",
-    live: "",
-    accent: "#a78bfa",
+      "Multi-role system (User/Provider/Admin) with real-time chat via Socket.io. Map-centric geo-search, Dockerized services, automated CI/CD pipeline.",
+    stats: [
+      { num: "Live", label: "Active users" },
+      { num: "RT",   label: "Real-time chat" },
+    ],
+    hotTags:    ["Node.js", "Socket.io", "Next.js"],
+    normalTags: ["MongoDB", "Docker", "Maps API", "RBAC", "GitHub Actions"],
+    links: { github: "https://github.com/Abhiii47" },
   },
   {
-    index: "03",
-    name: "Raseed",
-    hook: "Receipt → structured expense data in seconds.",
+    number: "03",
+    org: "Ecovis RKCA · GCP · 2024",
+    name: "RAG Knowledge Assistant",
+    hook: "Internal knowledge retrieval system — ask a question, get an answer with source citations.",
     description:
-      "Google Cloud Vision OCR ingestion pipeline, async background workers for categorisation, Server-Sent Events for real-time dashboard updates, and burn-rate analytics.",
-    stats: ["Real-time SSE updates", "GCP Vision OCR", "Auto-categorisation"],
-    stack: ["Python", "GCP Vision", "SSE", "PostgreSQL", "FastAPI"],
-    github: "https://github.com/Abhiii47",
-    live: "",
-    accent: "#fb923c",
+      "Document ingestion \u2192 chunking \u2192 FAISS vector store \u2192 LLM answer generation. Deployed on GCP Vertex AI with streaming responses via SSE.",
+    stats: [
+      { num: "GCP", label: "Deployed live" },
+      { num: "SSE", label: "Streaming output" },
+    ],
+    hotTags:    ["RAG", "Vertex AI", "FAISS"],
+    normalTags: ["LangChain", "GCP", "Python", "LLMs"],
+    links: { github: "https://github.com/Abhiii47" },
   },
   {
-    index: "04",
-    name: "RAG Assistant",
-    hook: "Company knowledge retrieval, deployed on GCP.",
+    number: "04",
+    org: "Amazon ML Summer School · 2024",
+    name: "Product Price Prediction Pipeline",
+    hook: "End-to-end regression pipeline on 150,000+ records. Built for Amazon ML School — top 0.1% program.",
     description:
-      "Document ingestion → chunking → FAISS vector store → LLM generation with citations. Deployed on Vertex AI with streaming responses. Built at Ecovis RKCA.",
-    stats: ["Vertex AI deployment", "FAISS vector store", "Streaming responses"],
-    stack: ["Python", "LangChain", "FAISS", "Vertex AI", "GCP"],
-    github: "https://github.com/Abhiii47",
-    live: "",
-    accent: "#4ade80",
-  },
-  {
-    index: "05",
-    name: "Price Prediction",
-    hook: "75k-record regression pipeline. Built for Amazon ML School.",
-    description:
-      "End-to-end ML pipeline: EDA → feature engineering → XGBoost → hyperparameter optimisation. Optimised on MAE and SMAPE across 75,000+ train and test records. Top 0.1% programme.",
-    stats: ["75,000+ records", "Top 0.1% Amazon ML", "MAE / SMAPE optimised"],
-    stack: ["Python", "XGBoost", "Pandas", "Scikit-learn", "NumPy"],
-    github: "https://github.com/Abhiii47",
-    live: "",
-    accent: "#f472b6",
+      "EDA \u2192 feature engineering \u2192 XGBoost regressor \u2192 hyperparameter optimization. Optimized on MAE and SMAPE metrics. Ensemble approach with bias-variance analysis.",
+    stats: [
+      { num: "150K+",    label: "Records processed" },
+      { num: "Top 0.1%", label: "Nationally" },
+    ],
+    hotTags:    ["XGBoost", "Python", "Feature Engineering"],
+    normalTags: ["Pandas", "Scikit-learn", "MAE/SMAPE", "EDA"],
+    links: { github: "https://github.com/Abhiii47" },
   },
 ];
 
-export default function Projects() {
-  const sectionRef  = useRef<HTMLElement>(null);
-  const trackRef    = useRef<HTMLDivElement>(null);
-  const cursorRef   = useRef<HTMLDivElement>(null);
+/* ───────────────────  PALETTE  ─────────────────── */
 
-  /* GSAP horizontal scroll */
+const C = {
+  bg:        "#F5F0E8",
+  surface:   "#EDE8DF",
+  border:    "#DDD7CB",
+  text:      "#1A1208",
+  muted:     "#6B6056",
+  hint:      "#9A8F83",
+  rust:      "#C4400A",
+  hotBg:     "#FBE9E0",
+  hotBorder: "#F0C4B0",
+} as const;
+
+/* ───────────────────  STAT COUNTER  ─────────────────── */
+
+function AnimatedStat({ num, label, triggered }: Stat & { triggered: boolean }) {
+  const [display, setDisplay] = useState("0");
+  const rafRef = useRef<number | null>(null);
+
   useEffect(() => {
-    const mm = gsap.matchMedia();
+    if (!triggered) return;
+    /* If the stat is numeric, count up; otherwise just reveal */
+    const numeric = parseFloat(num.replace(/[^0-9.]/g, ""));
+    const suffix  = num.replace(/[0-9.]/g, "");
+    const isNum   = !isNaN(numeric) && suffix !== num; /* has digits */
 
-    mm.add("(min-width: 769px)", () => {
-      const track  = trackRef.current;
-      const section = sectionRef.current;
-      if (!track || !section) return;
+    if (!isNum) { setDisplay(num); return; }
 
-      const totalWidth = track.scrollWidth - window.innerWidth;
+    const duration  = 1200;
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - startTime) / duration, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      const v = e * numeric;
+      setDisplay(
+        (numeric % 1 === 0
+          ? Math.round(v).toLocaleString()
+          : v.toFixed(1))
+        + suffix
+      );
+      if (p < 1) rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [triggered, num]);
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${totalWidth + window.innerHeight * 0.5}`,
-          pin: true,
-          scrub: 1.2,
-          anticipatePin: 1,
-        },
-      });
+  return (
+    <div style={{ textAlign: "right" }}>
+      <p style={{
+        fontFamily: "'DM Serif Display',Georgia,serif",
+        fontStyle: "italic",
+        fontSize: 22, fontWeight: 400,
+        color: C.rust, lineHeight: 1, marginBottom: 4,
+      }}>{display}</p>
+      <p style={{
+        fontFamily: "'DM Sans',sans-serif",
+        fontSize: 9, fontWeight: 400,
+        letterSpacing: "0.26em",
+        textTransform: "uppercase",
+        color: C.hint,
+      }}>{label}</p>
+    </div>
+  );
+}
 
-      tl.to(track, { x: -totalWidth, ease: "none" });
+/* ───────────────────  CARD  ─────────────────── */
 
-      /* Stagger card reveals */
-      gsap.utils.toArray<Element>(".proj-card").forEach((card, i) => {
-        gsap.from(card.querySelector(".proj-content"), {
-          scrollTrigger: {
-            trigger: section,
-            start: () => `top+=${i * (totalWidth / PROJECTS.length) * 0.6} top`,
-            end: () => `top+=${i * (totalWidth / PROJECTS.length) * 0.6 + 200} top`,
-            scrub: 1,
-            containerAnimation: tl,
-          },
-          y: 30,
-          opacity: 0,
-        });
-      });
+function ProjectCard({ p, index }: { p: Project; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [triggered, setTriggered] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); obs.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      className={`proj-card proj-card-${index}`}
+      style={{
+        background: C.surface,
+        border: `0.5px solid ${C.border}`,
+        borderRadius: 8,
+        padding: "clamp(18px,2.5vw,28px) clamp(18px,2.8vw,32px)",
+        display: "grid",
+        gridTemplateColumns: "52px 1fr",
+        gap: "0 clamp(16px,2.5vw,28px)",
+        transition: "border-color 0.25s, transform 0.25s, box-shadow 0.25s",
+      }}
+      onMouseEnter={e => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = `${C.rust}80`;
+        el.style.transform   = "translateY(-2px)";
+        el.style.boxShadow   = "0 8px 28px rgba(26,18,8,0.07)";
+      }}
+      onMouseLeave={e => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = C.border;
+        el.style.transform   = "translateY(0)";
+        el.style.boxShadow   = "none";
+      }}
+    >
+      {/* ── Left: italic number ── */}
+      <div style={{ paddingTop: 2 }}>
+        <span style={{
+          fontFamily: "'DM Serif Display',Georgia,serif",
+          fontStyle: "italic",
+          fontSize: 52, fontWeight: 400,
+          color: C.border,
+          lineHeight: 1, display: "block",
+          userSelect: "none",
+        }}>{p.number}</span>
+      </div>
+
+      {/* ── Right: full content ── */}
+      <div>
+        {/* Org */}
+        <p style={{
+          fontFamily: "'DM Sans',sans-serif",
+          fontSize: 9, fontWeight: 400,
+          letterSpacing: "0.3em",
+          textTransform: "uppercase",
+          color: C.hint,
+          marginBottom: 6,
+        }}>{p.org}</p>
+
+        {/* Project name */}
+        <h3 style={{
+          fontFamily: "'DM Sans',sans-serif",
+          fontSize: 15, fontWeight: 500,
+          color: C.text,
+          marginBottom: 10, lineHeight: 1.3,
+        }}>{p.name}</h3>
+
+        {/* ── Desktop: hook + desc left | stats right ── */}
+        <div className="card-body" style={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto",
+          gap: "0 clamp(24px,4vw,48px)",
+          alignItems: "start",
+        }}>
+          <div>
+            {/* Hook — pull-quote moment */}
+            <p
+              className={`proj-hook proj-hook-${index}`}
+              style={{
+                fontFamily: "'DM Serif Display',Georgia,serif",
+                fontStyle: "italic",
+                fontSize: 15, fontWeight: 400,
+                color: C.rust,
+                lineHeight: 1.5,
+                marginBottom: 10,
+              }}
+            >{p.hook}</p>
+
+            {/* Description */}
+            <p style={{
+              fontFamily: "'DM Sans',sans-serif",
+              fontSize: 13, fontWeight: 300,
+              color: C.muted,
+              lineHeight: 1.65,
+              marginBottom: 14,
+            }}>{p.description}</p>
+
+            {/* Tags */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 16 }}>
+              {p.hotTags.map(t => (
+                <span key={t} style={{
+                  padding: "4px 9px", borderRadius: 4,
+                  background: C.hotBg,
+                  border: `1px solid ${C.hotBorder}`,
+                  color: C.rust,
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontWeight: 500, fontSize: 10, lineHeight: 1,
+                }}>{t}</span>
+              ))}
+              {p.normalTags.map(t => (
+                <span key={t} style={{
+                  padding: "4px 9px", borderRadius: 4,
+                  background: C.bg,
+                  border: `1px solid ${C.border}`,
+                  color: C.hint,
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontWeight: 400, fontSize: 10, lineHeight: 1,
+                }}>{t}</span>
+              ))}
+            </div>
+
+            {/* Links */}
+            <div style={{ display: "flex", gap: 18 }}>
+              {p.links.github && (
+                <a
+                  href={p.links.github}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{
+                    fontFamily: "'DM Sans',monospace",
+                    fontSize: 10, fontWeight: 400,
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: C.rust,
+                    textDecoration: "none",
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                    transition: "color 0.18s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#A33508")}
+                  onMouseLeave={e => (e.currentTarget.style.color = C.rust)}
+                >
+                  GitHub
+                  <span style={{ fontSize: 11, transition: "transform 0.18s" }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLSpanElement).style.transform = "translate(2px,-2px)")}
+                    onMouseLeave={e => ((e.currentTarget as HTMLSpanElement).style.transform = "none")}
+                  >↗</span>
+                </a>
+              )}
+              {p.links.live && (
+                <a
+                  href={p.links.live}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{
+                    fontFamily: "'DM Sans',monospace",
+                    fontSize: 10, fontWeight: 400,
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: C.hint,
+                    textDecoration: "none",
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                    transition: "color 0.18s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = C.rust)}
+                  onMouseLeave={e => (e.currentTarget.style.color = C.hint)}
+                >Live ↗</a>
+              )}
+            </div>
+          </div>
+
+          {/* Stats column */}
+          <div style={{
+            display: "flex", flexDirection: "column",
+            gap: 18, paddingTop: 2, minWidth: 90,
+          }}>
+            {p.stats.map(s => (
+              <AnimatedStat key={s.label} {...s} triggered={triggered} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────  SECTION  ─────────────────── */
+
+export default function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    /* Cards stagger */
+    gsap.from(".proj-card", {
+      scrollTrigger: { trigger: ".proj-list", start: "top 85%" },
+      y: 50, opacity: 0, duration: 0.8,
+      stagger: 0.12, ease: "power3.out",
     });
 
-    return () => mm.revert();
-  }, []);
-
-  /* Custom drag cursor */
-  useEffect(() => {
-    const section = sectionRef.current;
-    const cursor  = cursorRef.current;
-    if (!section || !cursor) return;
-
-    let mouseX = 0, mouseY = 0;
-    let curX   = 0, curY   = 0;
-    let rafId: number;
-
-    const follow = () => {
-      curX += (mouseX - curX) * 0.12;
-      curY += (mouseY - curY) * 0.12;
-      cursor.style.transform = `translate(${curX}px,${curY}px) translate(-50%,-50%)`;
-      rafId = requestAnimationFrame(follow);
-    };
-
-    const onMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-    const onEnter = () => { cursor.style.opacity = "1"; follow(); };
-    const onLeave = () => { cursor.style.opacity = "0"; cancelAnimationFrame(rafId); };
-
-    section.addEventListener("mousemove", onMove);
-    section.addEventListener("mouseenter", onEnter);
-    section.addEventListener("mouseleave", onLeave);
-    return () => {
-      section.removeEventListener("mousemove", onMove);
-      section.removeEventListener("mouseenter", onEnter);
-      section.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
+    /* Hook pull-quote entry per card */
+    gsap.utils.toArray<Element>(".proj-hook").forEach(hook => {
+      gsap.from(hook, {
+        scrollTrigger: { trigger: hook as Element, start: "top 88%" },
+        x: 20, opacity: 0, duration: 0.7, ease: "power2.out",
+      });
+    });
+  }, { scope: sectionRef });
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
-
-        .proj-track { display:flex; will-change:transform; }
-
-        .proj-card {
-          flex-shrink:0;
-          width:100vw;
-          height:100vh;
-          display:flex;
-          align-items:flex-end;
-          padding:clamp(28px,5vw,72px);
-          position:relative;
-          overflow:hidden;
-          cursor:none;
-        }
-
-        .proj-bg-name {
-          position:absolute;
-          inset:0;
-          display:flex;
-          align-items:center;
-          justify-content:flex-end;
-          padding-right:clamp(24px,4vw,56px);
-          pointer-events:none;
-          user-select:none;
-        }
-
-        .proj-tag {
-          display:inline-flex;
-          padding:4px 11px;
-          border-radius:9999px;
-          font-family:'Inter',monospace;
-          font-size:10px;
-          letter-spacing:0.1em;
-          transition:background 0.2s,color 0.2s;
-        }
-
-        /* Mobile: vertical stack */
-        @media(max-width:768px){
-          .proj-track { flex-direction:column!important; width:100%!important; }
-          .proj-card  { width:100%!important; height:auto!important; min-height:100svh; padding:clamp(24px,6vw,48px) clamp(18px,5vw,36px)!important; }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+        @media(max-width:640px){
+          .card-body { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
-      {/* DRAG cursor */}
-      <div
-        ref={cursorRef}
-        aria-hidden
-        style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: 88, height: 88,
-          borderRadius: "50%",
-          background: "rgba(255,255,255,0.08)",
-          border: "1px solid rgba(255,255,255,0.18)",
-          backdropFilter: "blur(4px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-          zIndex: 9998,
-          opacity: 0,
-          transition: "opacity 0.25s",
-          fontFamily: "'Inter',monospace",
-          fontSize: 9,
-          letterSpacing: "0.22em",
-          color: "white",
-          textTransform: "uppercase",
-        }}
-      >DRAG</div>
-
       <section
-        id="projects"
+        id="work"
         ref={sectionRef}
-        style={{ background: "#080c14", overflow: "hidden", position: "relative" }}
+        style={{
+          background: C.bg,
+          padding: "clamp(72px,9vw,120px) clamp(20px,5vw,72px)",
+        }}
       >
-        {/* Section label (fixed during pin) */}
-        <div style={{
-          position: "absolute",
-          top: "clamp(24px,3vw,36px)",
-          left: "clamp(20px,5vw,72px)",
-          zIndex: 10,
-          display: "flex", alignItems: "center", gap: 14,
-        }}>
+        <div style={{ maxWidth: 1140, margin: "0 auto" }}>
+
+          {/* Section label */}
           <p style={{
-            fontFamily: "'Inter',monospace", fontSize: 10,
-            letterSpacing: "0.38em", color: ACCENT,
+            fontFamily: "'DM Sans',sans-serif",
+            fontWeight: 400, fontSize: 10,
+            letterSpacing: "0.38em",
             textTransform: "uppercase",
-          }}>02 / Work</p>
-          <span style={{
-            fontFamily: "'Inter',monospace", fontSize: 9,
-            letterSpacing: "0.18em", color: "rgba(255,255,255,0.2)",
-          }}>— {PROJECTS.length} projects</span>
-        </div>
+            color: C.rust, marginBottom: 28,
+          }}>04 / Work</p>
 
-        {/* Progress dots */}
-        <div style={{
-          position: "absolute",
-          top: "clamp(24px,3vw,36px)",
-          right: "clamp(20px,5vw,72px)",
-          zIndex: 10,
-          display: "flex", gap: 6, alignItems: "center",
-        }}>
-          {PROJECTS.map((_, i) => (
-            <div key={i} style={{
-              width: 5, height: 5, borderRadius: "50%",
-              background: `rgba(255,255,255,${i === 0 ? 0.7 : 0.15})`,
-            }} />
-          ))}
-        </div>
+          {/* Heading */}
+          <h2 style={{
+            display: "flex", flexWrap: "wrap",
+            alignItems: "baseline", gap: "0 0.28em",
+            marginBottom: "clamp(40px,5vw,64px)",
+            lineHeight: 1.05,
+          }}>
+            <span style={{
+              fontFamily: "'DM Serif Display',Georgia,serif",
+              fontStyle: "normal", fontWeight: 400,
+              fontSize: "clamp(2.2rem,4.5vw,3.8rem)",
+              color: C.text,
+            }}>Selected</span>
+            <span style={{
+              fontFamily: "'DM Serif Display',Georgia,serif",
+              fontStyle: "italic", fontWeight: 400,
+              fontSize: "clamp(2.2rem,4.5vw,3.8rem)",
+              color: C.rust,
+            }}>projects</span>
+          </h2>
 
-        {/* Horizontal track */}
-        <div ref={trackRef} className="proj-track" style={{ height: "100vh" }}>
-          {PROJECTS.map((p) => (
-            <div
-              key={p.index}
-              className="proj-card"
-              style={{ background: "#080c14" }}
-            >
-              {/* Giant bg name */}
-              <div className="proj-bg-name">
-                <span style={{
-                  fontFamily: "'Bebas Neue','Arial Black',sans-serif",
-                  fontSize: "clamp(8rem,18vw,22rem)",
-                  fontWeight: 400,
-                  lineHeight: 0.85,
-                  color: "transparent",
-                  WebkitTextStroke: `1px ${p.accent}18`,
-                  whiteSpace: "nowrap",
-                }}>{p.name}</span>
-              </div>
+          {/* Card list */}
+          <div
+            className="proj-list"
+            style={{ display: "flex", flexDirection: "column", gap: 12 }}
+          >
+            {PROJECTS.map((p, i) => (
+              <ProjectCard key={p.number} p={p} index={i} />
+            ))}
+          </div>
 
-              {/* Left edge accent line */}
-              <div aria-hidden style={{
-                position: "absolute",
-                left: 0, top: "15%", bottom: "15%",
-                width: 1,
-                background: `linear-gradient(to bottom,transparent,${p.accent}50,transparent)`,
-              }} />
-
-              {/* Card content */}
-              <div className="proj-content" style={{
-                position: "relative", zIndex: 2,
-                maxWidth: 560,
-              }}>
-                {/* Index + accent dot */}
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                  <span style={{
-                    fontFamily: "'Bebas Neue',sans-serif",
-                    fontSize: "clamp(3rem,6vw,5.5rem)",
-                    color: p.accent,
-                    lineHeight: 1,
-                    opacity: 0.25,
-                  }}>{p.index}</span>
-                  <div style={{
-                    flex: 1, height: 1,
-                    background: `linear-gradient(90deg,${p.accent}40,transparent)`,
-                  }} />
-                </div>
-
-                {/* Project name */}
-                <h3 style={{
-                  fontFamily: "'Bebas Neue','Arial Black',sans-serif",
-                  fontSize: "clamp(2rem,4vw,3.6rem)",
-                  fontWeight: 400,
-                  color: "#f0ede8",
-                  lineHeight: 1.0,
-                  marginBottom: 14,
-                  letterSpacing: "0.02em",
-                }}>{p.name}</h3>
-
-                {/* Hook */}
-                <p style={{
-                  fontFamily: "'Inter',sans-serif",
-                  fontSize: "clamp(0.92rem,1.1vw,1rem)",
-                  color: p.accent,
-                  marginBottom: 14,
-                  fontWeight: 400,
-                  lineHeight: 1.5,
-                }}>{p.hook}</p>
-
-                {/* Description */}
-                <p style={{
-                  fontFamily: "'Inter',sans-serif",
-                  fontSize: "clamp(0.8rem,0.9vw,0.88rem)",
-                  color: "rgba(255,255,255,0.38)",
-                  lineHeight: 1.75,
-                  marginBottom: 20,
-                  maxWidth: "46ch",
-                }}>{p.description}</p>
-
-                {/* Stats */}
-                <div style={{
-                  display: "flex", gap: 16, flexWrap: "wrap",
-                  marginBottom: 22,
-                }}>
-                  {p.stats.map(s => (
-                    <span key={s} style={{
-                      fontFamily: "'Inter',monospace",
-                      fontSize: 9,
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      color: "rgba(255,255,255,0.28)",
-                      display: "flex", alignItems: "center", gap: 5,
-                    }}>
-                      <span style={{ color: p.accent, fontSize: 12 }}>—</span>
-                      {s}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Tech stack */}
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 28 }}>
-                  {p.stack.map(t => (
-                    <span key={t} className="proj-tag" style={{
-                      background: `${p.accent}12`,
-                      border: `1px solid ${p.accent}28`,
-                      color: `${p.accent}cc`,
-                    }}>{t}</span>
-                  ))}
-                </div>
-
-                {/* Links */}
-                <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-                  <a
-                    href={p.github}
-                    target="_blank" rel="noopener noreferrer"
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: 7,
-                      padding: "10px 22px",
-                      border: `1px solid ${p.accent}40`,
-                      borderRadius: 9999,
-                      fontFamily: "'Inter',monospace",
-                      fontSize: 9, letterSpacing: "0.22em",
-                      textTransform: "uppercase",
-                      color: p.accent,
-                      textDecoration: "none",
-                      transition: "background 0.2s,transform 0.2s",
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = `${p.accent}18`; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
-                  >
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    GitHub
-                  </a>
-                  {p.live && (
-                    <a
-                      href={p.live}
-                      target="_blank" rel="noopener noreferrer"
-                      style={{
-                        fontFamily: "'Inter',monospace",
-                        fontSize: 9, letterSpacing: "0.22em",
-                        textTransform: "uppercase",
-                        color: "rgba(255,255,255,0.22)",
-                        textDecoration: "none",
-                        display: "flex", alignItems: "center", gap: 6,
-                        transition: "color 0.2s",
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.color = "white")}
-                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.22)")}
-                    >
-                      Live &rarr;
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Bottom accent line */}
-              <div aria-hidden style={{
-                position: "absolute",
-                bottom: 0, left: 0, right: 0,
-                height: 1,
-                background: `linear-gradient(90deg,transparent,${p.accent}30,transparent)`,
-              }} />
-            </div>
-          ))}
         </div>
       </section>
     </>
