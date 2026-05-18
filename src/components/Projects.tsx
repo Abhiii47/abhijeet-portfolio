@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight, Github } from "lucide-react";
-import CardSpotlight from "./CardSpotlight";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,7 +13,7 @@ const projects = [
     id: "smartresume",
     index: "01",
     title: "SmartResume ATS",
-    tag: "AI · NLP · FastAPI",
+    tag: "AI \u00b7 NLP \u00b7 FastAPI",
     color: "#84cc16",
     problem: "Candidates were getting rejected by ATS systems before humans ever read their resumes.",
     solution: "Built a FastAPI + NLP pipeline that parses JDs, scores resume-JD semantic match, and generates targeted suggestions.",
@@ -26,7 +25,7 @@ const projects = [
     id: "mlcomp",
     index: "02",
     title: "Amazon ML Competition",
-    tag: "ML · Ensemble · XGBoost",
+    tag: "ML \u00b7 Ensemble \u00b7 XGBoost",
     color: "#ef4444",
     problem: "Multi-class classification on noisy, high-dimensional tabular data with class imbalance.",
     solution: "Stacked ensemble: XGBoost + LightGBM + CatBoost with SMOTE oversampling and custom feature engineering.",
@@ -38,7 +37,7 @@ const projects = [
     id: "roomfood",
     index: "03",
     title: "Room & Food Finder",
-    tag: "Next.js · Supabase · Maps",
+    tag: "Next.js \u00b7 Supabase \u00b7 Maps",
     color: "#3b82f6",
     problem: "Students relocating to new cities had no unified platform to find accommodation and food together.",
     solution: "Full-stack Next.js app with Supabase auth + realtime DB, Google Maps integration, and filter-based search.",
@@ -50,10 +49,10 @@ const projects = [
     id: "fabric",
     index: "04",
     title: "MS Fabric Analytics Pipeline",
-    tag: "ETL · Power BI · DP-600",
+    tag: "ETL \u00b7 Power BI \u00b7 DP-600",
     color: "#8b5cf6",
     problem: "Business data was siloed across 6 systems with no unified reporting layer.",
-    solution: "Built end-to-end ETL on Microsoft Fabric: Bronze→Silver→Gold lakehouse, automated refresh, Power BI semantic model.",
+    solution: "Built end-to-end ETL on Microsoft Fabric: Bronze\u2192Silver\u2192Gold lakehouse, automated refresh, Power BI semantic model.",
     result: "DP-600 certified. Pipeline processes 2M+ rows daily.",
     github: "https://github.com/Abhiii47",
     live: "",
@@ -62,16 +61,107 @@ const projects = [
     id: "genai",
     index: "05",
     title: "RAG Knowledge Assistant",
-    tag: "LLM · RAG · GCP",
+    tag: "LLM \u00b7 RAG \u00b7 GCP",
     color: "#d946ef",
-    problem: "Internal documents were unsearchable — teams wasted hours digging through PDFs.",
-    solution: "RAG pipeline on GCP: document ingestion → chunking → vector store (FAISS) → LLM answer generation with source citation.",
+    problem: "Internal documents were unsearchable \u2014 teams wasted hours digging through PDFs.",
+    solution: "RAG pipeline on GCP: document ingestion \u2192 chunking \u2192 vector store (FAISS) \u2192 LLM answer generation with source citation.",
     result: "< 2s end-to-end latency. Deployed on Vertex AI.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
 ];
 
+/* ── GlowCard ───────────────────────────────────────────────────────────── */
+function GlowCard({
+  children,
+  color,
+  className = "",
+}: {
+  children: React.ReactNode;
+  color: string;
+  className?: string;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    const glow = glowRef.current;
+    if (!card || !glow) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    glow.style.background = `radial-gradient(380px circle at ${x}px ${y}px, ${color}28, transparent 65%)`;
+    // subtle tilt
+    const tiltX = ((y / rect.height) - 0.5) * 6;
+    const tiltY = ((x / rect.width)  - 0.5) * -6;
+    card.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.012,1.012,1.012)`;
+  }, [color]);
+
+  const onMouseLeave = useCallback(() => {
+    const card = cardRef.current;
+    const glow = glowRef.current;
+    if (!card || !glow) return;
+    glow.style.background = "transparent";
+    card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)";
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      className={`relative rounded-xl overflow-hidden group ${className}`}
+      style={{
+        background: "rgba(255,255,255,0.025)",
+        border: `1px solid rgba(255,255,255,0.06)`,
+        transition: "transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease",
+        willChange: "transform",
+      }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      {/* Glowing border ring — tracks mouse */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(600px circle at 50% 50%, ${color}18, transparent 60%)`,
+          zIndex: 0,
+        }}
+      />
+
+      {/* Sharp border glow that follows mouse */}
+      <div
+        ref={glowRef}
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{ zIndex: 0, transition: "background 0.08s ease" }}
+      />
+
+      {/* Accent border on hover */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+        style={{
+          boxShadow: `inset 0 0 0 1px ${color}40`,
+          zIndex: 1,
+        }}
+      />
+
+      {/* Top edge shimmer line */}
+      <div
+        className="absolute top-0 left-[10%] right-[10%] h-px pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${color}80, transparent)`,
+          zIndex: 2,
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative" style={{ zIndex: 3 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ── Projects section ───────────────────────────────────────────────────── */
 export default function Projects() {
   const containerRef = useRef<HTMLElement>(null);
 
@@ -88,7 +178,6 @@ export default function Projects() {
 
   return (
     <section id="projects" ref={containerRef} className="relative w-full py-32 px-6 md:px-12">
-      {/* Ghost label */}
       <span
         className="absolute right-0 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none"
         style={{ WebkitTextStroke: "1px rgba(132,204,22,0.03)", color: "transparent" }}
@@ -96,7 +185,6 @@ export default function Projects() {
       >04</span>
 
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="mb-16">
           <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">04 / Work</p>
           <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -107,10 +195,7 @@ export default function Projects() {
               >
                 Selected
               </h2>
-              <h2
-                className="font-serif font-black leading-tight -mt-1"
-                style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
-              >
+              <h2 className="font-serif font-black leading-tight -mt-1" style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}>
                 Projects.
               </h2>
             </div>
@@ -120,25 +205,15 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* Cards grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* First card — full width featured */}
-          <CardSpotlight
-            className="project-card md:col-span-2 group"
-            spotlightColor={`${projects[0].color}10`}
-          >
+          <GlowCard color={projects[0].color} className="project-card md:col-span-2">
             <ProjectCardContent project={projects[0]} featured />
-          </CardSpotlight>
+          </GlowCard>
 
-          {/* Rest — 2-col */}
           {projects.slice(1).map((p) => (
-            <CardSpotlight
-              key={p.id}
-              className="project-card group"
-              spotlightColor={`${p.color}10`}
-            >
+            <GlowCard key={p.id} color={p.color} className="project-card">
               <ProjectCardContent project={p} />
-            </CardSpotlight>
+            </GlowCard>
           ))}
         </div>
       </div>
@@ -146,78 +221,53 @@ export default function Projects() {
   );
 }
 
+/* ── Card content ───────────────────────────────────────────────────────── */
 function ProjectCardContent({ project: p, featured = false }: { project: typeof projects[0]; featured?: boolean }) {
   return (
     <div className={`p-7 md:p-9 ${featured ? "md:flex md:gap-14" : ""}`}>
-
-      {/* Left col */}
       <div className={featured ? "md:w-1/2" : ""}>
-
-        {/* Index + tag row */}
         <div className="flex items-center justify-between mb-5">
-          {/* Index — animates to accent color on group hover */}
-          <span
-            className="font-mono text-[11px] tracking-[0.3em] transition-all duration-500"
-            style={{ color: "#374151" }}
-            onMouseEnter={undefined}
-          >
-            <span
-              className="group-hover:scale-110 inline-block transition-transform duration-500"
-              style={{
-                /* handled via CSS group-hover below via style tag workaround */
-              }}
-            >
-              {p.index}
-            </span>
+          <span className="font-mono text-[11px] tracking-[0.3em] text-gray-600 group-hover:text-white transition-colors duration-500">
+            {p.index}
           </span>
-
-          {/* Tag pill — border brightens on hover */}
           <span
-            className="font-mono text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 rounded-full transition-all duration-400"
+            className="font-mono text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 rounded-full transition-all duration-300 group-hover:border-opacity-60"
             style={{
               color: p.color,
               background: `${p.color}12`,
-              border: `1px solid ${p.color}25`,
+              border: `1px solid ${p.color}30`,
             }}
           >
             {p.tag}
           </span>
         </div>
 
-        {/* Title */}
-        <h3 className="font-serif font-bold text-white leading-tight mb-3"
+        <h3
+          className="font-serif font-bold text-white leading-tight mb-3 group-hover:text-white transition-colors duration-300"
           style={{ fontSize: featured ? "clamp(1.6rem, 3vw, 2.5rem)" : "clamp(1.3rem, 2vw, 1.9rem)" }}
         >
           {p.title}
         </h3>
 
-        {/* Animated accent line — expands on group hover */}
-        <div className="overflow-hidden mb-6">
-          <div
-            className="h-px transition-all duration-700 ease-out"
-            style={{
-              width: "3rem",
-              background: `linear-gradient(90deg, ${p.color}, transparent)`,
-            }}
-            /* JS-free width expansion via data-group pattern */
-          />
-        </div>
+        {/* Accent line — expands on hover */}
+        <div
+          className="h-px mb-6 transition-all duration-700 ease-out"
+          style={{
+            width: "3rem",
+            background: `linear-gradient(90deg, ${p.color}, transparent)`,
+          }}
+        />
       </div>
 
-      {/* Right col — problem/solution/result with stagger reveal */}
       <div className={`space-y-5 ${featured ? "md:w-1/2" : ""}`}>
         {[
           { label: "Problem",  text: p.problem,  delay: "0ms"   },
           { label: "Solution", text: p.solution, delay: "60ms"  },
           { label: "Result",   text: p.result,   delay: "120ms" },
         ].map(({ label, text, delay }) => (
-          <div
-            key={label}
-            className="transform transition-all duration-500"
-            style={{ transitionDelay: delay }}
-          >
+          <div key={label} className="transition-all duration-500" style={{ transitionDelay: delay }}>
             <p
-              className="font-mono text-[9px] tracking-[0.3em] uppercase mb-1 transition-colors duration-300"
+              className="font-mono text-[9px] tracking-[0.3em] uppercase mb-1 transition-colors duration-400"
               style={{ color: "#374151" }}
             >
               {label}
@@ -226,16 +276,12 @@ function ProjectCardContent({ project: p, featured = false }: { project: typeof 
           </div>
         ))}
 
-        {/* Links — always visible but accent-color on hover */}
         <div className="flex items-center gap-5 pt-3 border-t border-white/[0.04]">
           <a
             href={p.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300"
-            style={{ color: "#4b5563" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#ffffff")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#4b5563")}
+            className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300 text-gray-600 hover:text-white"
           >
             <Github className="w-3.5 h-3.5" /> GitHub
           </a>
@@ -246,19 +292,12 @@ function ProjectCardContent({ project: p, featured = false }: { project: typeof 
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest transition-all duration-300"
               style={{ color: p.color }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.gap = "8px";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.gap = "6px";
-              }}
             >
               <ArrowUpRight className="w-3.5 h-3.5" /> Live
             </a>
           )}
-
-          {/* Hover cue — arrow that appears on hover */}
-          <div className="ml-auto flex items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0"
+          <div
+            className="ml-auto flex items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0"
             style={{ color: p.color }}
           >
             <ArrowUpRight className="w-3 h-3" />
@@ -266,23 +305,6 @@ function ProjectCardContent({ project: p, featured = false }: { project: typeof 
           </div>
         </div>
       </div>
-
-      {/* Inline style for group-hover effects that can't be done via Tailwind alone */}
-      <style jsx>{`
-        .group:hover .accent-line-${p.id} {
-          width: 100% !important;
-        }
-        .group:hover .index-${p.id} {
-          color: ${p.color} !important;
-          transform: scale(1.15);
-        }
-        .group:hover .tag-border-${p.id} {
-          border-color: ${p.color}60 !important;
-        }
-        .group:hover .row-label-${p.id} {
-          color: ${p.color}80 !important;
-        }
-      `}</style>
     </div>
   );
 }
