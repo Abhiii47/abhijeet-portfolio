@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import CardSpotlight from "./CardSpotlight";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 const skills = [
   {
@@ -33,9 +32,9 @@ const skills = [
   },
   {
     id: "cloud", title: "Cloud", size: "small",
-    tags: ["GCP", "Vertex AI", "MS Fabric"],
+    tags: ["GCP", "Azure", "AWS", "Vertex AI"],
     color: "#4285F4",
-    desc: "Vertex AI, Cloud Functions, Data Lake architectures.",
+    desc: "Vertex AI, Cloud Functions, Data Lake architectures, CI/CD pipelines.",
   },
   {
     id: "viz", title: "Data Viz & BI", size: "small",
@@ -67,6 +66,103 @@ function sizeToClass(size: string) {
   }
 }
 
+/* ── GlowCard ───────────────────────────────────────────────────────────── */
+function GlowCard({
+  children, color, className = "", style,
+}: {
+  children: React.ReactNode;
+  color: string;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    const glow = glowRef.current;
+    if (!card || !glow) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    glow.style.background = `radial-gradient(320px circle at ${x}px ${y}px, ${color}30, transparent 65%)`;
+    const tiltX = ((y / rect.height) - 0.5) * 5;
+    const tiltY = ((x / rect.width)  - 0.5) * -5;
+    card.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.01,1.01,1.01)`;
+  }, [color]);
+
+  const onMouseLeave = useCallback(() => {
+    const card = cardRef.current;
+    const glow = glowRef.current;
+    if (!card || !glow) return;
+    glow.style.background = "transparent";
+    card.style.transform = "perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)";
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      className={`relative rounded-xl overflow-hidden group cursor-pointer ${className}`}
+      style={{
+        background: "rgba(255,255,255,0.025)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        transition: "transform 0.25s cubic-bezier(0.16,1,0.3,1)",
+        willChange: "transform",
+        ...style,
+      }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      {/* mouse-tracked spotlight */}
+      <div ref={glowRef} className="absolute inset-0 rounded-xl pointer-events-none" style={{ zIndex: 0, transition: "background 0.07s ease" }} />
+      {/* hover border ring */}
+      <div className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ boxShadow: `inset 0 0 0 1px ${color}45`, zIndex: 1 }} />
+      {/* top shimmer */}
+      <div className="absolute top-0 left-[8%] right-[8%] h-px pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(90deg, transparent, ${color}90, transparent)`, zIndex: 2 }} />
+      <div className="relative h-full" style={{ zIndex: 3 }}>{children}</div>
+    </div>
+  );
+}
+
+/* ── Sparkles (for featured cell) ─────────────────────────────────────── */
+function Sparkles({ color }: { color: string }) {
+  const sparks = Array.from({ length: 22 }, (_, i) => ({
+    id: i,
+    x: 10 + Math.random() * 80,
+    y: 10 + Math.random() * 80,
+    size: Math.random() * 3 + 1,
+    duration: Math.random() * 2.5 + 1.5,
+    delay: Math.random() * 3,
+  }));
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+      {sparks.map(s => (
+        <div
+          key={s.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${s.x}%`,
+            top:  `${s.y}%`,
+            width:  `${s.size}px`,
+            height: `${s.size}px`,
+            background: s.id % 4 === 0 ? color : "rgba(255,255,255,0.6)",
+            animation: `sparkle ${s.duration}s ${s.delay}s ease-in-out infinite`,
+            boxShadow: `0 0 ${s.size * 2}px ${s.id % 4 === 0 ? color : "rgba(255,255,255,0.4)"}`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes sparkle {
+          0%, 100% { opacity: 0; transform: scale(0.3); }
+          50%       { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ── BentoSkills ─────────────────────────────────────────────────────────── */
 export default function BentoSkills() {
   const containerRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState<string | null>(null);
@@ -83,6 +179,18 @@ export default function BentoSkills() {
 
   return (
     <section id="skills" ref={containerRef} className="relative w-full py-32 px-6 md:px-12 overflow-hidden">
+
+      {/* Dot grid background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden
+        style={{
+          backgroundImage: "radial-gradient(rgba(132,204,22,0.08) 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+          maskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, black 40%, transparent 100%)",
+        }}
+      />
+
       <span
         className="absolute -right-4 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none"
         style={{ WebkitTextStroke: "1px rgba(132,204,22,0.03)", color: "transparent" }}
@@ -94,46 +202,73 @@ export default function BentoSkills() {
           <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">03 / Skills</p>
           <h2
             className="font-serif font-black leading-tight"
-            style={{ fontSize: "clamp(2rem, 5vw, 4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}
+            style={{ fontSize: "clamp(2rem,5vw,4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}
           >Technical Arsenal</h2>
           <h2
             className="font-serif font-black leading-tight -mt-2"
-            style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
+            style={{ fontSize: "clamp(2rem,5vw,4rem)" }}
           >Built to Ship.</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[180px]">
           {skills.map((skill, i) => (
-            <CardSpotlight
+            <GlowCard
               key={skill.id}
-              className={`bento-card cursor-pointer ${sizeToClass(skill.size)} transition-all duration-700`}
+              color={skill.color}
+              className={`bento-card ${sizeToClass(skill.size)}`}
               style={{
                 opacity: visible ? 1 : 0,
-                transform: visible ? "translateY(0) scale(1)" : "translateY(40px) scale(0.96)",
+                transform: visible
+                  ? "perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)"
+                  : "translateY(40px) scale(0.96)",
                 transitionDelay: `${i * 80}ms`,
               }}
-              spotlightColor={`${skill.color}15`}
             >
+              {/* Sparkles only on the featured (large) cell */}
+              {skill.size === "large" && <Sparkles color={skill.color} />}
+
               <div
                 className="relative h-full p-6 flex flex-col justify-between"
                 onClick={() => setActive(active === skill.id ? null : skill.id)}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-mono text-[9px] tracking-[0.3em] uppercase mb-2" style={{ color: skill.color }}>
-                      {skill.tags.join(" · ")}
-                    </p>
+                    {/* Tag chips */}
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {skill.tags.map(tag => (
+                        <span
+                          key={tag}
+                          className="font-mono text-[8px] tracking-[0.15em] uppercase px-2 py-0.5 rounded-full transition-all duration-300"
+                          style={{
+                            color: skill.color,
+                            background: `${skill.color}12`,
+                            border: `1px solid ${skill.color}25`,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                     <h3 className="font-serif font-bold text-white/90 text-lg leading-tight">{skill.title}</h3>
                   </div>
                   {skill.stat && (
                     <div className="text-right flex-shrink-0 ml-4">
-                      <div className="font-mono font-black tabular-nums" style={{ fontSize: "clamp(1.2rem,2.5vw,1.8rem)", color: skill.color }}>
+                      <div
+                        className="font-mono font-black tabular-nums"
+                        style={{
+                          fontSize: "clamp(1.2rem,2.5vw,1.8rem)",
+                          color: skill.color,
+                          textShadow: `0 0 20px ${skill.color}60`,
+                        }}
+                      >
                         {skill.stat}
                       </div>
                       <div className="font-mono text-[8px] text-gray-600 uppercase tracking-widest mt-0.5">{skill.statLabel}</div>
                     </div>
                   )}
                 </div>
+
+                {/* Description — revealed on click */}
                 <p
                   className="font-mono text-[11px] text-gray-500 leading-relaxed transition-all duration-300"
                   style={{
@@ -143,26 +278,34 @@ export default function BentoSkills() {
                     overflow: "hidden",
                   }}
                 >{skill.desc}</p>
+
+                {/* Bottom progress line */}
                 <div
                   className="absolute bottom-0 left-0 h-[2px] transition-all duration-500"
                   style={{
                     width: active === skill.id ? "100%" : "0%",
                     background: `linear-gradient(90deg, ${skill.color}, transparent)`,
-                    borderRadius: "0 0 12px 12px",
                   }}
                 />
+
+                {/* Pulsing dot */}
                 <div
                   className="absolute bottom-4 right-4 w-2 h-2 rounded-full transition-all duration-300"
                   style={{
                     background: skill.color,
-                    boxShadow: `0 0 ${active === skill.id ? '12px' : '4px'} ${skill.color}`,
-                    opacity: 0.7,
+                    boxShadow: `0 0 ${active === skill.id ? "14px" : "5px"} ${skill.color}`,
+                    opacity: 0.75,
                   }}
                 />
               </div>
-            </CardSpotlight>
+            </GlowCard>
           ))}
         </div>
+
+        {/* Click hint */}
+        <p className="font-mono text-[9px] text-gray-700 tracking-[0.25em] uppercase text-center mt-8">
+          Click any card to expand
+        </p>
       </div>
     </section>
   );
