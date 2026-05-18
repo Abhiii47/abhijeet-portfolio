@@ -1,234 +1,275 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
-import { ArrowDown } from "lucide-react";
 import MagneticButton from "./MagneticButton";
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
+/* ─────────────────────────────────────────────
+   PHASE 1 — HERO
+   Theme:  Deep space black  #020408
+   Accent: Electric cyan     #00d4ff
+   Type:   Outline name (giant) + solid surname
+   3D:     Canvas particle sphere — pure math, no deps
+───────────────────────────────────────────── */
 
+const ACCENT = "#00d4ff";
 const ROLES = [
-  "SDE / Product Manager",
-  "Cloud & Internal Tools",
-  "AI + Web Experiences",
+  "SDE & Product Manager",
+  "Cloud Systems @ Ecovis RKCA",
+  "ML · Next.js · AWS · Azure",
   "Open to Opportunities",
 ];
 
+/* ── Scramble hook ── */
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
 function useScramble(target: string, autoPlay = false) {
   const [text, setText] = useState(target);
   const idRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const play = () => {
+  const play = useCallback(() => {
     if (idRef.current) clearInterval(idRef.current);
     let pos = 0;
     idRef.current = setInterval(() => {
-      setText(
-        target.split("").map((ch, i) => {
-          if (ch === " ") return " ";
-          return i < pos ? ch : CHARS[Math.floor(Math.random() * CHARS.length)];
-        }).join("")
-      );
-      pos += 0.4;
-      if (pos > target.length) {
-        setText(target);
-        if (idRef.current) clearInterval(idRef.current);
-      }
-    }, 28);
-  };
-
-  useEffect(() => {
-    if (autoPlay) {
-      const t = setTimeout(play, 900);
-      return () => clearTimeout(t);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoPlay]);
-
+      setText(target.split("").map((ch, i) => ch === " " ? " " : i < pos ? ch : CHARS[Math.floor(Math.random() * CHARS.length)]).join(""));
+      pos += 0.45;
+      if (pos > target.length) { setText(target); if (idRef.current) clearInterval(idRef.current); }
+    }, 26);
+  }, [target]);
+  useEffect(() => { if (autoPlay) { const t = setTimeout(play, 700); return () => clearTimeout(t); } }, [autoPlay, play]);
   return { text, play };
 }
 
-/* ── Floating Particles ───────────────────────────────────────── */
-function FloatingParticles() {
-  const particles = Array.from({ length: 28 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    duration: Math.random() * 14 + 10,
-    delay: Math.random() * 8,
-    opacity: Math.random() * 0.35 + 0.05,
-    lime: i % 7 === 0,
-  }));
+/* ── 3D Particle Sphere (Canvas, pure math) ── */
+function ParticleSphere() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef  = useRef({ x: 0, y: 0 });
+  const frameRef  = useRef<number>(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    /* Build sphere points using Fibonacci lattice */
+    const N = 420;
+    const RADIUS = 1;
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    type Point = { ox: number; oy: number; oz: number; x: number; y: number; z: number; size: number; isCyan: boolean };
+    const pts: Point[] = Array.from({ length: N }, (_, i) => {
+      const y  = 1 - (i / (N - 1)) * 2;
+      const r  = Math.sqrt(1 - y * y);
+      const th = goldenAngle * i;
+      return { ox: Math.cos(th) * r * RADIUS, oy: y * RADIUS, oz: Math.sin(th) * r * RADIUS, x: 0, y: 0, z: 0, size: Math.random() * 1.4 + 0.5, isCyan: i % 9 === 0 };
+    });
+
+    let rotX = 0; let rotY = 0;
+    let targetRotX = 0; let targetRotY = 0;
+    let autoAngle = 0;
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const size = Math.min(window.innerWidth * 0.55, window.innerHeight * 0.72, 520);
+      canvas.width  = size * dpr;
+      canvas.height = size * dpr;
+      canvas.style.width  = `${size}px`;
+      canvas.style.height = `${size}px`;
+      ctx.scale(dpr, dpr);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const onMouse = (e: MouseEvent) => {
+      mouseRef.current = { x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * 2 };
+    };
+    window.addEventListener("mousemove", onMouse);
+
+    const draw = () => {
+      const W = canvas.width  / (window.devicePixelRatio || 1);
+      const H = canvas.height / (window.devicePixelRatio || 1);
+      ctx.clearRect(0, 0, W, H);
+
+      /* slow auto-rotation + mouse parallax */
+      autoAngle += 0.0035;
+      targetRotY = autoAngle + mouseRef.current.x * 0.4;
+      targetRotX = mouseRef.current.y * -0.35;
+      rotX += (targetRotX - rotX) * 0.06;
+      rotY += (targetRotY - rotY) * 0.06;
+
+      const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+      const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+
+      const sphereR = Math.min(W, H) * 0.38;
+      const cx = W / 2, cy = H / 2;
+
+      /* project + sort by z */
+      pts.forEach(p => {
+        /* rotate Y */
+        const x1 = p.ox * cosY - p.oz * sinY;
+        const z1 = p.ox * sinY + p.oz * cosY;
+        /* rotate X */
+        const y2 = p.oy * cosX - z1 * sinX;
+        const z2 = p.oy * sinX + z1 * cosX;
+        p.x = x1; p.y = y2; p.z = z2;
+      });
+      pts.sort((a, b) => a.z - b.z);
+
+      /* draw lines between nearby points (back hemisphere only) */
+      ctx.lineWidth = 0.3;
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i];
+        if (a.z < -0.1) continue; /* skip back-face */
+        for (let j = i + 1; j < Math.min(i + 7, pts.length); j++) {
+          const b = pts[j];
+          const dist = Math.hypot(a.ox - b.ox, a.oy - b.oy, a.oz - b.oz);
+          if (dist > 0.28) continue;
+          const alpha = (1 - dist / 0.28) * 0.12 * ((a.z + 1) / 2);
+          ctx.strokeStyle = `rgba(0,212,255,${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(cx + a.x * sphereR, cy + a.y * sphereR);
+          ctx.lineTo(cx + b.x * sphereR, cy + b.y * sphereR);
+          ctx.stroke();
+        }
+      }
+
+      /* draw dots */
+      pts.forEach(p => {
+        const depth = (p.z + 1) / 2; /* 0 = back, 1 = front */
+        if (depth < 0.08) return;
+        const sx = cx + p.x * sphereR;
+        const sy = cy + p.y * sphereR;
+        const r  = p.size * (0.4 + depth * 0.8);
+        const alpha = 0.18 + depth * 0.75;
+
+        if (p.isCyan) {
+          /* glowing cyan dot */
+          const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3.5);
+          grd.addColorStop(0, `rgba(0,212,255,${alpha})`);
+          grd.addColorStop(1, "rgba(0,212,255,0)");
+          ctx.fillStyle = grd;
+          ctx.beginPath();
+          ctx.arc(sx, sy, r * 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = p.isCyan
+          ? `rgba(0,212,255,${Math.min(1, alpha + 0.2)})`
+          : `rgba(180,220,255,${alpha * 0.55})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      /* equator ring glow */
+      const rg = ctx.createRadialGradient(cx, cy, sphereR * 0.82, cx, cy, sphereR * 1.08);
+      rg.addColorStop(0, "rgba(0,212,255,0.00)");
+      rg.addColorStop(0.5, "rgba(0,212,255,0.05)");
+      rg.addColorStop(1, "rgba(0,212,255,0.00)");
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(cx, cy, sphereR * 1.08, 0, Math.PI * 2);
+      ctx.fill();
+
+      frameRef.current = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMouse);
+    };
+  }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      {particles.map(p => (
-        <span
-          key={p.id}
-          className="absolute bottom-0 rounded-full"
-          style={{
-            left: `${p.x}%`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            opacity: p.opacity,
-            background: p.lime ? "#84cc16" : "#f0ede8",
-            animation: `floatUp ${p.duration}s ${p.delay}s linear infinite`,
-          }}
-        />
-      ))}
-      <style>{`
-        @keyframes floatUp {
-          0%   { transform: translateY(0) scale(1);   opacity: 0; }
-          10%  { opacity: 1; }
-          90%  { opacity: 1; }
-          100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-/* ── Aurora Background ────────────────────────────────────────── */
-function AuroraBackground() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      <div
-        className="absolute rounded-full blur-[120px]"
-        style={{
-          width: "70vw", height: "55vh",
-          top: "5%", left: "-15%",
-          background: "radial-gradient(ellipse, rgba(132,204,22,0.07) 0%, rgba(59,130,246,0.05) 50%, transparent 70%)",
-          animation: "auroraMove1 18s ease-in-out infinite alternate",
-        }}
-      />
-      <div
-        className="absolute rounded-full blur-[100px]"
-        style={{
-          width: "60vw", height: "50vh",
-          top: "10%", right: "-10%",
-          background: "radial-gradient(ellipse, rgba(139,92,246,0.06) 0%, rgba(217,70,239,0.04) 50%, transparent 70%)",
-          animation: "auroraMove2 22s ease-in-out infinite alternate",
-        }}
-      />
-      <div
-        className="absolute rounded-full blur-[140px]"
-        style={{
-          width: "50vw", height: "40vh",
-          bottom: "10%", left: "20%",
-          background: "radial-gradient(ellipse, rgba(132,204,22,0.05) 0%, rgba(20,184,166,0.04) 60%, transparent 75%)",
-          animation: "auroraMove3 26s ease-in-out infinite alternate",
-        }}
-      />
-      <style>{`
-        @keyframes auroraMove1 {
-          0%   { transform: translate(0, 0)    scale(1); }
-          100% { transform: translate(8vw, 5vh) scale(1.1); }
-        }
-        @keyframes auroraMove2 {
-          0%   { transform: translate(0, 0)     scale(1); }
-          100% { transform: translate(-6vw, 8vh) scale(1.08); }
-        }
-        @keyframes auroraMove3 {
-          0%   { transform: translate(0, 0)   scale(1); }
-          100% { transform: translate(5vw, -4vh) scale(1.12); }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-/* ── Background Beams ───────────────────────────────────────────── */
-function BackgroundBeams() {
-  const beams = [
-    { rotate: -38, opacity: 0.055, delay: 0,    width: 1.5 },
-    { rotate: -26, opacity: 0.08,  delay: 0.8,  width: 1 },
-    { rotate: -14, opacity: 0.11,  delay: 1.6,  width: 2 },
-    { rotate: -4,  opacity: 0.13,  delay: 2.4,  width: 1 },
-    { rotate:  6,  opacity: 0.11,  delay: 1.2,  width: 2 },
-    { rotate:  18, opacity: 0.08,  delay: 2.0,  width: 1 },
-    { rotate:  32, opacity: 0.055, delay: 0.4,  width: 1.5 },
-    { rotate:  46, opacity: 0.035, delay: 1.0,  width: 1 },
-  ];
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden style={{ perspective: "600px" }}>
-      {beams.map((b, i) => (
-        <div
-          key={i}
-          className="absolute"
-          style={{
-            bottom: 0, left: "50%",
-            width: `${b.width}px`, height: "120vh",
-            transformOrigin: "bottom center",
-            transform: `rotate(${b.rotate}deg)`,
-            background: `linear-gradient(to top, #84cc16, rgba(132,204,22,0.3) 30%, transparent 75%)`,
-            opacity: b.opacity,
-            animation: `beamPulse 4s ${b.delay}s ease-in-out infinite alternate`,
-          }}
-        />
-      ))}
-      <div
-        className="absolute"
-        style={{
-          bottom: 0, left: "50%",
-          transform: "translateX(-50%)",
-          width: "60vw", height: "35vh",
-          background: "radial-gradient(ellipse at bottom, rgba(132,204,22,0.08) 0%, transparent 65%)",
-        }}
-      />
-      <style>{`
-        @keyframes beamPulse {
-          0%   { opacity: var(--base-op, 0.08); }
-          100% { opacity: calc(var(--base-op, 0.08) * 1.8); }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-/* ── Noise Overlay ──────────────────────────────────────────────────── */
-function NoiseOverlay() {
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none"
+    <canvas
+      ref={canvasRef}
       aria-hidden
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        backgroundRepeat: "repeat",
-        backgroundSize: "128px 128px",
-        opacity: 0.022,
-        mixBlendMode: "overlay",
-      }}
+      style={{ display: "block", imageRendering: "pixelated" }}
     />
   );
 }
 
-/* ── Grid Lines ─────────────────────────────────────────────────────── */
-function GridLines() {
+/* ── AK Monogram SVG ── */
+function AKMonogram() {
   return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-      aria-hidden
-      style={{
-        backgroundImage:
-          `linear-gradient(rgba(132,204,22,0.025) 1px, transparent 1px),
-           linear-gradient(90deg, rgba(132,204,22,0.025) 1px, transparent 1px)`,
-        backgroundSize: "80px 80px",
-        maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%)",
-      }}
-    />
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-label="Abhijeet Kadu">
+      {/* outer ring */}
+      <circle cx="24" cy="24" r="22" stroke={ACCENT} strokeWidth="1" strokeOpacity="0.35" />
+      {/* A */}
+      <path d="M10 36 L17 14 L24 36 M12.5 27 H21.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* K */}
+      <path d="M27 14 V36 M27 25 L37 14 M27 25 L37 36" stroke={ACCENT} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
   );
 }
 
+/* ── Grid overlay ── */
+function GridOverlay() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" aria-hidden style={{
+      backgroundImage: `linear-gradient(rgba(0,212,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.018) 1px, transparent 1px)`,
+      backgroundSize: "72px 72px",
+      maskImage: "radial-gradient(ellipse 80% 70% at 50% 100%, black 30%, transparent 80%)",
+    }} />
+  );
+}
+
+/* ── Noise grain ── */
+function Grain() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" aria-hidden style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+      backgroundRepeat: "repeat",
+      backgroundSize: "128px 128px",
+      opacity: 0.028,
+      mixBlendMode: "overlay",
+    }} />
+  );
+}
+
+/* ── Ambient glow ── */
+function AmbientGlow() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+      {/* top-right soft glow */}
+      <div style={{
+        position: "absolute", right: "-10%", top: "-5%",
+        width: "60vw", height: "55vh",
+        borderRadius: "50%",
+        background: "radial-gradient(ellipse, rgba(0,212,255,0.06) 0%, transparent 65%)",
+        filter: "blur(40px)",
+        animation: "glowPulse 8s ease-in-out infinite alternate",
+      }} />
+      {/* bottom-left warm fill */}
+      <div style={{
+        position: "absolute", left: "-5%", bottom: "5%",
+        width: "45vw", height: "40vh",
+        borderRadius: "50%",
+        background: "radial-gradient(ellipse, rgba(0,212,255,0.03) 0%, transparent 70%)",
+        filter: "blur(60px)",
+        animation: "glowPulse 12s ease-in-out infinite alternate-reverse",
+      }} />
+      <style>{`
+        @keyframes glowPulse {
+          0%   { opacity: 0.7; transform: scale(1); }
+          100% { opacity: 1;   transform: scale(1.08); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MAIN COMPONENT
+═══════════════════════════════════════════ */
 export default function Entry() {
   const containerRef = useRef<HTMLDivElement>(null);
   const nameRef      = useRef<HTMLHeadingElement>(null);
-  const roleRef      = useRef<HTMLDivElement>(null);
-  const lineRef      = useRef<HTMLDivElement>(null);
-  const scrollRef    = useRef<HTMLDivElement>(null);
-  const taglineRef   = useRef<HTMLParagraphElement>(null);
-  const locationRef  = useRef<HTMLElement>(null);
+  const metaRef      = useRef<HTMLDivElement>(null);
   const ctaRef       = useRef<HTMLDivElement>(null);
+  const sphereRef    = useRef<HTMLDivElement>(null);
+  const scrollRef    = useRef<HTMLDivElement>(null);
 
   const { text: firstName, play: playFirst } = useScramble("ABHIJEET", true);
   const { text: lastName,  play: playLast  } = useScramble("KADU",     true);
@@ -238,191 +279,150 @@ export default function Entry() {
   useEffect(() => {
     const id = setInterval(() => {
       setRoleVisible(false);
-      setTimeout(() => {
-        setRoleIdx(p => (p + 1) % ROLES.length);
-        setRoleVisible(true);
-      }, 380);
-    }, 2800);
+      setTimeout(() => { setRoleIdx(p => (p + 1) % ROLES.length); setRoleVisible(true); }, 360);
+    }, 2600);
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    const el = nameRef.current;
-    if (!el) return;
-    const onMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth  - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 8;
-      gsap.to(el, { x, y, duration: 1.4, ease: "power2.out" });
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
   useGSAP(() => {
-    const els = [
-      nameRef.current, taglineRef.current, locationRef.current,
-      lineRef.current, roleRef.current, scrollRef.current, ctaRef.current,
-    ];
+    const els = [nameRef.current, metaRef.current, ctaRef.current, sphereRef.current, scrollRef.current];
     gsap.set(els, { opacity: 0 });
-    gsap.set(nameRef.current,    { y: 60, filter: "blur(20px)" });
-    gsap.set(taglineRef.current, { y: 24 });
-    gsap.set(ctaRef.current,     { y: 16 });
-    gsap.set(lineRef.current,    { scaleX: 0 });
+    gsap.set(nameRef.current,   { y: 70, filter: "blur(18px)" });
+    gsap.set(sphereRef.current, { scale: 0.82 });
+    gsap.set(ctaRef.current,    { y: 20 });
 
     gsap.timeline()
-      .to(nameRef.current, {
-        opacity: 1, y: 0, filter: "blur(0px)",
-        duration: 1.6, ease: "power3.out", delay: 0.3,
-      })
-      .to(lineRef.current,    { opacity: 1, scaleX: 1, duration: 1.1, ease: "expo.inOut" }, "-=0.8")
-      .to(roleRef.current,    { opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.5")
-      .to(taglineRef.current, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.4")
-      .to(locationRef.current,{ opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.5")
-      .to(ctaRef.current,     { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, "-=0.4")
-      .to(scrollRef.current,  { opacity: 0.5, duration: 0.8 }, "-=0.3");
+      .to(sphereRef.current, { opacity: 1, scale: 1, duration: 1.6, ease: "power3.out", delay: 0.1 })
+      .to(nameRef.current,   { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.5, ease: "power3.out" }, "-=1.1")
+      .to(metaRef.current,   { opacity: 1, duration: 0.9, ease: "power2.out" }, "-=0.6")
+      .to(ctaRef.current,    { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.5")
+      .to(scrollRef.current, { opacity: 0.5, duration: 0.8 }, "-=0.3");
   }, { scope: containerRef });
 
   return (
     <section
       id="hero"
       ref={containerRef}
-      className="relative h-screen flex flex-col justify-end pb-16 md:pb-24 px-6 md:px-14 overflow-hidden"
+      className="relative min-h-screen flex flex-col overflow-hidden"
+      style={{ background: "#020408" }}
     >
-      <AuroraBackground />
-      <GridLines />
-      <BackgroundBeams />
-      <FloatingParticles />
-      <NoiseOverlay />
+      <AmbientGlow />
+      <GridOverlay />
+      <Grain />
 
-      <span
-        className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 font-serif font-black select-none pointer-events-none leading-none z-0"
-        style={{
-          fontSize: "clamp(10rem, 22vw, 22rem)",
-          WebkitTextStroke: "1px rgba(132,204,22,0.04)",
-          color: "transparent",
-        }}
-        aria-hidden
-      >01</span>
-
-      <p
-        ref={locationRef as React.RefObject<HTMLParagraphElement>}
-        className="absolute top-32 left-6 md:left-14 font-mono text-[9px] tracking-[0.32em] text-gray-600 uppercase z-10"
-      >
-        Mumbai, India &nbsp;·&nbsp; 20°41′N 74°02′E
-      </p>
-
-      <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex-col items-center gap-3 hidden md:flex z-10">
-        <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Status</span>
-        <div className="w-px h-14 bg-gradient-to-b from-transparent via-accent to-transparent" />
-        <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-        <div className="w-px h-14 bg-gradient-to-b from-accent via-transparent to-transparent" />
-        <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Available</span>
+      {/* ── Top bar ── */}
+      <div className="relative z-20 flex items-center justify-between px-6 md:px-12 pt-8">
+        <AKMonogram />
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: ACCENT }} />
+          <span className="font-mono text-[9px] tracking-[0.3em] uppercase" style={{ color: ACCENT }}>Available</span>
+        </div>
       </div>
 
-      <div className="relative z-10">
-        <h1 ref={nameRef} className="font-serif font-black select-none" style={{ lineHeight: 0.86 }}>
-          <span
-            className="block cursor-pointer"
-            style={{
-              fontSize: "clamp(4rem, 15vw, 13rem)",
-              WebkitTextStroke: "1.5px #f0ede8",
-              color: "transparent",
-              letterSpacing: "-0.03em",
-              transition: "letter-spacing 0.5s cubic-bezier(0.16,1,0.3,1), -webkit-text-stroke-color 0.3s ease",
-            }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.letterSpacing = "0.01em";
-              (el.style as unknown as Record<string,string>)["webkitTextStroke"] = "1.5px #84cc16";
-              playFirst();
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.letterSpacing = "-0.03em";
-              (el.style as unknown as Record<string,string>)["webkitTextStroke"] = "1.5px #f0ede8";
-            }}
-          >{firstName}</span>
+      {/* ── Main layout: name left / sphere right ── */}
+      <div className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-between px-6 md:px-12 pb-8 gap-8 mt-4 md:mt-0">
 
-          <span className="relative block" style={{ fontSize: "clamp(3.2rem, 12vw, 10.5rem)", letterSpacing: "-0.03em" }}>
-            <span
-              className="cursor-pointer text-white"
-              style={{ transition: "color 0.3s ease" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#84cc16"; playLast(); }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "#ffffff"; }}
-            >{lastName}</span>
-            <span
-              className="absolute left-0"
-              style={{ bottom: "-6px", height: "3px", width: "55%", background: "linear-gradient(90deg, #84cc16, transparent)" }}
-            />
-          </span>
-        </h1>
+        {/* LEFT — Name + meta */}
+        <div className="flex flex-col justify-center flex-1 pt-4 md:pt-0">
 
-        <div
-          ref={lineRef}
-          className="origin-left"
-          style={{
-            height: "1px", width: "100%",
-            marginTop: "2rem", marginBottom: "1.5rem",
-            background: "linear-gradient(90deg, #84cc16 0%, rgba(240,237,232,0.08) 55%, transparent 100%)",
-          }}
-        />
-
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div ref={roleRef} className="flex items-center gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse flex-shrink-0" />
+          {/* Role pill */}
+          <div className="mb-6 flex items-center gap-2.5">
+            <div className="h-px w-8 flex-shrink-0" style={{ background: ACCENT, opacity: 0.5 }} />
             <p
-              className="font-mono uppercase"
-              style={{
-                fontSize: "clamp(0.6rem, 1vw, 0.8rem)",
-                letterSpacing: "0.24em",
-                color: roleVisible ? "#84cc16" : "transparent",
-                opacity: roleVisible ? 1 : 0,
-                transform: roleVisible ? "translateY(0)" : "translateY(6px)",
-                transition: "all 0.38s cubic-bezier(0.16,1,0.3,1)",
-              }}
+              className="font-mono text-[10px] tracking-[0.28em] uppercase transition-all duration-360"
+              style={{ color: roleVisible ? ACCENT : "transparent", opacity: roleVisible ? 1 : 0, transform: roleVisible ? "translateY(0)" : "translateY(5px)" }}
             >{ROLES[roleIdx]}</p>
           </div>
 
-          <div className="flex flex-col items-start md:items-end gap-5">
-            <p
-              ref={taglineRef}
-              className="font-serif italic leading-snug text-left md:text-right"
-              style={{
-                fontSize: "clamp(0.85rem, 1.2vw, 1.05rem)",
-                color: "rgba(240,237,232,0.38)",
-                maxWidth: "22ch",
-              }}
+          {/* Name */}
+          <h1 ref={nameRef} className="font-serif font-black select-none" style={{ lineHeight: 0.88 }}>
+            <span
+              className="block cursor-pointer"
+              style={{ fontSize: "clamp(3.5rem, 12vw, 11rem)", WebkitTextStroke: "1.5px #f0ede8", color: "transparent", letterSpacing: "-0.03em", transition: "letter-spacing 0.5s cubic-bezier(0.16,1,0.3,1), -webkit-text-stroke-color 0.3s ease" }}
+              onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.letterSpacing = "0.01em"; (el.style as unknown as Record<string,string>)["webkitTextStroke"] = `1.5px ${ACCENT}`; playFirst(); }}
+              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.letterSpacing = "-0.03em"; (el.style as unknown as Record<string,string>)["webkitTextStroke"] = "1.5px #f0ede8"; }}
+            >{firstName}</span>
+            <span
+              className="relative block text-white cursor-pointer"
+              style={{ fontSize: "clamp(2.8rem, 9.5vw, 8.8rem)", letterSpacing: "-0.03em", transition: "color 0.3s ease" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = ACCENT; playLast(); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "#ffffff"; }}
             >
-              Building products that ship,<br />not just ideas that sit.
-            </p>
+              {lastName}
+              <span className="absolute left-0 -bottom-1 h-[2.5px] w-3/5" style={{ background: `linear-gradient(90deg, ${ACCENT}, transparent)` }} />
+            </span>
+          </h1>
 
-            <div ref={ctaRef} className="flex items-center gap-3 flex-wrap">
-              {/* View Work CTA — font size via text-[0.65rem] class, no style prop */}
-              <MagneticButton
-                tag="a"
-                href="#projects"
-                className="inline-flex items-center gap-2 px-7 py-3 bg-accent text-black font-mono font-bold tracking-[0.18em] uppercase rounded-full hover:bg-lime-300 transition-colors duration-200 text-[0.65rem]"
-              >
-                View Work
-              </MagneticButton>
+          {/* Tagline */}
+          <p className="font-mono mt-6 leading-relaxed" style={{ fontSize: "clamp(0.7rem, 1vw, 0.85rem)", color: "rgba(180,220,255,0.4)", maxWidth: "32ch" }}>
+            Building cloud systems &amp; shipping products that matter.
+          </p>
 
-              {/* Contact CTA — uses a plain <a> to avoid MagneticButton prop constraints */}
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 px-7 py-3 font-mono tracking-[0.18em] uppercase rounded-full transition-all duration-200 text-[0.65rem] border border-white/15 text-white/60 hover:border-accent/50 hover:text-accent"
-              >
-                Contact
-              </a>
-            </div>
+          {/* Meta row */}
+          <div ref={metaRef} className="mt-4 flex items-center gap-4 flex-wrap">
+            <span className="font-mono text-[9px] tracking-[0.25em] uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>Mumbai, India</span>
+            <span style={{ color: "rgba(255,255,255,0.1)" }}>·</span>
+            <span className="font-mono text-[9px] tracking-[0.25em] uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>Ecovis RKCA</span>
+            <span style={{ color: "rgba(255,255,255,0.1)" }}>·</span>
+            <span className="font-mono text-[9px] tracking-[0.25em] uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>DP-600 Certified</span>
+          </div>
+
+          {/* CTA row */}
+          <div ref={ctaRef} className="mt-8 flex items-center gap-3 flex-wrap">
+            <MagneticButton
+              tag="a"
+              href="#projects"
+              className="inline-flex items-center gap-2 px-7 py-3 font-mono font-bold tracking-[0.18em] uppercase rounded-full text-[0.65rem] transition-all duration-200"
+              style={{ background: ACCENT, color: "#020408" } as React.CSSProperties}
+            >
+              View Work
+            </MagneticButton>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 px-7 py-3 font-mono tracking-[0.18em] uppercase rounded-full text-[0.65rem] transition-all duration-200"
+              style={{ border: `1px solid rgba(0,212,255,0.2)`, color: "rgba(0,212,255,0.6)" }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = ACCENT; el.style.color = ACCENT; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = "rgba(0,212,255,0.2)"; el.style.color = "rgba(0,212,255,0.6)"; }}
+            >
+              Contact
+            </a>
+          </div>
+        </div>
+
+        {/* RIGHT — 3D Sphere */}
+        <div
+          ref={sphereRef}
+          className="flex-shrink-0 flex items-center justify-center relative"
+          style={{ width: "clamp(280px, 45vw, 520px)", height: "clamp(280px, 45vw, 520px)" }}
+        >
+          {/* outer glow ring */}
+          <div className="absolute inset-0 rounded-full" style={{
+            background: `radial-gradient(ellipse at center, rgba(0,212,255,0.06) 0%, transparent 68%)`,
+            filter: "blur(20px)",
+          }} />
+          <ParticleSphere />
+          {/* floating label */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2" style={{ opacity: 0.4 }}>
+            <div className="h-px w-6" style={{ background: ACCENT }} />
+            <span className="font-mono text-[8px] tracking-[0.3em] uppercase" style={{ color: ACCENT }}>Interactive</span>
+            <div className="h-px w-6" style={{ background: ACCENT }} />
           </div>
         </div>
       </div>
 
-      <div ref={scrollRef} className="absolute bottom-8 left-6 md:left-14 flex items-center gap-3 z-10">
-        <div className="w-px h-10 bg-gradient-to-b from-transparent to-accent/35" />
-        <span className="font-mono text-[8px] tracking-[0.32em] text-gray-700 uppercase">Scroll</span>
-        <ArrowDown className="w-3 h-3 text-accent animate-bounce" />
+      {/* ── Scroll hint ── */}
+      <div ref={scrollRef} className="relative z-20 flex items-center gap-3 px-6 md:px-12 pb-8">
+        <div className="w-px h-8" style={{ background: `linear-gradient(to bottom, transparent, ${ACCENT}55)` }} />
+        <span className="font-mono text-[8px] tracking-[0.32em] uppercase" style={{ color: "rgba(0,212,255,0.35)" }}>Scroll</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden className="animate-bounce">
+          <path d="M5 1 V9 M2 6 L5 9 L8 6" stroke={ACCENT} strokeOpacity="0.5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </div>
+
+      {/* ── Bottom fade to next section (cream) ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{
+        background: "linear-gradient(to bottom, transparent, #020408 80%)",
+      }} />
     </section>
   );
 }

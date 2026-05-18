@@ -1,68 +1,31 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next";
-import SmoothScroll from "@/components/ui/SmoothScroll";
-import HUDOverlay from "@/components/ui/HUDOverlay";
-import Navbar from "@/components/Navbar";
-import NeuralCanvas from "@/components/NeuralCanvas";
-import Cursor from "@/components/Cursor";
-import Preloader from "@/components/Preloader";
-import ScrollCounter from "@/components/ScrollCounter";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
-  title: "Abhijeet Kadu | AI/ML Engineer",
-  description:
-    "AI/ML Engineer & Computer Engineering student. Top 0.1% Amazon ML Summer School. Building transformer-based models and scalable ML systems.",
+  title: "Abhijeet Kadu — SDE & Product Manager",
+  description: "SDE & Product Manager at Ecovis RKCA. Cloud systems, AI, and full-stack web. Based in Mumbai.",
+  keywords: ["Abhijeet Kadu", "SDE", "Product Manager", "Cloud", "AWS", "Azure", "Next.js", "Machine Learning", "Mumbai"],
   openGraph: {
-    title: "Abhijeet Kadu | AI/ML Engineer",
-    description:
-      "AI/ML Engineer specializing in Transformer models, ensemble learning, and production ML pipelines.",
-    url: "https://abhijeet-portfolio-tau.vercel.app",
-    siteName: "Abhijeet Kadu",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Abhijeet Kadu — AI/ML Engineer" }],
+    title: "Abhijeet Kadu — SDE & Product Manager",
+    description: "Building cloud systems & shipping products that matter.",
     type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Abhijeet Kadu | AI/ML Engineer",
-    description: "AI/ML Engineer. Top 0.1% Amazon ML Summer School.",
-    images: ["/og-image.png"],
-  },
-  keywords: ["AI Engineer","ML Engineer","Machine Learning","Python","PyTorch","FastAPI","Next.js","Computer Engineering"],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground overflow-x-hidden`}>
-        {/* Cinematic preloader — mounts first, unmounts after reveal */}
-        <Preloader />
-
-        {/* Global ambient neural network background */}
-        <NeuralCanvas />
-
-        {/* Context-aware custom cursor */}
-        <Cursor />
-
-        {/* Fixed right-side scroll position indicator */}
-        <ScrollCounter />
-
-        <SmoothScroll>
-          <HUDOverlay />
-          <Navbar />
-          {children}
-        </SmoothScroll>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300..700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        {children}
         <Analytics />
       </body>
     </html>
