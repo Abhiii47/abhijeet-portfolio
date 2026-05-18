@@ -9,9 +9,9 @@ import MagneticButton from "./MagneticButton";
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
 
 const ROLES = [
-  "AI / ML Engineer",
-  "Applied Data Science",
-  "Competitive Programmer",
+  "SDE / Product Manager",
+  "Cloud & Internal Tools",
+  "AI + Web Experiences",
   "Open to Opportunities",
 ];
 
@@ -61,7 +61,6 @@ export default function Entry() {
   const { text: firstName, play: playFirst } = useScramble("ABHIJEET", true);
   const { text: lastName,  play: playLast  } = useScramble("KADU",     true);
 
-  // Role ticker
   const [roleIdx, setRoleIdx]         = useState(0);
   const [roleVisible, setRoleVisible] = useState(true);
   useEffect(() => {
@@ -75,7 +74,6 @@ export default function Entry() {
     return () => clearInterval(id);
   }, []);
 
-  // Subtle name parallax
   useEffect(() => {
     const el = nameRef.current;
     if (!el) return;
@@ -118,7 +116,6 @@ export default function Entry() {
       ref={containerRef}
       className="relative h-screen flex flex-col justify-end pb-20 md:pb-28 px-6 md:px-12 overflow-hidden"
     >
-      {/* Accent ghost number */}
       <span
         className="absolute right-4 md:right-16 top-1/2 -translate-y-1/2 font-serif text-[28vw] font-black select-none pointer-events-none leading-none"
         style={{ WebkitTextStroke: "1px rgba(132,204,22,0.06)", color: "transparent" }}
@@ -127,7 +124,6 @@ export default function Entry() {
         01
       </span>
 
-      {/* Top bar */}
       <p
         ref={locationRef as React.RefObject<HTMLParagraphElement>}
         className="absolute top-28 left-6 md:left-12 font-mono text-[10px] tracking-[0.3em] text-gray-600 uppercase"
@@ -135,7 +131,6 @@ export default function Entry() {
         Mumbai, India &nbsp;·&nbsp; 20°41&apos;N 74°02&apos;E
       </p>
 
-      {/* Right status strip */}
       <div className="absolute right-6 md:right-14 top-1/2 -translate-y-1/2 flex-col items-center gap-3 hidden md:flex">
         <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Status</span>
         <div className="w-px h-16 bg-gradient-to-b from-transparent via-accent to-transparent" />
@@ -144,14 +139,12 @@ export default function Entry() {
         <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Available</span>
       </div>
 
-      {/* ── HERO NAME ── */}
       <div className="relative z-10">
         <h1
           ref={nameRef}
           className="font-serif font-black leading-[0.88] tracking-tighter select-none"
           style={{ fontSize: "clamp(3.5rem, 13vw, 11rem)" }}
         >
-          {/* OUTLINE first name — JS style assignment uses camelCase webkitTextStroke */}
           <span
             className="block cursor-pointer transition-all duration-500 hover:tracking-wide"
             style={{
@@ -160,7 +153,6 @@ export default function Entry() {
             }}
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLElement;
-              // CSSStyleDeclaration requires camelCase (webkitTextStroke, not WebkitTextStroke)
               (el.style as unknown as Record<string, string>)["webkitTextStroke"] = "1.5px #84cc16";
               el.style.color = "transparent";
               playFirst();
@@ -174,7 +166,6 @@ export default function Entry() {
             {firstName}
           </span>
 
-          {/* FILLED last name */}
           <span className="relative block">
             <span
               className="cursor-pointer text-white hover:text-accent transition-colors duration-300"
@@ -182,7 +173,6 @@ export default function Entry() {
             >
               {lastName}
             </span>
-            {/* Accent underline */}
             <span
               className="absolute -bottom-3 left-0 h-[3px] w-3/4"
               style={{ background: "linear-gradient(90deg, #84cc16, transparent)" }}
@@ -190,16 +180,13 @@ export default function Entry() {
           </span>
         </h1>
 
-        {/* Divider */}
         <div
           ref={lineRef}
           className="h-px w-full origin-left mt-10 mb-7"
           style={{ background: "linear-gradient(90deg, #84cc16 0%, rgba(240,237,232,0.1) 50%, transparent 100%)" }}
         />
 
-        {/* Bottom row */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          {/* Role ticker */}
           <div ref={roleRef} className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse flex-shrink-0" />
             <p
@@ -215,13 +202,12 @@ export default function Entry() {
             </p>
           </div>
 
-          {/* Right — tagline + CTAs */}
           <div className="flex flex-col items-start md:items-end gap-4">
             <p
               ref={taglineRef}
               className="font-serif italic text-gray-500 text-sm md:text-base max-w-xs text-left md:text-right leading-relaxed"
             >
-              Building models that ship,<br />not just notebooks that run.
+              Building products that ship,<br />not just ideas that sit.
             </p>
 
             <div ref={ctaRef} className="flex items-center gap-3 flex-wrap">
@@ -244,7 +230,6 @@ export default function Entry() {
         </div>
       </div>
 
-      {/* Scroll cue — bottom left */}
       <div ref={scrollRef} className="absolute bottom-10 left-6 md:left-12 flex items-center gap-3">
         <div className="w-px h-12 bg-gradient-to-b from-transparent to-accent/40" />
         <span className="font-mono text-[9px] tracking-[0.3em] text-gray-600 uppercase">Scroll</span>
