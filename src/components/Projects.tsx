@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,50 +10,50 @@ gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
-    id: "smartresume",
+    id: "ecovis",
     index: "01",
-    title: "SmartResume ATS",
-    tag: "AI \u00b7 NLP \u00b7 FastAPI",
+    title: "Cloud Migration & Internal Tooling",
+    tag: "AWS · Azure · Next.js · CI/CD",
     color: "#84cc16",
-    problem: "Candidates were getting rejected by ATS systems before humans ever read their resumes.",
-    solution: "Built a FastAPI + NLP pipeline that parses JDs, scores resume-JD semantic match, and generates targeted suggestions.",
-    result: "92% ATS pass-rate on test set. 50k+ resumes analyzed.",
+    year: "2024–Present",
+    company: "Ecovis RKCA",
+    desc: "Migrated legacy infrastructure to AWS/Azure achieving 99.9% uptime. Built internal Next.js + TypeScript tooling that cut manual reporting time by 60%. Designed CI/CD pipelines that reduced release cycles from 2 weeks to 2 days.",
+    github: "",
+    live: "",
+  },
+  {
+    id: "fabric",
+    index: "02",
+    title: "MS Fabric Analytics Pipeline",
+    tag: "ETL · Power BI · DP-600",
+    color: "#3b82f6",
+    year: "2024",
+    company: "Microsoft Internship",
+    desc: "End-to-end lakehouse ETL on Microsoft Fabric — Bronze→Silver→Gold layers, automated daily refresh for 2M+ row datasets, Power BI semantic models and executive dashboards. DP-600 certified.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
   {
     id: "mlcomp",
-    index: "02",
+    index: "03",
     title: "Amazon ML Competition",
-    tag: "ML \u00b7 Ensemble \u00b7 XGBoost",
+    tag: "ML · Ensemble · XGBoost",
     color: "#ef4444",
-    problem: "Multi-class classification on noisy, high-dimensional tabular data with class imbalance.",
-    solution: "Stacked ensemble: XGBoost + LightGBM + CatBoost with SMOTE oversampling and custom feature engineering.",
-    result: "Top 0.1% of 100,000+ participants. Amazon ML Summer School selection.",
+    year: "2024",
+    company: "Amazon ML Summer School",
+    desc: "Multi-class tabular classification with stacked XGBoost + LightGBM + CatBoost ensemble and SMOTE oversampling. Top 0.1% of 100,000+ national participants — selected for Amazon ML Summer School.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
   {
     id: "roomfood",
-    index: "03",
-    title: "Room & Food Finder",
-    tag: "Next.js \u00b7 Supabase \u00b7 Maps",
-    color: "#3b82f6",
-    problem: "Students relocating to new cities had no unified platform to find accommodation and food together.",
-    solution: "Full-stack Next.js app with Supabase auth + realtime DB, Google Maps integration, and filter-based search.",
-    result: "Live product with active users. Sub-300ms query response on Supabase edge.",
-    github: "https://github.com/Abhiii47",
-    live: "",
-  },
-  {
-    id: "fabric",
     index: "04",
-    title: "MS Fabric Analytics Pipeline",
-    tag: "ETL \u00b7 Power BI \u00b7 DP-600",
+    title: "Room & Food Finder",
+    tag: "Next.js · Supabase · Maps",
     color: "#8b5cf6",
-    problem: "Business data was siloed across 6 systems with no unified reporting layer.",
-    solution: "Built end-to-end ETL on Microsoft Fabric: Bronze\u2192Silver\u2192Gold lakehouse, automated refresh, Power BI semantic model.",
-    result: "DP-600 certified. Pipeline processes 2M+ rows daily.",
+    year: "2023",
+    company: "Personal Project",
+    desc: "Full-stack platform for students to find accommodation and food in new cities. Next.js + Supabase auth + realtime DB + Google Maps geo-search. Live product with active users, sub-300ms query response.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
@@ -61,250 +61,194 @@ const projects = [
     id: "genai",
     index: "05",
     title: "RAG Knowledge Assistant",
-    tag: "LLM \u00b7 RAG \u00b7 GCP",
+    tag: "LLM · RAG · GCP",
     color: "#d946ef",
-    problem: "Internal documents were unsearchable \u2014 teams wasted hours digging through PDFs.",
-    solution: "RAG pipeline on GCP: document ingestion \u2192 chunking \u2192 vector store (FAISS) \u2192 LLM answer generation with source citation.",
-    result: "< 2s end-to-end latency. Deployed on Vertex AI.",
+    year: "2024",
+    company: "Personal Project",
+    desc: "RAG pipeline on GCP: document ingestion → chunking → FAISS vector store → LLM answer generation with source citation. Under 2s end-to-end latency, deployed on Vertex AI.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
 ];
 
-/* ── GlowCard ───────────────────────────────────────────────────────────── */
-function GlowCard({
-  children,
-  color,
-  className = "",
-}: {
-  children: React.ReactNode;
-  color: string;
-  className?: string;
-}) {
+/* ── GlowCard ────────────────────────────────────────────────── */
+function GlowCard({ children, color, className = "" }: { children: React.ReactNode; color: string; className?: string }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
 
   const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    const glow = glowRef.current;
+    const card = cardRef.current; const glow = glowRef.current;
     if (!card || !glow) return;
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    glow.style.background = `radial-gradient(380px circle at ${x}px ${y}px, ${color}28, transparent 65%)`;
-    // subtle tilt
-    const tiltX = ((y / rect.height) - 0.5) * 6;
-    const tiltY = ((x / rect.width)  - 0.5) * -6;
+    glow.style.background = `radial-gradient(380px circle at ${e.clientX - rect.left}px ${e.clientY - rect.top}px, ${color}28, transparent 65%)`;
+    const tiltX = ((e.clientY - rect.top)  / rect.height - 0.5) * 6;
+    const tiltY = ((e.clientX - rect.left) / rect.width  - 0.5) * -6;
     card.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.012,1.012,1.012)`;
   }, [color]);
 
   const onMouseLeave = useCallback(() => {
-    const card = cardRef.current;
-    const glow = glowRef.current;
-    if (!card || !glow) return;
-    glow.style.background = "transparent";
-    card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)";
+    if (glowRef.current) glowRef.current.style.background = "transparent";
+    if (cardRef.current) cardRef.current.style.transform = "perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)";
   }, []);
 
   return (
-    <div
-      ref={cardRef}
-      className={`relative rounded-xl overflow-hidden group ${className}`}
-      style={{
-        background: "rgba(255,255,255,0.025)",
-        border: `1px solid rgba(255,255,255,0.06)`,
-        transition: "transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease",
-        willChange: "transform",
-      }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
+    <div ref={cardRef} className={`relative rounded-xl overflow-hidden group ${className}`}
+      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", transition: "transform 0.25s cubic-bezier(0.16,1,0.3,1)", willChange: "transform" }}
+      onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
     >
-      {/* Glowing border ring — tracks mouse */}
+      <div ref={glowRef} className="absolute inset-0 rounded-xl pointer-events-none" style={{ zIndex: 0, transition: "background 0.08s ease" }} />
+      <div className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ boxShadow: `inset 0 0 0 1px ${color}40`, zIndex: 1 }} />
+      <div className="absolute top-0 left-[10%] right-[10%] h-px pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(90deg, transparent, ${color}80, transparent)`, zIndex: 2 }} />
+      <div className="relative" style={{ zIndex: 3 }}>{children}</div>
+    </div>
+  );
+}
+
+/* ── Single project row (Atharva-style) ─────────────────────── */
+function ProjectRow({ p, index }: { p: typeof projects[0]; index: number }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      className="project-card group relative"
+      style={{
+        borderBottom: "1px solid rgba(255,255,255,0.05)",
+        paddingBlock: "clamp(1.5rem, 3vw, 2.5rem)",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* background fill on hover */}
       <div
-        className="absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(600px circle at 50% 50%, ${color}18, transparent 60%)`,
-          zIndex: 0,
-        }}
+        className="absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-400"
+        style={{ background: `linear-gradient(90deg, ${p.color}07, transparent)`, opacity: hovered ? 1 : 0 }}
       />
 
-      {/* Sharp border glow that follows mouse */}
-      <div
-        ref={glowRef}
-        className="absolute inset-0 rounded-xl pointer-events-none"
-        style={{ zIndex: 0, transition: "background 0.08s ease" }}
-      />
+      <div className="relative flex items-start gap-6 md:gap-10 px-2">
+        {/* Index */}
+        <span
+          className="font-mono shrink-0 tabular-nums transition-colors duration-300"
+          style={{
+            fontSize: "clamp(0.65rem, 1vw, 0.75rem)",
+            letterSpacing: "0.2em",
+            color: hovered ? p.color : "rgba(255,255,255,0.15)",
+            marginTop: "0.35rem",
+          }}
+        >
+          {p.index}
+        </span>
 
-      {/* Accent border on hover */}
-      <div
-        className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-        style={{
-          boxShadow: `inset 0 0 0 1px ${color}40`,
-          zIndex: 1,
-        }}
-      />
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+          {/* Title row */}
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <h3
+              className="font-serif font-bold leading-tight transition-colors duration-300"
+              style={{
+                fontSize: "clamp(1.25rem, 2.5vw, 1.9rem)",
+                color: hovered ? "#ffffff" : "rgba(240,237,232,0.85)",
+              }}
+            >
+              {p.title}
+            </h3>
 
-      {/* Top edge shimmer line */}
-      <div
-        className="absolute top-0 left-[10%] right-[10%] h-px pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${color}80, transparent)`,
-          zIndex: 2,
-        }}
-      />
+            {/* Arrow — slides in on hover */}
+            <a
+              href={p.github || p.live || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 transition-all duration-300 mt-1"
+              style={{
+                opacity: hovered ? 1 : 0,
+                transform: hovered ? "translate(0, 0)" : "translate(-8px, 8px)",
+                color: p.color,
+              }}
+              aria-label={`View ${p.title}`}
+            >
+              <ArrowUpRight className="w-6 h-6" />
+            </a>
+          </div>
 
-      {/* Content */}
-      <div className="relative" style={{ zIndex: 3 }}>
-        {children}
+          {/* Meta row */}
+          <div className="flex items-center gap-3 mt-2 mb-4 flex-wrap">
+            <span
+              className="font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-0.5 rounded-full"
+              style={{ color: p.color, background: `${p.color}12`, border: `1px solid ${p.color}25` }}
+            >
+              {p.tag}
+            </span>
+            <span className="font-mono text-[10px] text-gray-600 tracking-widest">{p.company}</span>
+            <span className="font-mono text-[10px] text-gray-700 tracking-widest">{p.year}</span>
+          </div>
+
+          {/* Description — fades in */}
+          <p
+            className="font-mono text-[11.5px] text-gray-500 leading-relaxed transition-all duration-400 max-w-2xl"
+            style={{
+              opacity: hovered ? 1 : 0.45,
+              transform: hovered ? "translateY(0)" : "translateY(4px)",
+            }}
+          >
+            {p.desc}
+          </p>
+
+          {/* GitHub link */}
+          {p.github && (
+            <a
+              href={p.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase mt-4 transition-all duration-300"
+              style={{
+                color: hovered ? p.color : "rgba(255,255,255,0.2)",
+                opacity: hovered ? 1 : 0,
+              }}
+            >
+              <Github className="w-3 h-3" /> GitHub
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ── Projects section ───────────────────────────────────────────────────── */
+/* ── Projects section ────────────────────────────────────────── */
 export default function Projects() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
     gsap.from(".project-card", {
-      opacity: 0, y: 60,
-      duration: 0.8, stagger: 0.12, ease: "power3.out",
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 70%",
-      },
+      opacity: 0, y: 40,
+      duration: 0.7, stagger: 0.1, ease: "power3.out",
+      scrollTrigger: { trigger: containerRef.current, start: "top 70%" },
     });
   }, { scope: containerRef });
 
   return (
     <section id="projects" ref={containerRef} className="relative w-full py-32 px-6 md:px-12">
-      <span
-        className="absolute right-0 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none"
-        style={{ WebkitTextStroke: "1px rgba(132,204,22,0.03)", color: "transparent" }}
-        aria-hidden
-      >04</span>
+      <span className="absolute right-0 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none" style={{ WebkitTextStroke: "1px rgba(132,204,22,0.03)", color: "transparent" }} aria-hidden>04</span>
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <div className="mb-16">
           <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">04 / Work</p>
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h2
-                className="font-serif font-black leading-tight"
-                style={{ fontSize: "clamp(2rem, 5vw, 4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}
-              >
-                Selected
-              </h2>
-              <h2 className="font-serif font-black leading-tight -mt-1" style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}>
-                Projects.
-              </h2>
+              <h2 className="font-serif font-black leading-tight" style={{ fontSize: "clamp(2rem,5vw,4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}>Selected</h2>
+              <h2 className="font-serif font-black leading-tight -mt-1" style={{ fontSize: "clamp(2rem,5vw,4rem)" }}>Projects.</h2>
             </div>
-            <p className="font-mono text-[10px] text-gray-700 tracking-[0.2em] uppercase max-w-xs text-right">
-              Each built to solve a real problem.
-            </p>
+            <p className="font-mono text-[10px] text-gray-700 tracking-[0.2em] uppercase max-w-xs text-right">Built to solve real problems.</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <GlowCard color={projects[0].color} className="project-card md:col-span-2">
-            <ProjectCardContent project={projects[0]} featured />
-          </GlowCard>
+        {/* Divider */}
+        <div className="h-px mb-2" style={{ background: "linear-gradient(90deg, rgba(132,204,22,0.25), transparent)" }} />
 
-          {projects.slice(1).map((p) => (
-            <GlowCard key={p.id} color={p.color} className="project-card">
-              <ProjectCardContent project={p} />
-            </GlowCard>
-          ))}
+        {/* Project rows */}
+        <div>
+          {projects.map((p, i) => <ProjectRow key={p.id} p={p} index={i} />)}
         </div>
       </div>
     </section>
-  );
-}
-
-/* ── Card content ───────────────────────────────────────────────────────── */
-function ProjectCardContent({ project: p, featured = false }: { project: typeof projects[0]; featured?: boolean }) {
-  return (
-    <div className={`p-7 md:p-9 ${featured ? "md:flex md:gap-14" : ""}`}>
-      <div className={featured ? "md:w-1/2" : ""}>
-        <div className="flex items-center justify-between mb-5">
-          <span className="font-mono text-[11px] tracking-[0.3em] text-gray-600 group-hover:text-white transition-colors duration-500">
-            {p.index}
-          </span>
-          <span
-            className="font-mono text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 rounded-full transition-all duration-300 group-hover:border-opacity-60"
-            style={{
-              color: p.color,
-              background: `${p.color}12`,
-              border: `1px solid ${p.color}30`,
-            }}
-          >
-            {p.tag}
-          </span>
-        </div>
-
-        <h3
-          className="font-serif font-bold text-white leading-tight mb-3 group-hover:text-white transition-colors duration-300"
-          style={{ fontSize: featured ? "clamp(1.6rem, 3vw, 2.5rem)" : "clamp(1.3rem, 2vw, 1.9rem)" }}
-        >
-          {p.title}
-        </h3>
-
-        {/* Accent line — expands on hover */}
-        <div
-          className="h-px mb-6 transition-all duration-700 ease-out"
-          style={{
-            width: "3rem",
-            background: `linear-gradient(90deg, ${p.color}, transparent)`,
-          }}
-        />
-      </div>
-
-      <div className={`space-y-5 ${featured ? "md:w-1/2" : ""}`}>
-        {[
-          { label: "Problem",  text: p.problem,  delay: "0ms"   },
-          { label: "Solution", text: p.solution, delay: "60ms"  },
-          { label: "Result",   text: p.result,   delay: "120ms" },
-        ].map(({ label, text, delay }) => (
-          <div key={label} className="transition-all duration-500" style={{ transitionDelay: delay }}>
-            <p
-              className="font-mono text-[9px] tracking-[0.3em] uppercase mb-1 transition-colors duration-400"
-              style={{ color: "#374151" }}
-            >
-              {label}
-            </p>
-            <p className="font-mono text-[11.5px] text-gray-400 leading-relaxed">{text}</p>
-          </div>
-        ))}
-
-        <div className="flex items-center gap-5 pt-3 border-t border-white/[0.04]">
-          <a
-            href={p.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300 text-gray-600 hover:text-white"
-          >
-            <Github className="w-3.5 h-3.5" /> GitHub
-          </a>
-          {p.live && (
-            <a
-              href={p.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest transition-all duration-300"
-              style={{ color: p.color }}
-            >
-              <ArrowUpRight className="w-3.5 h-3.5" /> Live
-            </a>
-          )}
-          <div
-            className="ml-auto flex items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0"
-            style={{ color: p.color }}
-          >
-            <ArrowUpRight className="w-3 h-3" />
-            <span>View</span>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
