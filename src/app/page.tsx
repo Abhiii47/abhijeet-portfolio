@@ -1,4 +1,5 @@
 import Entry from "@/components/Entry";
+import StatStrip from "@/components/StatStrip";
 import About from "@/components/About";
 import BentoSkills from "@/components/BentoSkills";
 import SystemDeck from "@/components/SystemDeck";
@@ -14,6 +15,9 @@ export default function Home() {
     <main className="relative w-full">
       {/* Hero — full bleed */}
       <Entry />
+
+      {/* Stat strip — cinematic beat between hero and content */}
+      <StatStrip />
 
       {/* TracingBeam spine */}
       <TracingBeam>
