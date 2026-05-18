@@ -1,59 +1,39 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * SmoothScroll — zero external dependencies.
+ * Keeps GSAP ScrollTrigger in sync with the native scroll position.
+ * For true lerp smooth scroll, install `lenis` and uncomment the block below.
+ */
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<unknown>(null);
-
   useEffect(() => {
-    let lenis: {
-      raf: (time: number) => void;
-      destroy: () => void;
-      on: (event: string, cb: (e: { scroll: number }) => void) => void;
-    } | null = null;
+    /* Keep ScrollTrigger refreshed on every scroll event */
+    const onScroll = () => ScrollTrigger.update();
+    window.addEventListener("scroll", onScroll, { passive: true });
 
-    const initLenis = async () => {
-      try {
-        /* Dynamic import so it only runs client-side */
-        const LenisModule = await import("@studio-freight/lenis");
-        const LenisClass  = LenisModule.default ?? LenisModule;
+    /* Refresh ScrollTrigger after fonts / images load */
+    const onLoad = () => ScrollTrigger.refresh();
+    window.addEventListener("load", onLoad);
 
-        lenis = new (LenisClass as new (opts: object) => typeof lenis)({
-          duration: 1.15,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          orientation: "vertical",
-          smoothWheel: true,
-          wheelMultiplier: 1,
-          touchMultiplier: 1.6,
-        });
-
-        lenisRef.current = lenis;
-
-        /* Sync Lenis with GSAP ScrollTrigger */
-        lenis!.on("scroll", () => ScrollTrigger.update());
-
-        /* GSAP ticker drives Lenis RAF */
-        gsap.ticker.add((time: number) => {
-          lenis!.raf(time * 1000);
-        });
-        gsap.ticker.lagSmoothing(0);
-
-      } catch {
-        /* Lenis not installed — fall back to native scroll silently */
-      }
+    /* Refresh on resize */
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
     };
-
-    initLenis();
+    window.addEventListener("resize", onResize);
 
     return () => {
-      if (lenis) {
-        lenis.destroy();
-        gsap.ticker.remove((time: number) => lenis!.raf(time * 1000));
-      }
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("load",   onLoad);
+      window.removeEventListener("resize", onResize);
+      clearTimeout(resizeTimer);
     };
   }, []);
 
