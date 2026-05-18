@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, ReactNode } from "react";
+import { useRef, ReactNode, CSSProperties } from "react";
 
 interface Props {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
   onClick?: () => void;
   href?: string;
   strength?: number;
@@ -16,6 +17,7 @@ interface Props {
 export default function MagneticButton({
   children,
   className = "",
+  style,
   onClick,
   href,
   strength = 0.38,
@@ -47,6 +49,7 @@ export default function MagneticButton({
   const props = {
     ref: ref as React.RefObject<HTMLButtonElement & HTMLAnchorElement>,
     className: `magnetic-btn ${className}`,
+    style,
     onMouseMove: handleMouseMove,
     onMouseLeave: handleMouseLeave,
     onClick,
