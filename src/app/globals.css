@@ -1,33 +1,46 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   SINGLE DARK THEME — #080c14 ink base
-   Accent (primary)  = #00d4ff  electric cyan
-   Accent (warm)     = #00d4ff  (same — no split)
-   Surface layers    = #0d1117 / #111820 / #15202e
+   RUST + CREAM EDITORIAL SYSTEM
+   Accent          = #C4400A  warm rust
+   Accent bright   = #E8572A  lighter rust for hover
+   Dark bg         = #0E0C0A  warm near-black (not cold blue)
+   Cream sections  = #F5F0E8  off-white
+   Cream mid       = #EDE8DF  slightly darker cream
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Core accent */
-  --accent:        #00d4ff;
-  --accent-dim:    rgba(0,212,255,0.25);
-  --accent-glow:   rgba(0,212,255,0.08);
+  /* ── Core accent ── */
+  --accent:        #C4400A;
+  --accent-bright: #E8572A;
+  --accent-dim:    rgba(196,64,10,0.28);
+  --accent-glow:   rgba(196,64,10,0.10);
 
-  /* Dark surface stack */
-  --bg-base:       #080c14;
-  --bg-section:    #0b1018;
-  --bg-surface:    #0d1117;
-  --bg-card:       #111820;
-  --bg-card-hover: #141e28;
-  --bg-line:       rgba(0,212,255,0.07);
+  /* ── Dark surface stack (warm near-black, not cold blue) ── */
+  --bg-base:       #0E0C0A;
+  --bg-section:    #131008;
+  --bg-surface:    #1A1610;
+  --bg-card:       #201C15;
+  --bg-card-hover: #262118;
+  --bg-line:       rgba(196,64,10,0.08);
 
-  /* Ink / text */
-  --ink:           #f0ede8;
+  /* ── Cream surface stack ── */
+  --cream:         #F5F0E8;
+  --cream-mid:     #EDE8DF;
+  --cream-deep:    #E0D9CE;
+
+  /* ── Ink / text (on dark) ── */
+  --ink:           #F0EDE8;
   --ink-muted:     rgba(240,237,232,0.55);
   --ink-hint:      rgba(240,237,232,0.28);
   --ink-border:    rgba(240,237,232,0.08);
 
-  /* Typography */
+  /* ── Ink (on cream) ── */
+  --ink-dark:       #1A1208;
+  --ink-dark-muted: rgba(26,18,8,0.55);
+  --ink-dark-hint:  rgba(26,18,8,0.30);
+
+  /* ── Typography ── */
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body:    'Inter', system-ui, sans-serif;
   --font-mono:    'Inter', monospace;
@@ -61,12 +74,12 @@ body {
 .border-accent { border-color: var(--accent); }
 
 /* ── Selection ── */
-::selection { background: rgba(0,212,255,0.2); color: var(--ink); }
+::selection { background: rgba(196,64,10,0.22); color: var(--ink); }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.22); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: rgba(196,64,10,0.35); border-radius: 99px; }
 
 /* ── Focus ── */
 :focus-visible {
@@ -105,32 +118,20 @@ body {
   --space-16: 4rem;    --space-20: 5rem;   --space-24: 6rem;
 }
 
-/* ── Global section divider — cyan scan line ── */
+/* ── Section divider — rust tone ── */
 .section-divider {
   width: 100%;
   height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(0,212,255,0.18) 20%,
-    rgba(0,212,255,0.35) 50%,
-    rgba(0,212,255,0.18) 80%,
+    rgba(196,64,10,0.2) 20%,
+    rgba(196,64,10,0.45) 50%,
+    rgba(196,64,10,0.2) 80%,
     transparent 100%
   );
 }
 
-/* ── Noise grain overlay (applied on hero) ── */
-.hero-grain::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.030;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
-}
-
-/* ── Pulse badge ── */
+/* ── Pulse badge (available dot) ── */
 @keyframes badgePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
   50%       { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
@@ -150,7 +151,7 @@ body {
 }
 .scroll-bounce { animation: scrollBounce 1.6s ease-in-out infinite; }
 
-/* ── Shimmer sweep on featured cert card ── */
+/* ── Shimmer sweep (on featured cert) — rust tone ── */
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
@@ -158,29 +159,21 @@ body {
 .cert-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(0,212,255,0.0) 0%,
-    rgba(0,212,255,0.12) 50%,
-    rgba(0,212,255,0.0) 100%
+    rgba(196,64,10,0.0)  0%,
+    rgba(196,64,10,0.14) 50%,
+    rgba(196,64,10,0.0)  100%
   );
   background-size: 200% auto;
   animation: shimmer 3.2s linear infinite;
-}
-
-/* ── Section grid lines ── */
-.section-grid {
-  background-image:
-    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-  background-size: 80px 80px;
 }
 
 /* ── Tag pill ── */
 .tag-hot {
   padding: 4px 10px;
   border-radius: 4px;
-  background: rgba(0,212,255,0.1);
-  border: 1px solid rgba(0,212,255,0.22);
-  color: var(--accent);
+  background: rgba(196,64,10,0.12);
+  border: 1px solid rgba(196,64,10,0.30);
+  color: var(--accent-bright);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
@@ -198,4 +191,14 @@ body {
   font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1;
+}
+
+/* ── Cream section utility ── */
+.section-cream {
+  background: var(--cream);
+  color: var(--ink-dark);
+}
+.section-cream-mid {
+  background: var(--cream-mid);
+  color: var(--ink-dark);
 }
