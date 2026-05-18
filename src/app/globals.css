@@ -3,12 +3,12 @@
 @theme {
   --color-background: #04040F;
   --color-foreground: #E8E6F0;
-  --color-accent: #7C3AED;
-  --color-accent-bright: #A78BFA;
-  --color-accent-dim: #3B1D7A;
+  --color-accent: #84cc16;
+  --color-accent-bright: #a3e635;
+  --color-accent-dim: #365314;
   --color-muted: #52496B;
   --color-surface: #0C0B1A;
-  --color-border: rgba(124,58,237,0.18);
+  --color-border: rgba(132,204,22,0.18);
   --font-sans: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), 'Courier New', monospace;
 }
@@ -18,12 +18,12 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #7C3AED #0C0B1A;
+  scrollbar-color: #84cc16 #0C0B1A;
 }
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: #0C0B1A; }
-::-webkit-scrollbar-thumb { background: #7C3AED; border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: #84cc16; border-radius: 99px; }
 
 body {
   background: var(--color-background);
@@ -51,7 +51,7 @@ canvas.neural-bg {
 
 #__next > *, main > * { position: relative; z-index: 1; }
 
-::selection { background: rgba(124,58,237,0.28); color: #E8E6F0; }
+::selection { background: rgba(132,204,22,0.28); color: #E8E6F0; }
 
 /* ── CURSOR ── */
 .cursor-dot  { mix-blend-mode: difference; }
@@ -61,7 +61,7 @@ canvas.neural-bg {
 }
 
 /* ── FOCUS ── */
-:focus-visible { outline: 1.5px solid rgba(124,58,237,0.7); outline-offset: 3px; border-radius: 3px; }
+:focus-visible { outline: 1.5px solid rgba(132,204,22,0.7); outline-offset: 3px; border-radius: 3px; }
 
 /* ── MAGNETIC BUTTON ── */
-.magnetic-btn { display: i
+.magnetic-btn { display: inline-flex; align-items: center; justify-content: center; }
