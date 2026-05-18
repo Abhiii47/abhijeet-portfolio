@@ -19,20 +19,15 @@ export default function About() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    // Stagger text lines
     gsap.from(".about-line", {
       scrollTrigger: { trigger: containerRef.current, start: "top 72%" },
       y: 40, opacity: 0, duration: 0.9,
       stagger: 0.12, ease: "power3.out",
     });
-
-    // ID card
     gsap.from(".id-card", {
       scrollTrigger: { trigger: containerRef.current, start: "top 60%" },
       x: 60, opacity: 0, duration: 1.1, ease: "power3.out", delay: 0.15,
     });
-
-    // Metrics
     gsap.from(".metric-item", {
       scrollTrigger: { trigger: ".metrics-grid", start: "top 88%" },
       y: 30, opacity: 0, duration: 0.6,
@@ -46,12 +41,10 @@ export default function About() {
       ref={containerRef}
       className="w-full min-h-screen px-6 py-28 md:px-12 flex flex-col justify-center relative"
     >
-      {/* Section ghost number */}
       <span className="absolute right-6 top-1/2 -translate-y-1/2 font-serif text-[18vw] font-black text-white/[0.025] select-none pointer-events-none leading-none" aria-hidden>02</span>
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
-        {/* ── LEFT: text ── */}
         <div className="space-y-12">
           <h2 className="about-line font-mono text-[11px] tracking-[0.3em] text-accent uppercase">
             01 / About Me
@@ -72,7 +65,6 @@ export default function About() {
             </p>
           </div>
 
-          {/* Metrics grid */}
           <div className="metrics-grid grid grid-cols-2 gap-3">
             {METRICS.map(m => (
               <div
@@ -87,11 +79,9 @@ export default function About() {
           </div>
         </div>
 
-        {/* ── RIGHT: ID card ── */}
         <div className="hidden lg:flex justify-center perspective-1000">
           <div className="id-card w-80 h-[460px] relative transition-all duration-700 transform-style-3d group hover:rotate-y-180">
 
-            {/* FRONT */}
             <div className="absolute inset-0 backface-hidden bg-[#0d0d0d] border border-white/10 rounded-2xl p-6 overflow-hidden noise-overlay">
               <div className="flex justify-between items-start mb-8">
                 <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-white/15">
@@ -123,7 +113,6 @@ export default function About() {
                 ))}
               </div>
 
-              {/* Skill tags */}
               <div className="mt-5 flex flex-wrap gap-1.5">
                 {["Next.js", "AWS", "Azure", "PyTorch", "FastAPI"].map(tag => (
                   <span key={tag} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-gray-400">
@@ -138,8 +127,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* BACK */}
-            <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl overflow-hidden border border-accent/15 bg-black">
+            <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl overflow-hidden border border-accent/20 bg-black">
               <Image src="/profile-full.png" alt="Abhijeet Kadu Full" fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
