@@ -61,7 +61,6 @@ const PROJECTS: Project[] = [
   },
 ];
 
-/* ── Animated stat ── */
 function AnimatedStat({ num, label, triggered }: Stat & { triggered: boolean }) {
   const [display, setDisplay] = useState("0");
   const raf = useRef<number | null>(null);
@@ -89,13 +88,11 @@ function AnimatedStat({ num, label, triggered }: Stat & { triggered: boolean }) 
         fontFamily: "'Cormorant Garamond',Georgia,serif",
         fontStyle: "italic",
         fontSize: 26, fontWeight: 700,
-        color: ACCENT,
-        lineHeight: 1, marginBottom: 4,
+        color: ACCENT, lineHeight: 1, marginBottom: 4,
       }}>{display}</p>
       <p style={{
         fontFamily: "var(--font-mono)",
-        fontSize: 9, fontWeight: 400,
-        letterSpacing: "0.26em",
+        fontSize: 9, letterSpacing: "0.26em",
         textTransform: "uppercase",
         color: "var(--ink-hint)",
       }}>{label}</p>
@@ -103,12 +100,12 @@ function AnimatedStat({ num, label, triggered }: Stat & { triggered: boolean }) 
   );
 }
 
-/* ── Single project card ── */
-function ProjectCard({ p, index }: { p: Project; index: number }) {
+function ProjectCard({ p }: { p: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const numRef  = useRef<HTMLSpanElement>(null);
   const hookRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
+  const edgeRef = useRef<HTMLDivElement>(null);
   const [triggered, setTriggered] = useState(false);
 
   useEffect(() => {
@@ -138,8 +135,21 @@ function ProjectCard({ p, index }: { p: Project; index: number }) {
     if (tags?.length) tl.from(Array.from(tags), { y: 8, opacity: 0, duration: 0.3, stagger: 0.03, ease: "power2.out" }, 0.42);
   }, { scope: cardRef });
 
-  const onEnter = () => gsap.to(cardRef.current, { y: -5, duration: 0.28, ease: "power2.out" });
-  const onLeave = () => gsap.to(cardRef.current, { y: 0,  duration: 0.28, ease: "power2.out" });
+  const onEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(cardRef.current, { y: -5, duration: 0.28, ease: "power2.out" });
+    gsap.to(edgeRef.current, { opacity: 1, duration: 0.25 });
+    const el = e.currentTarget as HTMLDivElement;
+    el.style.borderColor = `${ACCENT}28`;
+    el.style.boxShadow = `0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px ${ACCENT}12`;
+  };
+
+  const onLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(cardRef.current, { y: 0, duration: 0.28, ease: "power2.out" });
+    gsap.to(edgeRef.current, { opacity: 0, duration: 0.25 });
+    const el = e.currentTarget as HTMLDivElement;
+    el.style.borderColor = "var(--ink-border)";
+    el.style.boxShadow = "none";
+  };
 
   return (
     <div
@@ -156,27 +166,21 @@ function ProjectCard({ p, index }: { p: Project; index: number }) {
         position: "relative",
         overflow: "hidden",
       }}
-      onMouseEnter={e => {
-        onEnter();
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = `${ACCENT}28`;
-        el.style.boxShadow = `0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px ${ACCENT}12`;
-      }}
-      onMouseLeave={e => {
-        onLeave();
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = "var(--ink-border)";
-        el.style.boxShadow = "none";
-      }}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
     >
-      {/* Accent left edge on hover — via inline absolute */}
-      <div style={{
-        position: "absolute", left: 0, top: 0, bottom: 0,
-        width: 2,
-        background: `linear-gradient(to bottom, transparent, ${ACCENT}50, transparent)`,
-        opacity: 0,
-        transition: "opacity 0.25s",
-      }} className="card-edge" />
+      {/* Accent left edge — controlled by GSAP on hover */}
+      <div
+        ref={edgeRef}
+        aria-hidden
+        style={{
+          position: "absolute", left: 0, top: 0, bottom: 0,
+          width: 2,
+          background: `linear-gradient(to bottom, transparent, ${ACCENT}70, transparent)`,
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+      />
 
       {/* Number */}
       <div style={{ paddingTop: 2 }}>
@@ -192,7 +196,7 @@ function ProjectCard({ p, index }: { p: Project; index: number }) {
 
       {/* Content */}
       <div>
-        <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, fontWeight: 400, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--ink-hint)", marginBottom: 6 }}>{p.org}</p>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--ink-hint)", marginBottom: 6 }}>{p.org}</p>
         <h3 style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 500, color: "var(--ink)", marginBottom: 10, lineHeight: 1.3 }}>{p.name}</h3>
 
         <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "0 clamp(24px,4vw,48px)", alignItems: "start" }}>
@@ -201,27 +205,26 @@ function ProjectCard({ p, index }: { p: Project; index: number }) {
               fontFamily: "'Cormorant Garamond',Georgia,serif",
               fontStyle: "italic",
               fontSize: 15, fontWeight: 400,
-              color: ACCENT,
-              lineHeight: 1.55, marginBottom: 10,
+              color: ACCENT, lineHeight: 1.55, marginBottom: 10,
             }}>{p.hook}</p>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "var(--ink-muted)", lineHeight: 1.65, marginBottom: 14 }}>{p.description}</p>
 
             <div ref={tagsRef} style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 16 }}>
-              {p.hotTags.map(t => <span key={t} className="proj-tag tag-hot">{t}</span>)}
+              {p.hotTags.map(t    => <span key={t} className="proj-tag tag-hot">{t}</span>)}
               {p.normalTags.map(t => <span key={t} className="proj-tag tag-normal">{t}</span>)}
             </div>
 
             <div style={{ display: "flex", gap: 18 }}>
               {p.links.github && (
                 <a href={p.links.github} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 400, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, transition: "opacity 0.18s" }}
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, transition: "opacity 0.18s" }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = "0.7")}
                   onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
                 >GitHub ↗</a>
               )}
               {p.links.live && (
                 <a href={p.links.live} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 400, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--ink-muted)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, transition: "color 0.18s" }}
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--ink-muted)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, transition: "color 0.18s" }}
                   onMouseEnter={e => (e.currentTarget.style.color = ACCENT)}
                   onMouseLeave={e => (e.currentTarget.style.color = "var(--ink-muted)")}
                 >Live ↗</a>
@@ -246,7 +249,6 @@ export default function Projects() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         @media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }
-        .card-edge-wrap:hover .card-edge { opacity: 1 !important; }
       `}</style>
 
       <section
@@ -260,7 +262,7 @@ export default function Projects() {
       >
         <div style={{ maxWidth: 1140, margin: "0 auto" }}>
           <AnimatedHeading text="Selected" italic="projects" section="04" />
-          <div className="proj-list" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {PROJECTS.map((p, i) => <ProjectCard key={p.number} p={p} index={i} />)}
           </div>
         </div>
