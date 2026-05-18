@@ -17,7 +17,7 @@ const projects = [
     color: "#84cc16",
     year: "2024–Present",
     company: "Ecovis RKCA",
-    desc: "Migrated legacy infrastructure to AWS/Azure achieving 99.9% uptime. Built internal Next.js + TypeScript tooling that cut manual reporting time by 60%. Designed CI/CD pipelines that reduced release cycles from 2 weeks to 2 days.",
+    desc: "Migrated legacy infrastructure to AWS/Azure, achieving 99.9% uptime. Built internal Next.js + TypeScript tooling that cut manual reporting time by 60%. Designed CI/CD pipelines reducing release cycles from 2 weeks to 2 days.",
     github: "",
     live: "",
   },
@@ -28,8 +28,8 @@ const projects = [
     tag: "ETL · Power BI · DP-600",
     color: "#3b82f6",
     year: "2024",
-    company: "Microsoft Internship",
-    desc: "End-to-end lakehouse ETL on Microsoft Fabric — Bronze→Silver→Gold layers, automated daily refresh for 2M+ row datasets, Power BI semantic models and executive dashboards. DP-600 certified.",
+    company: "Microsoft",
+    desc: "Built end-to-end ETL on Microsoft Fabric with Bronze→Silver→Gold lakehouse layers, automated refresh, and Power BI semantic models. Earned DP-600 Fabric Analytics Engineer certification.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
@@ -41,7 +41,7 @@ const projects = [
     color: "#ef4444",
     year: "2024",
     company: "Amazon ML Summer School",
-    desc: "Multi-class tabular classification with stacked XGBoost + LightGBM + CatBoost ensemble and SMOTE oversampling. Top 0.1% of 100,000+ national participants — selected for Amazon ML Summer School.",
+    desc: "Stacked XGBoost + LightGBM + CatBoost ensemble with SMOTE oversampling for multi-class tabular classification. Top 0.1% nationally — selected for Amazon ML Summer School.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
@@ -53,7 +53,7 @@ const projects = [
     color: "#8b5cf6",
     year: "2023",
     company: "Personal Project",
-    desc: "Full-stack platform for students to find accommodation and food in new cities. Next.js + Supabase auth + realtime DB + Google Maps geo-search. Live product with active users, sub-300ms query response.",
+    desc: "Full-stack platform helping students find accommodation and food in new cities. Next.js + Supabase auth + realtime DB + Google Maps geo-search. Live product with an active user base.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
@@ -65,13 +65,12 @@ const projects = [
     color: "#d946ef",
     year: "2024",
     company: "Personal Project",
-    desc: "RAG pipeline on GCP: document ingestion → chunking → FAISS vector store → LLM answer generation with source citation. Under 2s end-to-end latency, deployed on Vertex AI.",
+    desc: "RAG pipeline on GCP: document ingestion → chunking → FAISS vector store → LLM answer generation with source citation. Deployed on Vertex AI.",
     github: "https://github.com/Abhiii47",
     live: "",
   },
 ];
 
-/* ── GlowCard ────────────────────────────────────────────────── */
 function GlowCard({ children, color, className = "" }: { children: React.ReactNode; color: string; className?: string }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -104,108 +103,52 @@ function GlowCard({ children, color, className = "" }: { children: React.ReactNo
   );
 }
 
-/* ── Single project row (Atharva-style) ─────────────────────── */
-function ProjectRow({ p, index }: { p: typeof projects[0]; index: number }) {
+function ProjectRow({ p }: { p: typeof projects[0] }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
-      className="project-card group relative"
-      style={{
-        borderBottom: "1px solid rgba(255,255,255,0.05)",
-        paddingBlock: "clamp(1.5rem, 3vw, 2.5rem)",
-      }}
+    <div className="project-card group relative"
+      style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBlock: "clamp(1.5rem, 3vw, 2.5rem)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* background fill on hover */}
-      <div
-        className="absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-400"
-        style={{ background: `linear-gradient(90deg, ${p.color}07, transparent)`, opacity: hovered ? 1 : 0 }}
-      />
+      <div className="absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-400" style={{ background: `linear-gradient(90deg, ${p.color}07, transparent)`, opacity: hovered ? 1 : 0 }} />
 
       <div className="relative flex items-start gap-6 md:gap-10 px-2">
-        {/* Index */}
-        <span
-          className="font-mono shrink-0 tabular-nums transition-colors duration-300"
-          style={{
-            fontSize: "clamp(0.65rem, 1vw, 0.75rem)",
-            letterSpacing: "0.2em",
-            color: hovered ? p.color : "rgba(255,255,255,0.15)",
-            marginTop: "0.35rem",
-          }}
-        >
-          {p.index}
-        </span>
+        <span className="font-mono shrink-0 tabular-nums transition-colors duration-300"
+          style={{ fontSize: "clamp(0.65rem, 1vw, 0.75rem)", letterSpacing: "0.2em", color: hovered ? p.color : "rgba(255,255,255,0.15)", marginTop: "0.35rem" }}
+        >{p.index}</span>
 
-        {/* Main content */}
         <div className="flex-1 min-w-0">
-          {/* Title row */}
           <div className="flex items-start justify-between gap-4 flex-wrap">
-            <h3
-              className="font-serif font-bold leading-tight transition-colors duration-300"
-              style={{
-                fontSize: "clamp(1.25rem, 2.5vw, 1.9rem)",
-                color: hovered ? "#ffffff" : "rgba(240,237,232,0.85)",
-              }}
-            >
-              {p.title}
-            </h3>
+            <h3 className="font-serif font-bold leading-tight transition-colors duration-300"
+              style={{ fontSize: "clamp(1.25rem, 2.5vw, 1.9rem)", color: hovered ? "#ffffff" : "rgba(240,237,232,0.85)" }}
+            >{p.title}</h3>
 
-            {/* Arrow — slides in on hover */}
-            <a
-              href={p.github || p.live || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
+            <a href={p.github || p.live || "#"} target="_blank" rel="noopener noreferrer"
               className="flex-shrink-0 transition-all duration-300 mt-1"
-              style={{
-                opacity: hovered ? 1 : 0,
-                transform: hovered ? "translate(0, 0)" : "translate(-8px, 8px)",
-                color: p.color,
-              }}
+              style={{ opacity: hovered ? 1 : 0, transform: hovered ? "translate(0,0)" : "translate(-8px,8px)", color: p.color }}
               aria-label={`View ${p.title}`}
-            >
-              <ArrowUpRight className="w-6 h-6" />
-            </a>
+            ><ArrowUpRight className="w-6 h-6" /></a>
           </div>
 
-          {/* Meta row */}
           <div className="flex items-center gap-3 mt-2 mb-4 flex-wrap">
-            <span
-              className="font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-0.5 rounded-full"
+            <span className="font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-0.5 rounded-full"
               style={{ color: p.color, background: `${p.color}12`, border: `1px solid ${p.color}25` }}
-            >
-              {p.tag}
-            </span>
+            >{p.tag}</span>
             <span className="font-mono text-[10px] text-gray-600 tracking-widest">{p.company}</span>
             <span className="font-mono text-[10px] text-gray-700 tracking-widest">{p.year}</span>
           </div>
 
-          {/* Description — fades in */}
-          <p
-            className="font-mono text-[11.5px] text-gray-500 leading-relaxed transition-all duration-400 max-w-2xl"
-            style={{
-              opacity: hovered ? 1 : 0.45,
-              transform: hovered ? "translateY(0)" : "translateY(4px)",
-            }}
-          >
-            {p.desc}
-          </p>
+          <p className="font-mono text-[11.5px] text-gray-500 leading-relaxed transition-all duration-400 max-w-2xl"
+            style={{ opacity: hovered ? 1 : 0.45, transform: hovered ? "translateY(0)" : "translateY(4px)" }}
+          >{p.desc}</p>
 
-          {/* GitHub link */}
           {p.github && (
-            <a
-              href={p.github}
-              target="_blank"
-              rel="noopener noreferrer"
+            <a href={p.github} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase mt-4 transition-all duration-300"
-              style={{
-                color: hovered ? p.color : "rgba(255,255,255,0.2)",
-                opacity: hovered ? 1 : 0,
-              }}
-            >
-              <Github className="w-3 h-3" /> GitHub
-            </a>
+              style={{ color: hovered ? p.color : "rgba(255,255,255,0.2)", opacity: hovered ? 1 : 0 }}
+            ><Github className="w-3 h-3" /> GitHub</a>
           )}
         </div>
       </div>
@@ -213,14 +156,12 @@ function ProjectRow({ p, index }: { p: typeof projects[0]; index: number }) {
   );
 }
 
-/* ── Projects section ────────────────────────────────────────── */
 export default function Projects() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
     gsap.from(".project-card", {
-      opacity: 0, y: 40,
-      duration: 0.7, stagger: 0.1, ease: "power3.out",
+      opacity: 0, y: 40, duration: 0.7, stagger: 0.1, ease: "power3.out",
       scrollTrigger: { trigger: containerRef.current, start: "top 70%" },
     });
   }, { scope: containerRef });
@@ -241,13 +182,8 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="h-px mb-2" style={{ background: "linear-gradient(90deg, rgba(132,204,22,0.25), transparent)" }} />
-
-        {/* Project rows */}
-        <div>
-          {projects.map((p, i) => <ProjectRow key={p.id} p={p} index={i} />)}
-        </div>
+        <div>{projects.map((p, i) => <ProjectRow key={p.id} p={p} />)}</div>
       </div>
     </section>
   );

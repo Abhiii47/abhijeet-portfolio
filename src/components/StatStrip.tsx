@@ -9,8 +9,6 @@ const ROW_A = [
   "✶",
   "99.9% CLOUD UPTIME",
   "✶",
-  "2M+ ROWS / DAY",
-  "✶",
   "DP-600 CERTIFIED",
   "✶",
   "60% FASTER REPORTING",
@@ -45,8 +43,7 @@ function MarqueeRow({ items, direction = 1, speed = 38 }: { items: string[]; dir
     const el = trackRef.current;
     if (!el) return;
     const w = el.scrollWidth / 2;
-    gsap.fromTo(
-      el,
+    gsap.fromTo(el,
       { x: direction === 1 ? 0 : -w },
       { x: direction === 1 ? -w : 0, duration: speed, ease: "none", repeat: -1 }
     );
@@ -58,15 +55,9 @@ function MarqueeRow({ items, direction = 1, speed = 38 }: { items: string[]; dir
     <div className="overflow-hidden w-full">
       <div ref={trackRef} className="flex items-center gap-0 whitespace-nowrap will-change-transform">
         {doubled.map((item, i) => (
-          <span
-            key={i}
-            className="font-mono text-[10px] tracking-[0.28em] px-4 shrink-0"
-            style={{
-              color: item === "✶" ? "#84cc16" : item === "·" ? "rgba(132,204,22,0.4)" : "rgba(240,237,232,0.18)",
-            }}
-          >
-            {item}
-          </span>
+          <span key={i} className="font-mono text-[10px] tracking-[0.28em] px-4 shrink-0"
+            style={{ color: item === "✶" ? "#84cc16" : item === "·" ? "rgba(132,204,22,0.4)" : "rgba(240,237,232,0.18)" }}
+          >{item}</span>
         ))}
       </div>
     </div>
