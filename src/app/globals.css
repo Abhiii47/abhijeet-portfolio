@@ -1,33 +1,39 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   SPLIT DUAL THEME
-   Hero (Entry) = #020408 deep black
-   Body          = #F5F0E8 warm cream  ← Phase 2+
-   Accent        = #00d4ff electric cyan
+   SINGLE DARK THEME — #080c14 ink base
+   Accent (primary)  = #00d4ff  electric cyan
+   Accent (warm)     = #00d4ff  (same — no split)
+   Surface layers    = #0d1117 / #111820 / #15202e
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Accent */
-  --accent: #00d4ff;
-  --accent-dim: rgba(0, 212, 255, 0.35);
+  /* Core accent */
+  --accent:        #00d4ff;
+  --accent-dim:    rgba(0,212,255,0.25);
+  --accent-glow:   rgba(0,212,255,0.08);
 
-  /* Hero surface */
-  --bg-hero: #020408;
+  /* Dark surface stack */
+  --bg-base:       #080c14;
+  --bg-section:    #0b1018;
+  --bg-surface:    #0d1117;
+  --bg-card:       #111820;
+  --bg-card-hover: #141e28;
+  --bg-line:       rgba(0,212,255,0.07);
 
-  /* Body surface (cream — active from Phase 2 onwards) */
-  --bg-body: #F5F0E8;
-  --bg-surface: #F0EBE1;
-  --bg-card:    #EBE5DA;
-  --color-ink:  #0A0F1E;
-  --color-ink-muted: #4A5568;
+  /* Ink / text */
+  --ink:           #f0ede8;
+  --ink-muted:     rgba(240,237,232,0.55);
+  --ink-hint:      rgba(240,237,232,0.28);
+  --ink-border:    rgba(240,237,232,0.08);
 
   /* Typography */
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'Inter', monospace;
 }
 
-/* Base reset */
+/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
@@ -41,37 +47,35 @@ html {
 
 body {
   min-height: 100dvh;
-  background: var(--bg-hero);
-  color: #f0ede8;
+  background: var(--bg-base);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   line-height: 1.65;
   overflow-x: hidden;
 }
 
-/* Tailwind accent alias */
-.text-accent  { color: var(--accent); }
-.bg-accent    { background-color: var(--accent); }
+/* ── Tailwind aliases ── */
+.text-accent   { color: var(--accent); }
+.bg-accent     { background-color: var(--accent); }
 .border-accent { border-color: var(--accent); }
 
-/* Font faces via Google Fonts — loaded in layout */
+/* ── Selection ── */
+::selection { background: rgba(0,212,255,0.2); color: var(--ink); }
 
-/* Selection */
-::selection { background: rgba(0,212,255,0.2); color: #f0ede8; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.22); border-radius: 99px; }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #020408; }
-::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.25); border-radius: 99px; }
-
-/* Focus */
+/* ── Focus ── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 4px;
 }
 
-/* Reduced motion */
+/* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -81,7 +85,7 @@ body {
   }
 }
 
-/* Fluid type scale */
+/* ── Fluid type scale ── */
 :root {
   --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
   --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
@@ -93,10 +97,105 @@ body {
   --text-hero: clamp(3rem,     0.5rem  + 7vw,    8rem);
 }
 
-/* Spacing */
+/* ── Spacing ── */
 :root {
   --space-1:  0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
   --space-4:  1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
   --space-8:  2rem;    --space-10: 2.5rem; --space-12: 3rem;
   --space-16: 4rem;    --space-20: 5rem;   --space-24: 6rem;
+}
+
+/* ── Global section divider — cyan scan line ── */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,212,255,0.18) 20%,
+    rgba(0,212,255,0.35) 50%,
+    rgba(0,212,255,0.18) 80%,
+    transparent 100%
+  );
+}
+
+/* ── Noise grain overlay (applied on hero) ── */
+.hero-grain::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.030;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* ── Pulse badge ── */
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+}
+.avail-dot {
+  animation: badgePulse 2s ease-in-out infinite;
+  border-radius: 50%;
+}
+
+/* ── Cursor blink ── */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── Scroll indicator bounce ── */
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+.scroll-bounce { animation: scrollBounce 1.6s ease-in-out infinite; }
+
+/* ── Shimmer sweep on featured cert card ── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.cert-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0,212,255,0.0) 0%,
+    rgba(0,212,255,0.12) 50%,
+    rgba(0,212,255,0.0) 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3.2s linear infinite;
+}
+
+/* ── Section grid lines ── */
+.section-grid {
+  background-image:
+    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* ── Tag pill ── */
+.tag-hot {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.22);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+.tag-normal {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(240,237,232,0.04);
+  border: 1px solid rgba(240,237,232,0.08);
+  color: rgba(240,237,232,0.42);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
