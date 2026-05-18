@@ -8,12 +8,18 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(ScrollTrigger);
 
 interface AnimatedHeadingProps {
-  text: string;       /* e.g. "Skills &" */
-  italic?: string;    /* e.g. "expertise" — rendered last in rust italic */
-  section?: string;   /* e.g. "03" — section number label */
-  size?: string;      /* CSS font-size, defaults to clamp */
+  text: string;
+  italic?: string;
+  section?: string;
+  size?: string;
+  /** Main word colour. Defaults to dark-mode white */
   color?: string;
-  rustColor?: string;
+  /** Italic/accent word colour. Defaults to cyan */
+  accentColor?: string;
+  /** Heading font family */
+  fontFamily?: string;
+  /** Section label font family */
+  labelFontFamily?: string;
 }
 
 export default function AnimatedHeading({
@@ -21,49 +27,39 @@ export default function AnimatedHeading({
   italic,
   section,
   size = "clamp(2.2rem,4.5vw,3.8rem)",
-  color = "#1A1208",
-  rustColor = "#C4400A",
+  color = "var(--ink, #f0ede8)",
+  accentColor = "var(--accent, #00d4ff)",
+  fontFamily = "'Cormorant Garamond',Georgia,serif",
+  labelFontFamily = "var(--font-mono,'Inter',monospace)",
 }: AnimatedHeadingProps) {
-  const ref        = useRef<HTMLDivElement>(null);
-  const lineRef    = useRef<HTMLDivElement>(null);
-  const labelRef   = useRef<HTMLParagraphElement>(null);
+  const ref      = useRef<HTMLDivElement>(null);
+  const lineRef  = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
 
-  /* Build word list — main words + optional italic word at end */
-  const mainWords   = text.trim().split(/\s+/);
-  const allWords    = italic ? [...mainWords, italic] : mainWords;
+  const mainWords = text.trim().split(/\s+/);
+  const allWords  = italic ? [...mainWords, italic] : mainWords;
 
   useGSAP(() => {
-    const wrappers = ref.current?.querySelectorAll<HTMLElement>(".ah-clip");
-    const inners   = ref.current?.querySelectorAll<HTMLElement>(".ah-inner");
-    const line     = lineRef.current;
-    const label    = labelRef.current;
-    if (!wrappers?.length || !inners?.length) return;
+    const inners = ref.current?.querySelectorAll<HTMLElement>(".ah-inner");
+    const line   = lineRef.current;
+    const label  = labelRef.current;
+    if (!inners?.length) return;
 
     const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ref.current,
-        start: "top 80%",
-        once: true,
-      },
+      scrollTrigger: { trigger: ref.current, start: "top 80%", once: true },
     });
 
-    /* Section label fades in first */
-    if (label) {
-      tl.from(label, { opacity: 0, y: 8, duration: 0.4, ease: "power2.out" }, 0);
-    }
+    if (label) tl.from(label, { opacity: 0, y: 8, duration: 0.4, ease: "power2.out" }, 0);
 
-    /* Words reveal: y:100% → 0 */
     inners.forEach((inner, i) => {
       const isItalic = italic && i === allWords.length - 1;
-      const delay    = isItalic ? i * 0.08 + 0.1 : i * 0.08;
       tl.from(
         inner,
         { y: "100%", opacity: 0, duration: 0.7, ease: "power4.out" },
-        0.1 + delay
+        0.1 + i * 0.08 + (isItalic ? 0.1 : 0)
       );
     });
 
-    /* Rust underline scaleX after words land */
     if (line) {
       tl.from(
         line,
@@ -75,30 +71,26 @@ export default function AnimatedHeading({
 
   return (
     <div ref={ref}>
-      {/* Section label */}
       {section && (
         <p
           ref={labelRef}
           style={{
-            fontFamily: "'DM Sans',sans-serif",
+            fontFamily: labelFontFamily,
             fontWeight: 400, fontSize: 10,
             letterSpacing: "0.38em",
             textTransform: "uppercase",
-            color: rustColor,
+            color: accentColor,
             marginBottom: 28,
           }}
-        >{section} / {italic ? text.split(" ")[0] === "Skills" ? "Skills" : text.split(" ")[0] : text}</p>
+        >{section} / {text.trim().split(" ")[0]}</p>
       )}
 
-      {/* Heading */}
-      <div
-        style={{
-          display: "flex", flexWrap: "wrap",
-          alignItems: "baseline",
-          gap: "0 0.28em",
-          marginBottom: 6,
-        }}
-      >
+      <div style={{
+        display: "flex", flexWrap: "wrap",
+        alignItems: "baseline",
+        gap: "0 0.28em",
+        marginBottom: 6,
+      }}>
         {allWords.map((word, i) => {
           const isItalic = italic && i === allWords.length - 1;
           return (
@@ -111,11 +103,11 @@ export default function AnimatedHeading({
                 className="ah-inner"
                 style={{
                   display: "inline-block",
-                  fontFamily: "'DM Serif Display',Georgia,serif",
+                  fontFamily,
                   fontStyle: isItalic ? "italic" : "normal",
-                  fontWeight: 400,
+                  fontWeight: isItalic ? 400 : 700,
                   fontSize: size,
-                  color: isItalic ? rustColor : color,
+                  color: isItalic ? accentColor : color,
                   lineHeight: 1.1,
                 }}
               >{word}</span>
@@ -124,13 +116,13 @@ export default function AnimatedHeading({
         })}
       </div>
 
-      {/* Rust underline */}
+      {/* Accent underline */}
       <div
         ref={lineRef}
         style={{
           height: 1.5,
           width: "clamp(48px,8vw,80px)",
-          background: rustColor,
+          background: accentColor,
           marginBottom: "clamp(32px,4vw,52px)",
           opacity: 0.5,
         }}

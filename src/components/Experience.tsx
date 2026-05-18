@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import AnimatedHeading from "./AnimatedHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -53,121 +54,143 @@ const EXP = [
 export default function Experience() {
   const ref     = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState<number|null>(null);
+  const [active, setActive] = useState<number | null>(null);
 
+  /* Scroll-driven timeline line fill */
   useEffect(() => {
     const fn = () => {
       const el = ref.current;
       if (!el || !lineRef.current) return;
       const r = el.getBoundingClientRect();
-      const p = Math.min(1,Math.max(0,(window.innerHeight - r.top)/(r.height + window.innerHeight*0.3)));
-      lineRef.current.style.height = `${p*100}%`;
+      const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / (r.height + window.innerHeight * 0.3)));
+      lineRef.current.style.height = `${p * 100}%`;
     };
-    window.addEventListener("scroll",fn,{passive:true}); fn();
-    return () => window.removeEventListener("scroll",fn);
-  },[]);
+    window.addEventListener("scroll", fn, { passive: true }); fn();
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
   useGSAP(() => {
-    gsap.from(".ex-item",{
-      scrollTrigger:{trigger:ref.current,start:"top 74%"},
-      x:-24,opacity:0,duration:0.8,stagger:0.14,ease:"power3.out",
+    gsap.from(".ex-item", {
+      scrollTrigger: { trigger: ref.current, start: "top 74%" },
+      x: -24, opacity: 0, duration: 0.8, stagger: 0.14, ease: "power3.out",
     });
-  },{ scope:ref });
+  }, { scope: ref });
 
   return (
     <section
       id="experience"
       ref={ref}
       style={{
-        background:"#080c14",
-        color:"#e8e5df",
-        padding:"clamp(72px,10vw,120px) clamp(24px,6vw,80px)",
-        position:"relative",overflow:"hidden",
+        background: "var(--bg-section)",
+        color: "var(--ink)",
+        padding: "clamp(72px,10vw,120px) clamp(24px,6vw,80px)",
+        position: "relative", overflow: "hidden",
       }}
     >
+      {/* Ghost number */}
       <span aria-hidden style={{
-        position:"absolute",right:"2%",top:"50%",transform:"translateY(-50%)",
-        fontFamily:"'Cormorant Garamond',Georgia,serif",
-        fontSize:"clamp(8rem,20vw,20rem)",fontWeight:900,lineHeight:1,
-        color:"transparent",WebkitTextStroke:"1px rgba(255,255,255,0.025)",
-        pointerEvents:"none",userSelect:"none",
+        position: "absolute", right: "2%", top: "50%", transform: "translateY(-50%)",
+        fontFamily: "'Bebas Neue','Arial Black',sans-serif",
+        fontSize: "clamp(8rem,20vw,20rem)", fontWeight: 900, lineHeight: 1,
+        color: "transparent",
+        WebkitTextStroke: "1px rgba(0,212,255,0.03)",
+        pointerEvents: "none", userSelect: "none",
       }}>02</span>
 
-      <div style={{ maxWidth:800,margin:"0 auto",position:"relative",zIndex:1 }}>
-        <p style={{ fontFamily:"monospace",fontSize:10,letterSpacing:"0.35em",color:ACCENT,textTransform:"uppercase",marginBottom:44 }}>02 / Experience</p>
-        <h2 style={{
-          fontFamily:"'Cormorant Garamond',Georgia,serif",
-          fontSize:"clamp(2rem,4.2vw,3.4rem)",
-          fontWeight:700,lineHeight:1.1,letterSpacing:"-0.02em",
-          color:"#e8e5df",
-          marginBottom:"clamp(44px,6vw,72px)",
-        }}>Where I&apos;ve shipped.</h2>
+      <div style={{ maxWidth: 800, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
-        <div style={{ position:"relative" }}>
-          {/* track */}
-          <div style={{ position:"absolute",left:0,top:0,bottom:0,width:1,background:"rgba(255,255,255,0.05)" }} />
-          {/* fill */}
+        <AnimatedHeading
+          text="Where I've"
+          italic="shipped."
+          section="02"
+          color="var(--ink, #f0ede8)"
+          accentColor="#00d4ff"
+          fontFamily="'Cormorant Garamond',Georgia,serif"
+        />
+
+        <div style={{ position: "relative" }}>
+          {/* Track */}
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 1, background: "rgba(255,255,255,0.05)" }} />
+          {/* Fill */}
           <div ref={lineRef} style={{
-            position:"absolute",left:0,top:0,width:1,height:"0%",
-            background:ACCENT,boxShadow:`0 0 8px ${ACCENT}`,
-            transition:"height 0.1s linear",
+            position: "absolute", left: 0, top: 0, width: 1, height: "0%",
+            background: ACCENT, boxShadow: `0 0 8px ${ACCENT}`,
+            transition: "height 0.1s linear",
           }} />
 
-          <div style={{ paddingLeft:36,display:"flex",flexDirection:"column" }}>
-            {EXP.map((e,i)=>(
+          <div style={{ paddingLeft: 36, display: "flex", flexDirection: "column" }}>
+            {EXP.map((e, i) => (
               <div
                 key={i}
                 className="ex-item"
-                onMouseEnter={()=>setActive(i)}
-                onMouseLeave={()=>setActive(null)}
-                style={{ position:"relative",paddingBottom: i<EXP.length-1?"clamp(32px,5vw,56px)":0 }}
+                onMouseEnter={() => setActive(i)}
+                onMouseLeave={() => setActive(null)}
+                style={{ position: "relative", paddingBottom: i < EXP.length - 1 ? "clamp(32px,5vw,56px)" : 0 }}
               >
-                {/* dot */}
+                {/* Dot */}
                 <div style={{
-                  position:"absolute",left:-40,top:8,
-                  width:10,height:10,borderRadius:"50%",
-                  background: active===i ? ACCENT : "rgba(255,255,255,0.12)",
-                  border:`1px solid ${active===i ? ACCENT : "rgba(255,255,255,0.08)"}`,
-                  boxShadow: active===i ? `0 0 14px ${ACCENT}` : "none",
-                  transition:"all 0.25s ease",
+                  position: "absolute", left: -40, top: 8,
+                  width: 10, height: 10, borderRadius: "50%",
+                  background: active === i ? ACCENT : "rgba(255,255,255,0.12)",
+                  border: `1px solid ${active === i ? ACCENT : "rgba(255,255,255,0.08)"}`,
+                  boxShadow: active === i ? `0 0 14px ${ACCENT}` : "none",
+                  transition: "all 0.25s ease",
                 }} />
 
-                {/* card */}
+                {/* Card */}
                 <div style={{
-                  padding:"clamp(20px,3vw,32px)",
-                  border:`1px solid ${active===i?"rgba(0,212,255,0.18)":"rgba(255,255,255,0.05)"}`,
-                  borderRadius:12,
-                  background: active===i ? "rgba(0,212,255,0.025)" : "transparent",
-                  transition:"border-color 0.25s,background 0.25s",
+                  padding: "clamp(20px,3vw,32px)",
+                  border: `1px solid ${active === i ? "rgba(0,212,255,0.18)" : "rgba(255,255,255,0.05)"}`,
+                  borderRadius: 12,
+                  background: active === i ? "rgba(0,212,255,0.025)" : "transparent",
+                  transition: "border-color 0.25s, background 0.25s",
                 }}>
-                  {/* top */}
-                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:10 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
                     <div>
-                      {e.current&&(
+                      {e.current && (
                         <span style={{
-                          display:"inline-flex",alignItems:"center",gap:5,
-                          fontFamily:"monospace",fontSize:8,letterSpacing:"0.3em",textTransform:"uppercase",
-                          color:ACCENT,padding:"3px 10px",borderRadius:9999,
-                          border:`1px solid rgba(0,212,255,0.22)`,marginBottom:10,
+                          display: "inline-flex", alignItems: "center", gap: 5,
+                          fontFamily: "var(--font-mono)", fontSize: 8,
+                          letterSpacing: "0.3em", textTransform: "uppercase",
+                          color: ACCENT, padding: "3px 10px", borderRadius: 9999,
+                          border: `1px solid rgba(0,212,255,0.22)`, marginBottom: 10,
                         }}>
-                          <span style={{ width:5,height:5,borderRadius:"50%",background:ACCENT,animation:"pulse 2s infinite",display:"inline-block" }} />
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "pulse 2s infinite", display: "inline-block" }} />
                           Current
                         </span>
                       )}
-                      <h3 style={{ fontFamily:"'Cormorant Garamond',Georgia,serif",fontSize:"clamp(1.05rem,2vw,1.35rem)",fontWeight:600,color:"#e8e5df",lineHeight:1.2,margin:0 }}>{e.role}</h3>
-                      <p style={{ fontFamily:"monospace",fontSize:10,color:ACCENT,marginTop:6,letterSpacing:"0.1em" }}>{e.company}</p>
+                      <h3 style={{
+                        fontFamily: "'Cormorant Garamond',Georgia,serif",
+                        fontSize: "clamp(1.05rem,2vw,1.35rem)",
+                        fontWeight: 600, color: "var(--ink)",
+                        lineHeight: 1.2, margin: 0,
+                      }}>{e.role}</h3>
+                      <p style={{
+                        fontFamily: "var(--font-mono)", fontSize: 10,
+                        color: ACCENT, marginTop: 6, letterSpacing: "0.1em",
+                      }}>{e.company}</p>
                     </div>
-                    <div style={{ display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0 }}>
-                      <span style={{ fontFamily:"monospace",fontSize:9,color:"rgba(255,255,255,0.28)",letterSpacing:"0.15em" }}>{e.period}</span>
-                      <span style={{ fontFamily:"monospace",fontSize:8,padding:"2px 8px",borderRadius:9999,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.28)",letterSpacing:"0.15em",textTransform:"uppercase" }}>{e.type}</span>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--ink-hint)", letterSpacing: "0.15em" }}>{e.period}</span>
+                      <span style={{
+                        fontFamily: "var(--font-mono)", fontSize: 8,
+                        padding: "2px 8px", borderRadius: 9999,
+                        background: "rgba(255,255,255,0.05)",
+                        color: "var(--ink-hint)",
+                        letterSpacing: "0.15em", textTransform: "uppercase",
+                      }}>{e.type}</span>
                     </div>
                   </div>
-                  {/* bullets */}
-                  <ul style={{ margin:0,padding:0,listStyle:"none",display:"flex",flexDirection:"column",gap:9 }}>
-                    {e.points.map((pt,j)=>(
-                      <li key={j} style={{ display:"flex",alignItems:"flex-start",gap:11 }}>
-                        <span style={{ marginTop:7,width:3,height:3,borderRadius:"50%",background:"rgba(0,212,255,0.45)",flexShrink:0 }} />
-                        <span style={{ fontFamily:"sans-serif",fontSize:"clamp(0.8rem,1vw,0.88rem)",color:"rgba(232,229,223,0.5)",lineHeight:1.65 }}>{pt}</span>
+
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
+                    {e.points.map((pt, j) => (
+                      <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
+                        <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: "rgba(0,212,255,0.45)", flexShrink: 0 }} />
+                        <span style={{
+                          fontFamily: "var(--font-body)",
+                          fontSize: "clamp(0.8rem,1vw,0.88rem)",
+                          color: "var(--ink-muted)", lineHeight: 1.65,
+                        }}>{pt}</span>
                       </li>
                     ))}
                   </ul>
