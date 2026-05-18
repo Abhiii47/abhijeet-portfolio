@@ -1,24 +1,23 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ACCENT = "#00d4ff";
-const EMAIL  = "abhijeetkadu47@gmail.com";
+const EMAIL  = "abhijeetkadu85@gmail.com";
 
 const SOCIALS = [
   {
     label: "GitHub",
     handle: "@Abhiii47",
     href: "https://github.com/Abhiii47",
-    color: "#ffffff",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12" />
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
@@ -26,10 +25,10 @@ const SOCIALS = [
     label: "LinkedIn",
     handle: "abhijeet-kadu",
     href: "https://linkedin.com/in/abhijeet-kadu",
-    color: "#0A66C2",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="4" cy="4" r="2" stroke="currentColor" strokeWidth="1.5"/>
       </svg>
     ),
   },
@@ -37,245 +36,286 @@ const SOCIALS = [
     label: "Email",
     handle: EMAIL,
     href: `mailto:${EMAIL}`,
-    color: ACCENT,
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <rect x="2" y="4" width="20" height="16" rx="2" />
-        <path d="M2 7l10 7 10-7" />
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
 ];
 
-/* ── Magnetic button ── */
-function MagneticCTA() {
-  const btnRef  = useRef<HTMLAnchorElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
-  const [hovered, setHovered] = useState(false);
-
-  const onMove = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    const el = btnRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const dx = (e.clientX - (r.left + r.width  / 2)) * 0.35;
-    const dy = (e.clientY - (r.top  + r.height / 2)) * 0.35;
-    gsap.to(el,     { x: dx, y: dy, duration: 0.4, ease: "power2.out" });
-    gsap.to(textRef.current, { x: dx * 0.5, y: dy * 0.5, duration: 0.4, ease: "power2.out" });
-  }, []);
-
-  const onLeave = useCallback(() => {
-    gsap.to(btnRef.current,  { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1,0.5)" });
-    gsap.to(textRef.current, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1,0.5)" });
-    setHovered(false);
-  }, []);
-
-  return (
-    <a
-      ref={btnRef}
-      href={`mailto:${EMAIL}`}
-      onMouseMove={onMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={onLeave}
-      style={{
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        gap: 10, padding: "20px 48px",
-        borderRadius: 99,
-        background: hovered ? ACCENT : "transparent",
-        border: `1.5px solid ${hovered ? ACCENT : "rgba(255,255,255,0.15)"}`,
-        color: hovered ? "#020408" : "white",
-        fontFamily: "monospace",
-        fontSize: "clamp(0.7rem, 1vw, 0.85rem)",
-        fontWeight: 700,
-        letterSpacing: "0.25em",
-        textTransform: "uppercase",
-        textDecoration: "none",
-        cursor: "pointer",
-        transition: "background 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease",
-        boxShadow: hovered ? `0 0 40px ${ACCENT}40` : "none",
-        willChange: "transform",
-        position: "relative",
-        zIndex: 1,
-      }}
-    >
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 7l10 7 10-7" />
-      </svg>
-      <span ref={textRef} style={{ display: "inline-block" }}>Send a message</span>
-      {/* rotating arrow */}
-      <svg
-        width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden
-        style={{ transition: "transform 0.3s ease", transform: hovered ? "rotate(45deg)" : "rotate(0deg)" }}
-      >
-        <path d="M2 10 L10 2 M4 2 H10 V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </a>
-  );
-}
-
-/* ── Social card ── */
-function SocialCard({ s }: { s: typeof SOCIALS[number] }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <a
-      href={s.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        display: "flex", alignItems: "center", gap: 14,
-        padding: "16px 20px",
-        borderRadius: 14,
-        background: hov ? `${s.color}08` : "rgba(255,255,255,0.025)",
-        border: `1px solid ${hov ? s.color + "40" : "rgba(255,255,255,0.06)"}`,
-        textDecoration: "none",
-        transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
-        transform: hov ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hov ? `0 8px 24px rgba(0,0,0,0.2)` : "none",
-        minWidth: 200, flex: "1 1 200px",
-      }}
-    >
-      <span style={{ color: hov ? s.color : "rgba(255,255,255,0.35)", transition: "color 0.2s ease" }}>{s.icon}</span>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2, overflow: "hidden" }}>
-        <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "0.95rem", fontWeight: 700, color: "white", lineHeight: 1.2 }}>{s.label}</span>
-        <span style={{ fontFamily: "monospace", fontSize: "9px", letterSpacing: "0.15em", color: "rgba(255,255,255,0.3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.handle}</span>
-      </div>
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden style={{ marginLeft: "auto", opacity: hov ? 1 : 0, transition: "opacity 0.2s ease", color: s.color }}>
-        <path d="M2 8 L8 2 M4 2 H8 V6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </a>
-  );
-}
-
-/* ════════════════════════════
-   MAIN SECTION
-════════════════════════════ */
 export default function Contact() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [copied, setCopied] = useState(false);
-  const year = new Date().getFullYear();
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(EMAIL).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    });
-  };
+  const ref = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".contact-line", {
-      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
-      y: 50, opacity: 0, duration: 0.9, stagger: 0.12, ease: "power3.out",
+    gsap.from(".ct-reveal", {
+      scrollTrigger: { trigger: ref.current, start: "top 80%" },
+      y: 50, opacity: 0, duration: 1, stagger: 0.12, ease: "power3.out",
     });
-    gsap.from(".social-card-wrap", {
-      scrollTrigger: { trigger: ".social-card-wrap", start: "top 85%" },
-      y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out",
-    });
-  }, { scope: sectionRef });
+  }, { scope: ref });
 
   return (
-    <section
-      id="contact"
-      ref={sectionRef}
-      style={{ background: "#020408", color: "white", position: "relative", overflow: "hidden" }}
-      className="w-full"
-    >
-      {/* ─── Top border fade ─── */}
-      <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${ACCENT}30, transparent)` }} />
-
-      <div className="max-w-5xl mx-auto px-6 md:px-14 pt-28 pb-0">
-
-        {/* section label */}
-        <p className="contact-line font-mono text-[10px] tracking-[0.35em] uppercase mb-8" style={{ color: ACCENT }}>05 &nbsp;/&nbsp; Contact</p>
-
-        {/* availability badge */}
-        <div className="contact-line inline-flex items-center gap-2 mb-10" style={{ padding: "6px 14px", borderRadius: 99, background: "rgba(0,212,255,0.07)", border: `1px solid ${ACCENT}25` }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e", animation: "badgePulse 2s ease-in-out infinite", display: "inline-block" }} />
-          <span style={{ fontFamily: "monospace", fontSize: "9px", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>Available for opportunities</span>
-        </div>
-
-        {/* Giant heading */}
-        <div className="mb-14" style={{ overflow: "hidden" }}>
-          <h2 className="contact-line font-serif font-bold leading-[0.95]" style={{ fontSize: "clamp(3.5rem, 10vw, 9rem)", letterSpacing: "-0.03em", color: "transparent", WebkitTextStroke: "1px rgba(255,255,255,0.12)" }}>Let&apos;s</h2>
-          <h2 className="contact-line font-serif font-bold leading-[0.95]" style={{ fontSize: "clamp(3.5rem, 10vw, 9rem)", letterSpacing: "-0.03em", color: "white" }}>Talk.</h2>
-        </div>
-
-        {/* CTA row */}
-        <div className="contact-line flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-16">
-          <MagneticCTA />
-
-          {/* copy email */}
-          <button
-            onClick={handleCopy}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "10px 20px", borderRadius: 99,
-              background: "transparent",
-              border: `1px solid ${copied ? "#22c55e" : "rgba(255,255,255,0.1)"}`,
-              color: copied ? "#22c55e" : "rgba(255,255,255,0.4)",
-              fontFamily: "monospace", fontSize: "9px",
-              letterSpacing: "0.2em", textTransform: "uppercase",
-              cursor: "pointer",
-              transition: "all 0.25s ease",
-            }}
-          >
-            {copied
-              ? <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden><path d="M2 6 L5 9 L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              : <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden><rect x="1" y="3" width="7" height="8" rx="1" stroke="currentColor" strokeWidth="1.2" /><path d="M4 3V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9" stroke="currentColor" strokeWidth="1.2" /></svg>
-            }
-            {copied ? "Copied!" : EMAIL}
-          </button>
-        </div>
-
-        {/* divider */}
-        <div className="contact-line mb-12" style={{ height: 1, background: "linear-gradient(90deg, rgba(255,255,255,0.06), transparent)" }} />
-
-        {/* Social cards */}
-        <div className="flex flex-wrap gap-3 mb-20">
-          {SOCIALS.map(s => <div key={s.label} className="social-card-wrap"><SocialCard s={s} /></div>)}
-        </div>
-      </div>
-
-      {/* ─── FOOTER ─── */}
-      <footer style={{
-        borderTop: "1px solid rgba(255,255,255,0.04)",
-        padding: "28px clamp(24px, 5vw, 56px)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        flexWrap: "wrap", gap: 12,
-      }}>
-        {/* logo mark */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-label="AK" style={{ flexShrink: 0 }}>
-            <path d="M4 24 L10 8 L16 24 M6 17.5 H14" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
-            <path d="M19 8 V24 M19 17 L27 8 M19 17 L27 24" stroke={ACCENT} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span style={{ fontFamily: "monospace", fontSize: "9px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" }}>Abhijeet Kadu</span>
-        </div>
-
-        <span style={{ fontFamily: "monospace", fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.15)", textTransform: "uppercase" }}>
-          Mumbai, IN &nbsp;&middot;&nbsp; {year}
-        </span>
-
-        <span style={{ fontFamily: "monospace", fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.1)", textTransform: "uppercase" }}>
-          Built with Next.js &amp; GSAP
-        </span>
-      </footer>
-
-      {/* ghost section number */}
-      <span aria-hidden style={{
-        position: "absolute", right: "2%", top: "50%", transform: "translateY(-50%)",
-        fontFamily: "'Cormorant Garamond', Georgia, serif",
-        fontSize: "clamp(8rem,18vw,18rem)", fontWeight: 900, lineHeight: 1,
-        color: "transparent", WebkitTextStroke: "1px rgba(255,255,255,0.025)",
-        pointerEvents: "none", userSelect: "none",
-      }}>05</span>
-
+    <>
       <style>{`
-        @keyframes badgePulse {
-          0%,100% { opacity:1; box-shadow: 0 0 8px #22c55e; }
-          50%      { opacity:0.6; box-shadow: 0 0 16px #22c55e; }
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
+
+        /* ── Marquee ── */
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        .marquee-track {
+          display: flex;
+          white-space: nowrap;
+          animation: marquee 18s linear infinite;
+          width: max-content;
+        }
+        .marquee-wrap:hover .marquee-track {
+          animation-play-state: paused;
+        }
+        .marquee-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 24px;
+          padding-right: 24px;
+        }
+        .marquee-link {
+          font-family: 'Inter', monospace;
+          font-size: clamp(0.78rem, 1.1vw, 0.95rem);
+          letter-spacing: 0.04em;
+          color: rgba(255,255,255,0.28);
+          text-decoration: none;
+          position: relative;
+          transition: color 0.22s;
+        }
+        .marquee-link::after {
+          content: '';
+          position: absolute;
+          bottom: -2px; left: 0; right: 0;
+          height: 1px;
+          background: ${ACCENT};
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.32s cubic-bezier(0.16,1,0.3,1);
+        }
+        .marquee-link:hover {
+          color: rgba(255,255,255,0.85);
+        }
+        .marquee-link:hover::after {
+          transform: scaleX(1);
+        }
+        .marquee-diamond {
+          color: ${ACCENT};
+          opacity: 0.4;
+          font-size: 0.5rem;
+        }
+
+        /* ── Social row ── */
+        .social-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          padding: 12px 0;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          transition: border-color 0.2s;
+        }
+        .social-item:hover {
+          border-color: ${ACCENT}50;
+        }
+        .social-item:hover .social-label {
+          color: white;
+        }
+        .social-item:hover .social-arrow {
+          transform: translate(2px,-2px);
+          color: ${ACCENT};
+        }
+        .social-label {
+          font-family: 'Inter', monospace;
+          font-size: 11px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.35);
+          transition: color 0.2s;
+          flex: 1;
+        }
+        .social-handle {
+          font-family: 'Inter', sans-serif;
+          font-size: 12px;
+          color: rgba(255,255,255,0.18);
+        }
+        .social-arrow {
+          color: rgba(255,255,255,0.15);
+          transition: transform 0.2s, color 0.2s;
+          font-size: 14px;
         }
       `}</style>
-    </section>
+
+      <section
+        id="contact"
+        ref={ref}
+        style={{
+          background: "#080c14",
+          padding: "clamp(80px,10vw,128px) clamp(20px,5vw,72px) clamp(48px,6vw,72px)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Top divider */}
+        <div style={{
+          height: 1,
+          background: `linear-gradient(90deg,transparent,${ACCENT}30,transparent)`,
+          marginBottom: "clamp(56px,8vw,96px)",
+        }} />
+
+        {/* Section label */}
+        <p className="ct-reveal" style={{
+          fontFamily: "'Inter',monospace", fontSize: 10,
+          letterSpacing: "0.38em", color: ACCENT,
+          textTransform: "uppercase", marginBottom: 40,
+        }}>03 / Contact</p>
+
+        {/* ── GIANT HEADING ── */}
+        <div className="ct-reveal" style={{ marginBottom: "clamp(24px,4vw,48px)" }}>
+          <h2 style={{
+            fontFamily: "'Bebas Neue','Arial Black',sans-serif",
+            fontSize: "clamp(5rem,18vw,14rem)",
+            fontWeight: 400,
+            lineHeight: 0.88,
+            letterSpacing: "0.01em",
+            margin: 0,
+            color: "#f0ede8",
+          }}>
+            <span style={{ display: "block" }}>LET&rsquo;S</span>
+            <span style={{
+              display: "block",
+              color: "transparent",
+              WebkitTextStroke: `2px ${ACCENT}`,
+            }}>TALK.</span>
+          </h2>
+        </div>
+
+        {/* ── Marquee email ── */}
+        <div className="ct-reveal marquee-wrap" style={{
+          overflow: "hidden",
+          marginBottom: "clamp(48px,7vw,88px)",
+          marginLeft: "-clamp(20px,5vw,72px)",
+          paddingLeft: "clamp(20px,5vw,72px)",
+        }}>
+          <div className="marquee-track">
+            {[...Array(6)].map((_, i) => (
+              <span key={i} className="marquee-item">
+                <a href={`mailto:${EMAIL}`} className="marquee-link">{EMAIL}</a>
+                <span className="marquee-diamond" aria-hidden>&#9670;</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Bottom row: socials left | location right ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "clamp(32px,5vw,64px)",
+          alignItems: "end",
+        }}>
+          {/* Social links */}
+          <div className="ct-reveal">
+            <p style={{
+              fontFamily: "'Inter',monospace", fontSize: 9,
+              letterSpacing: "0.3em", textTransform: "uppercase",
+              color: "rgba(255,255,255,0.15)", marginBottom: 16,
+            }}>Find me</p>
+            {SOCIALS.map(s => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank" rel="noopener noreferrer"
+                className="social-item"
+              >
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>{s.icon}</span>
+                <span className="social-label">{s.label}</span>
+                <span className="social-handle">{s.handle}</span>
+                <span className="social-arrow">&#8599;</span>
+              </a>
+            ))}
+          </div>
+
+          {/* Right: location + availability + copyright */}
+          <div className="ct-reveal" style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: 24,
+          }}>
+            {/* Availability badge */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "8px 18px",
+              border: "1px solid rgba(74,222,128,0.2)",
+              borderRadius: 9999,
+              background: "rgba(74,222,128,0.04)",
+            }}>
+              <span style={{
+                width: 6, height: 6, borderRadius: "50%",
+                background: "#4ade80",
+                display: "inline-block",
+                boxShadow: "0 0 6px #4ade8099",
+              }} />
+              <span style={{
+                fontFamily: "'Inter',monospace",
+                fontSize: 9, letterSpacing: "0.28em",
+                color: "rgba(74,222,128,0.75)",
+                textTransform: "uppercase",
+              }}>Open to opportunities</span>
+            </div>
+
+            {/* Location */}
+            <p style={{
+              fontFamily: "'Inter',monospace",
+              fontSize: 10, letterSpacing: "0.22em",
+              color: "rgba(255,255,255,0.18)",
+              textTransform: "uppercase",
+              textAlign: "right",
+            }}>
+              Mumbai, IN&nbsp;&nbsp;·&nbsp;&nbsp;Available 2026
+            </p>
+
+            {/* Copyright */}
+            <p style={{
+              fontFamily: "'Inter',sans-serif",
+              fontSize: 10,
+              color: "rgba(255,255,255,0.1)",
+              textAlign: "right",
+            }}>
+              &copy; {new Date().getFullYear()} Abhijeet Kadu
+            </p>
+          </div>
+        </div>
+
+        {/* Ghost name watermark */}
+        <div aria-hidden style={{
+          position: "absolute",
+          bottom: 0, right: 0,
+          fontFamily: "'Bebas Neue',sans-serif",
+          fontSize: "clamp(6rem,18vw,20rem)",
+          lineHeight: 0.85,
+          color: "transparent",
+          WebkitTextStroke: `1px rgba(255,255,255,0.025)`,
+          pointerEvents: "none",
+          userSelect: "none",
+          letterSpacing: "0.01em",
+        }}>AK</div>
+
+        {/* Mobile */}
+        <style>{`
+          @media(max-width:640px){
+            .contact-grid { grid-template-columns: 1fr !important; }
+            .contact-right { align-items: flex-start !important; }
+          }
+        `}</style>
+      </section>
+    </>
   );
 }
