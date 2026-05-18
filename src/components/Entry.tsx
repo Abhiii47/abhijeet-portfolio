@@ -48,7 +48,7 @@ function useScramble(target: string, autoPlay = false) {
   return { text, play };
 }
 
-/* ─── Floating Particles ─────────────────────────────────────── */
+/* ── Floating Particles ───────────────────────────────────────── */
 function FloatingParticles() {
   const particles = Array.from({ length: 28 }, (_, i) => ({
     id: i,
@@ -88,11 +88,10 @@ function FloatingParticles() {
   );
 }
 
-/* ─── Aurora Background ──────────────────────────────────────── */
+/* ── Aurora Background ────────────────────────────────────────── */
 function AuroraBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      {/* Animated aurora blobs */}
       <div
         className="absolute rounded-full blur-[120px]"
         style={{
@@ -138,7 +137,7 @@ function AuroraBackground() {
   );
 }
 
-/* ─── Background Beams ───────────────────────────────────────── */
+/* ── Background Beams ───────────────────────────────────────────── */
 function BackgroundBeams() {
   const beams = [
     { rotate: -38, opacity: 0.055, delay: 0,    width: 1.5 },
@@ -152,20 +151,14 @@ function BackgroundBeams() {
   ];
 
   return (
-    <div
-      className="absolute inset-0 overflow-hidden pointer-events-none"
-      aria-hidden
-      style={{ perspective: "600px" }}
-    >
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden style={{ perspective: "600px" }}>
       {beams.map((b, i) => (
         <div
           key={i}
           className="absolute"
           style={{
-            bottom: 0,
-            left: "50%",
-            width: `${b.width}px`,
-            height: "120vh",
+            bottom: 0, left: "50%",
+            width: `${b.width}px`, height: "120vh",
             transformOrigin: "bottom center",
             transform: `rotate(${b.rotate}deg)`,
             background: `linear-gradient(to top, #84cc16, rgba(132,204,22,0.3) 30%, transparent 75%)`,
@@ -174,20 +167,15 @@ function BackgroundBeams() {
           }}
         />
       ))}
-
-      {/* Radial glow at beam origin */}
       <div
         className="absolute"
         style={{
-          bottom: 0,
-          left: "50%",
+          bottom: 0, left: "50%",
           transform: "translateX(-50%)",
-          width: "60vw",
-          height: "35vh",
+          width: "60vw", height: "35vh",
           background: "radial-gradient(ellipse at bottom, rgba(132,204,22,0.08) 0%, transparent 65%)",
         }}
       />
-
       <style>{`
         @keyframes beamPulse {
           0%   { opacity: var(--base-op, 0.08); }
@@ -198,7 +186,7 @@ function BackgroundBeams() {
   );
 }
 
-/* ─── Noise Grain Overlay ─────────────────────────────────────── */
+/* ── Noise Overlay ──────────────────────────────────────────────────── */
 function NoiseOverlay() {
   return (
     <div
@@ -215,7 +203,7 @@ function NoiseOverlay() {
   );
 }
 
-/* ─── Grid Lines ─────────────────────────────────────────────── */
+/* ── Grid Lines ─────────────────────────────────────────────────────── */
 function GridLines() {
   return (
     <div
@@ -231,7 +219,6 @@ function GridLines() {
     />
   );
 }
-
 
 export default function Entry() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -301,14 +288,12 @@ export default function Entry() {
       ref={containerRef}
       className="relative h-screen flex flex-col justify-end pb-16 md:pb-24 px-6 md:px-14 overflow-hidden"
     >
-      {/* ── BACKGROUND LAYERS (z-0) ── */}
       <AuroraBackground />
       <GridLines />
       <BackgroundBeams />
       <FloatingParticles />
       <NoiseOverlay />
 
-      {/* Ghost section number */}
       <span
         className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 font-serif font-black select-none pointer-events-none leading-none z-0"
         style={{
@@ -317,11 +302,8 @@ export default function Entry() {
           color: "transparent",
         }}
         aria-hidden
-      >
-        01
-      </span>
+      >01</span>
 
-      {/* Location */}
       <p
         ref={locationRef as React.RefObject<HTMLParagraphElement>}
         className="absolute top-32 left-6 md:left-14 font-mono text-[9px] tracking-[0.32em] text-gray-600 uppercase z-10"
@@ -329,7 +311,6 @@ export default function Entry() {
         Mumbai, India &nbsp;·&nbsp; 20°41′N 74°02′E
       </p>
 
-      {/* Right side status indicator */}
       <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex-col items-center gap-3 hidden md:flex z-10">
         <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Status</span>
         <div className="w-px h-14 bg-gradient-to-b from-transparent via-accent to-transparent" />
@@ -338,14 +319,8 @@ export default function Entry() {
         <span className="font-mono text-[8px] tracking-[0.35em] text-gray-700 uppercase [writing-mode:vertical-rl]">Available</span>
       </div>
 
-      {/* ── MAIN CONTENT (z-10) ── */}
       <div className="relative z-10">
-
-        <h1
-          ref={nameRef}
-          className="font-serif font-black select-none"
-          style={{ lineHeight: 0.86 }}
-        >
+        <h1 ref={nameRef} className="font-serif font-black select-none" style={{ lineHeight: 0.86 }}>
           <span
             className="block cursor-pointer"
             style={{
@@ -366,32 +341,18 @@ export default function Entry() {
               el.style.letterSpacing = "-0.03em";
               (el.style as unknown as Record<string,string>)["webkitTextStroke"] = "1.5px #f0ede8";
             }}
-          >
-            {firstName}
-          </span>
+          >{firstName}</span>
 
           <span className="relative block" style={{ fontSize: "clamp(3.2rem, 12vw, 10.5rem)", letterSpacing: "-0.03em" }}>
             <span
               className="cursor-pointer text-white"
               style={{ transition: "color 0.3s ease" }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.color = "#84cc16";
-                playLast();
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.color = "#ffffff";
-              }}
-            >
-              {lastName}
-            </span>
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#84cc16"; playLast(); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "#ffffff"; }}
+            >{lastName}</span>
             <span
               className="absolute left-0"
-              style={{
-                bottom: "-6px",
-                height: "3px",
-                width: "55%",
-                background: "linear-gradient(90deg, #84cc16, transparent)",
-              }}
+              style={{ bottom: "-6px", height: "3px", width: "55%", background: "linear-gradient(90deg, #84cc16, transparent)" }}
             />
           </span>
         </h1>
@@ -400,16 +361,13 @@ export default function Entry() {
           ref={lineRef}
           className="origin-left"
           style={{
-            height: "1px",
-            width: "100%",
-            marginTop: "2rem",
-            marginBottom: "1.5rem",
+            height: "1px", width: "100%",
+            marginTop: "2rem", marginBottom: "1.5rem",
             background: "linear-gradient(90deg, #84cc16 0%, rgba(240,237,232,0.08) 55%, transparent 100%)",
           }}
         />
 
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-
           <div ref={roleRef} className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse flex-shrink-0" />
             <p
@@ -422,9 +380,7 @@ export default function Entry() {
                 transform: roleVisible ? "translateY(0)" : "translateY(6px)",
                 transition: "all 0.38s cubic-bezier(0.16,1,0.3,1)",
               }}
-            >
-              {ROLES[roleIdx]}
-            </p>
+            >{ROLES[roleIdx]}</p>
           </div>
 
           <div className="flex flex-col items-start md:items-end gap-5">
@@ -441,42 +397,27 @@ export default function Entry() {
             </p>
 
             <div ref={ctaRef} className="flex items-center gap-3 flex-wrap">
+              {/* View Work CTA — font size via text-[0.65rem] class, no style prop */}
               <MagneticButton
                 tag="a"
                 href="#projects"
-                className="inline-flex items-center gap-2 px-7 py-3 bg-accent text-black font-mono font-bold tracking-[0.18em] uppercase rounded-full hover:bg-lime-300 transition-colors duration-200"
-                style={{ fontSize: "0.65rem" }}
+                className="inline-flex items-center gap-2 px-7 py-3 bg-accent text-black font-mono font-bold tracking-[0.18em] uppercase rounded-full hover:bg-lime-300 transition-colors duration-200 text-[0.65rem]"
               >
                 View Work
               </MagneticButton>
-              <MagneticButton
-                tag="a"
+
+              {/* Contact CTA — uses a plain <a> to avoid MagneticButton prop constraints */}
+              <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-7 py-3 font-mono tracking-[0.18em] uppercase rounded-full transition-all duration-200"
-                style={{
-                  fontSize: "0.65rem",
-                  border: "1px solid rgba(240,237,232,0.15)",
-                  color: "rgba(240,237,232,0.6)",
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.borderColor = "rgba(132,204,22,0.5)";
-                  el.style.color = "#84cc16";
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.borderColor = "rgba(240,237,232,0.15)";
-                  el.style.color = "rgba(240,237,232,0.6)";
-                }}
+                className="inline-flex items-center gap-2 px-7 py-3 font-mono tracking-[0.18em] uppercase rounded-full transition-all duration-200 text-[0.65rem] border border-white/15 text-white/60 hover:border-accent/50 hover:text-accent"
               >
                 Contact
-              </MagneticButton>
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Scroll hint */}
       <div ref={scrollRef} className="absolute bottom-8 left-6 md:left-14 flex items-center gap-3 z-10">
         <div className="w-px h-10 bg-gradient-to-b from-transparent to-accent/35" />
         <span className="font-mono text-[8px] tracking-[0.32em] text-gray-700 uppercase">Scroll</span>
