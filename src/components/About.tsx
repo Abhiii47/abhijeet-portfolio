@@ -59,19 +59,16 @@ export default function About() {
 
           <div className="space-y-6">
             <p className="about-line font-serif text-2xl md:text-3xl leading-snug text-white">
-              <span className="text-accent">AI/ML-focused</span> Computer Engineering student —
-              building end-to-end machine learning systems that go from research to production.
+              <span className="text-accent">SDE &amp; Product Manager</span> at Ecovis RKCA &mdash;
+              shipping cloud infrastructure and AI-powered products from architecture to production.
             </p>
             <p className="about-line text-base text-gray-400 leading-relaxed max-w-lg">
-              Specializing in <span className="text-white">Transformer-based models</span>, ensemble learning,
-              and scalable service pipelines via FastAPI and GCP. Selected for{" "}
-              <span className="text-white font-medium">Amazon ML Summer School</span> (Top 0.1%
-              of 100,000+ applicants), I bridge the gap between complex research and
-              industry-grade applications.
+              At <span className="text-white font-medium">Ecovis RKCA</span>, I lead cloud migration on AWS/Azure, build internal tooling in Next.js, and drive product strategy across engineering teams.
+              Previously selected for <span className="text-white font-medium">Amazon ML Summer School</span> (Top 0.1% of 100,000+ applicants) and interned at Microsoft on MS Fabric pipelines.
             </p>
             <p className="about-line text-base text-gray-400 leading-relaxed max-w-lg">
-              When I&apos;m not training models, I&apos;m competing on Kaggle, contributing
-              to competitive programming, or writing technical posts on Medium.
+              When I&apos;m not building products, I&apos;m prototyping indie games, designing web experiences,
+              or exploring AI tooling that automates real business workflows.
             </p>
           </div>
 
@@ -113,10 +110,11 @@ export default function About() {
 
               <div className="space-y-3 font-mono text-[11px] text-gray-500">
                 {[
-                  ["Class",  "Computer Engineer"],
-                  ["Focus",  "AI / ML SDE"],
-                  ["Origin", "Mumbai, IN"],
-                  ["Status", "Available"],
+                  ["Class",   "Computer Engineer"],
+                  ["Role",    "SDE & Product Manager"],
+                  ["Company", "Ecovis RKCA"],
+                  ["Origin",  "Mumbai, IN"],
+                  ["Status",  "Available"],
                 ].map(([k, v]) => (
                   <div key={k} className="flex justify-between border-b border-white/[0.05] pb-2">
                     <span>{k}</span>
@@ -126,8 +124,8 @@ export default function About() {
               </div>
 
               {/* Skill tags */}
-              <div className="mt-6 flex flex-wrap gap-1.5">
-                {["PyTorch", "FastAPI", "XGBoost", "LLMs", "GCP"].map(tag => (
+              <div className="mt-5 flex flex-wrap gap-1.5">
+                {["Next.js", "AWS", "Azure", "PyTorch", "FastAPI"].map(tag => (
                   <span key={tag} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-gray-400">
                     {tag}
                   </span>
@@ -146,7 +144,7 @@ export default function About() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
                 <p className="font-mono font-bold text-accent tracking-widest text-sm">ABHIJEET KADU</p>
-                <p className="font-mono text-gray-500 text-[10px] tracking-[0.3em] uppercase mt-1">AI / ML Engineer</p>
+                <p className="font-mono text-gray-500 text-[10px] tracking-[0.3em] uppercase mt-1">SDE &amp; Product Manager</p>
                 <a
                   href="mailto:abhijeetkadu007@gmail.com"
                   className="inline-block mt-3 px-3 py-1.5 bg-accent/10 border border-accent/30 rounded text-[10px] font-mono text-accent hover:bg-accent/20 transition-colors"
