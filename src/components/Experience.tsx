@@ -1,196 +1,219 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
-const experiences = [
+gsap.registerPlugin(ScrollTrigger);
+
+const ACCENT = "#00d4ff";
+
+const EXPERIENCES = [
   {
     role: "Software Development Engineer & Product Manager",
     company: "Ecovis RKCA",
     period: "2024 – Present",
-    color: "#84cc16",
-    badge: "Full-Time",
+    type: "Full-Time",
     current: true,
     points: [
-      "Migrated legacy infrastructure to cloud (AWS / Azure), improving system uptime to 99.9%",
-      "Led product roadmap end-to-end — from requirement gathering to sprint delivery across cross-functional teams",
-      "Built internal tooling with Next.js + TypeScript that reduced manual reporting time by 60%",
-      "Designed CI/CD pipelines that cut release cycles from 2 weeks to 2 days",
-      "Worked with stakeholders to define KPIs and drive data-informed product decisions",
+      "Migrated legacy infrastructure to AWS & Azure — improved uptime to 99.9%",
+      "Led product roadmap end-to-end: requirements, sprint planning, and delivery across cross-functional teams",
+      "Built internal Next.js + TypeScript tooling that reduced manual reporting time by 60%",
+      "Designed CI/CD pipelines that cut release cycles from two weeks to two days",
+      "Defined KPIs with stakeholders and drove data-informed product decisions",
     ],
   },
   {
-    role: "Microsoft MS Fabric Internship",
+    role: "Microsoft Fabric Data Engineering Intern",
     company: "Microsoft",
     period: "2024",
-    color: "#00a4ef",
-    badge: "Internship",
+    type: "Internship",
     current: false,
     points: [
-      "Built Bronze→Silver→Gold ETL pipelines on Microsoft Fabric",
+      "Built Bronze → Silver → Gold ETL medallion pipelines on Microsoft Fabric",
       "Created Power BI semantic models and executive dashboards",
       "Earned DP-600 Fabric Analytics Engineer certification",
     ],
   },
   {
-    role: "ML Competition — Amazon",
+    role: "ML Competition Finalist",
     company: "Amazon ML Summer School",
     period: "2024",
-    color: "#f97316",
-    badge: "Achievement",
+    type: "Achievement",
     current: false,
     points: [
-      "Top 0.1% nationally in the Amazon ML competition",
-      "Stacked XGBoost + LightGBM + CatBoost ensemble with SMOTE oversampling",
+      "Top 0.1% nationally among 100,000+ applicants",
+      "Ensemble of XGBoost + LightGBM + CatBoost with SMOTE oversampling",
       "Selected for Amazon ML Summer School program",
-    ],
-  },
-  {
-    role: "Full-Stack Developer",
-    company: "Room & Food Finder (Personal Project)",
-    period: "2023",
-    color: "#a3e635",
-    badge: "Project",
-    current: false,
-    points: [
-      "Next.js + Supabase + Google Maps full-stack app",
-      "Auth, geo-search, and filter system for student housing",
-      "Live product with active user base",
     ],
   },
 ];
 
-function GlowCard({ children, color, active }: { children: React.ReactNode; color: string; active: boolean }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-
-  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    const glow = glowRef.current;
-    if (!card || !glow) return;
-    const rect = card.getBoundingClientRect();
-    glow.style.background = `radial-gradient(400px circle at ${e.clientX - rect.left}px ${e.clientY - rect.top}px, ${color}25, transparent 65%)`;
-  }, [color]);
-
-  const onMouseLeave = useCallback(() => {
-    if (glowRef.current) glowRef.current.style.background = "transparent";
-  }, []);
-
-  return (
-    <div
-      ref={cardRef}
-      className="relative rounded-xl overflow-hidden transition-all duration-400"
-      style={{
-        background: active ? `linear-gradient(135deg, ${color}08 0%, rgba(255,255,255,0.015) 60%)` : "rgba(255,255,255,0.02)",
-        border: `1px solid ${active ? color + "30" : "rgba(255,255,255,0.06)"}`,
-        boxShadow: active ? `0 0 40px ${color}10, inset 0 0 0 1px ${color}20` : "none",
-      }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-    >
-      <div ref={glowRef} className="absolute inset-0 rounded-xl pointer-events-none" style={{ zIndex: 0, transition: "background 0.07s ease" }} />
-      {active && (
-        <div className="absolute top-0 left-[5%] right-[5%] h-px pointer-events-none" style={{ background: `linear-gradient(90deg, transparent, ${color}80, transparent)`, zIndex: 2 }} />
-      )}
-      <div className="relative" style={{ zIndex: 3 }}>{children}</div>
-    </div>
-  );
-}
-
 export default function Experience() {
-  const containerRef = useRef<HTMLElement>(null);
-  const lineRef      = useRef<HTMLDivElement>(null);
-  const [visible, setVisible]     = useState(false);
-  const [lineH, setLineH]         = useState(0);
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const ref = useRef<HTMLElement>(null);
+  const [active, setActive] = useState<number | null>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.08 }
-    );
-    if (containerRef.current) obs.observe(containerRef.current);
-    return () => obs.disconnect();
-  }, []);
-
+  /* Scroll-driven line fill */
   useEffect(() => {
     const onScroll = () => {
-      const el = containerRef.current;
-      if (!el) return;
+      const el = ref.current;
+      if (!el || !lineRef.current) return;
       const rect = el.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.4)));
-      setLineH(progress * 100);
+      const progress = Math.min(1, Math.max(0,
+        (window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.3)
+      ));
+      lineRef.current.style.height = `${progress * 100}%`;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useGSAP(() => {
+    gsap.from(".exp-item", {
+      scrollTrigger: { trigger: ref.current, start: "top 72%" },
+      x: -24, opacity: 0, duration: 0.8,
+      stagger: 0.15, ease: "power3.out",
+    });
+  }, { scope: ref });
+
   return (
-    <section id="experience" ref={containerRef} className="relative w-full py-32 px-6 md:px-12">
-      <span className="absolute right-0 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none" style={{ WebkitTextStroke: "1px rgba(132,204,22,0.04)", color: "transparent" }} aria-hidden>05</span>
+    <section
+      id="experience"
+      ref={ref}
+      style={{
+        background: "#080c14",
+        color: "#e8e5df",
+        padding: "clamp(64px,10vw,120px) clamp(24px,6vw,80px)",
+        position: "relative", overflow: "hidden",
+      }}
+    >
+      {/* Ghost number */}
+      <span aria-hidden style={{
+        position: "absolute", right: "2%", top: "50%", transform: "translateY(-50%)",
+        fontFamily: "'Cormorant Garamond',Georgia,serif",
+        fontSize: "clamp(8rem,20vw,20rem)", fontWeight: 900, lineHeight: 1,
+        color: "transparent", WebkitTextStroke: "1px rgba(255,255,255,0.03)",
+        pointerEvents: "none", userSelect: "none",
+      }}>02</span>
 
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-16">
-          <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">05 / Experience</p>
-          <h2 className="font-serif font-black leading-tight" style={{ fontSize: "clamp(2rem,5vw,4rem)", WebkitTextStroke: "1px rgba(240,237,232,0.15)", color: "transparent" }}>Where I&apos;ve</h2>
-          <h2 className="font-serif font-black leading-tight -mt-2" style={{ fontSize: "clamp(2rem,5vw,4rem)" }}>Shipped.</h2>
-        </div>
+      <div style={{ maxWidth: 820, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
-        <div className="relative">
-          <div className="absolute left-[5px] top-0 bottom-0 w-px" style={{ background: "rgba(255,255,255,0.05)" }} />
-          <div ref={lineRef} className="absolute left-[5px] top-0 w-px" style={{ height: `${lineH}%`, background: "linear-gradient(to bottom, #84cc16, #00a4ef, #f97316, #a3e635)", boxShadow: "0 0 8px rgba(132,204,22,0.4)", transition: "height 0.1s linear" }} />
+        {/* Header */}
+        <p style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.35em", color: ACCENT, textTransform: "uppercase", marginBottom: 40 }}>02 / Experience</p>
+        <h2 style={{
+          fontFamily: "'Cormorant Garamond',Georgia,serif",
+          fontSize: "clamp(2.2rem,4.5vw,3.5rem)",
+          fontWeight: 700, lineHeight: 1.1,
+          letterSpacing: "-0.02em",
+          color: "#e8e5df",
+          marginBottom: "clamp(40px,6vw,72px)",
+        }}>Where I&apos;ve shipped.</h2>
 
-          <div className="space-y-0 pl-8">
-            {experiences.map((exp, i) => (
-              <div key={i} className="relative group"
-                style={{ opacity: visible ? 1 : 0, transform: visible ? "translateX(0)" : "translateX(-40px)", transition: `opacity 0.7s ease ${i * 140}ms, transform 0.7s ease ${i * 140}ms` }}
-                onMouseEnter={() => setActiveIdx(i)}
-                onMouseLeave={() => setActiveIdx(null)}
+        {/* Timeline */}
+        <div style={{ position: "relative" }}>
+          {/* Track */}
+          <div style={{
+            position: "absolute", left: 0, top: 0, bottom: 0,
+            width: 1, background: "rgba(255,255,255,0.06)",
+          }} />
+          {/* Fill */}
+          <div ref={lineRef} style={{
+            position: "absolute", left: 0, top: 0,
+            width: 1, height: "0%",
+            background: ACCENT,
+            boxShadow: `0 0 6px ${ACCENT}`,
+            transition: "height 0.12s linear",
+          }} />
+
+          <div style={{ paddingLeft: 32, display: "flex", flexDirection: "column", gap: 0 }}>
+            {EXPERIENCES.map((exp, i) => (
+              <div
+                key={i}
+                className="exp-item"
+                onMouseEnter={() => setActive(i)}
+                onMouseLeave={() => setActive(null)}
+                style={{ position: "relative", paddingBottom: i < EXPERIENCES.length - 1 ? "clamp(32px,5vw,56px)" : 0 }}
               >
-                <div className="absolute -left-[27px] top-7 w-3 h-3 rounded-full z-10 transition-all duration-400"
-                  style={{ background: exp.color, boxShadow: activeIdx === i ? `0 0 0 4px ${exp.color}20, 0 0 20px ${exp.color}80` : `0 0 8px ${exp.color}50`, transform: activeIdx === i ? "scale(1.5)" : "scale(1)" }}
-                />
+                {/* Dot */}
+                <div style={{
+                  position: "absolute", left: -36, top: 6,
+                  width: 10, height: 10, borderRadius: "50%",
+                  background: active === i ? ACCENT : "rgba(255,255,255,0.15)",
+                  border: `1px solid ${active === i ? ACCENT : "rgba(255,255,255,0.1)"}`,
+                  boxShadow: active === i ? `0 0 12px ${ACCENT}` : "none",
+                  transition: "all 0.25s ease",
+                }} />
 
-                <GlowCard color={exp.color} active={activeIdx === i}>
-                  <div className="py-8 px-6">
-                    <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
-                      <div>
-                        {exp.current && (
-                          <span className="inline-flex items-center gap-1.5 font-mono text-[9px] px-2.5 py-1 rounded-full mb-2.5 tracking-widest uppercase" style={{ background: `${exp.color}18`, color: exp.color, border: `1px solid ${exp.color}35` }}>
-                            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: exp.color }} />
-                            Current Role
-                          </span>
-                        )}
-                        <h3 className="font-serif font-bold text-white leading-tight" style={{ fontSize: "clamp(1rem,2vw,1.3rem)" }}>{exp.role}</h3>
-                        <p className="font-mono text-[11px] mt-1.5 tracking-wide" style={{ color: exp.color }}>{exp.company}</p>
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                        <span className="font-mono text-[10px] px-3 py-1 rounded-full border tracking-widest" style={{ borderColor: `${exp.color}35`, color: exp.color }}>{exp.period}</span>
-                        <span className="font-mono text-[9px] px-2.5 py-0.5 rounded-full tracking-wider" style={{ background: `${exp.color}15`, color: `${exp.color}cc` }}>{exp.badge}</span>
-                      </div>
+                {/* Card */}
+                <div
+                  style={{
+                    padding: "clamp(20px,3vw,32px)",
+                    border: `1px solid ${active === i ? "rgba(0,212,255,0.2)" : "rgba(255,255,255,0.05)"}`,
+                    borderRadius: 12,
+                    background: active === i ? "rgba(0,212,255,0.03)" : "transparent",
+                    transition: "border-color 0.25s, background 0.25s",
+                  }}
+                >
+                  {/* Top row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+                    <div>
+                      {exp.current && (
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: 5,
+                          fontFamily: "monospace", fontSize: 8,
+                          letterSpacing: "0.3em", textTransform: "uppercase",
+                          color: ACCENT,
+                          padding: "3px 10px", borderRadius: 9999,
+                          border: `1px solid rgba(0,212,255,0.25)`,
+                          marginBottom: 10,
+                        }}>
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "pulse 2s infinite", display: "inline-block" }} />
+                          Current
+                        </span>
+                      )}
+                      <h3 style={{
+                        fontFamily: "'Cormorant Garamond',Georgia,serif",
+                        fontSize: "clamp(1.1rem,2vw,1.4rem)",
+                        fontWeight: 600, color: "#e8e5df",
+                        lineHeight: 1.2, margin: 0,
+                      }}>{exp.role}</h3>
+                      <p style={{ fontFamily: "monospace", fontSize: 10, color: ACCENT, marginTop: 6, letterSpacing: "0.1em" }}>{exp.company}</p>
                     </div>
-
-                    <ul className="space-y-2.5">
-                      {exp.points.map((pt, j) => (
-                        <li key={j} className="flex items-start gap-3 transition-all duration-300"
-                          style={{ opacity: activeIdx === i ? 1 : 0.6, transform: activeIdx === i ? "translateX(0)" : "translateX(-4px)", transitionDelay: `${j * 40}ms` }}
-                        >
-                          <span className="mt-[7px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: exp.color, boxShadow: activeIdx === i ? `0 0 6px ${exp.color}` : "none" }} />
-                          <span className="font-mono text-[11px] text-gray-400 leading-relaxed">{pt}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-6 h-px transition-all duration-700 ease-out" style={{ width: activeIdx === i ? "100%" : "0%", background: `linear-gradient(90deg, ${exp.color}, transparent)` }} />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
+                      <span style={{
+                        fontFamily: "monospace", fontSize: 9,
+                        color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em",
+                      }}>{exp.period}</span>
+                      <span style={{
+                        fontFamily: "monospace", fontSize: 8,
+                        padding: "2px 8px", borderRadius: 9999,
+                        background: "rgba(255,255,255,0.05)",
+                        color: "rgba(255,255,255,0.3)",
+                        letterSpacing: "0.15em", textTransform: "uppercase",
+                      }}>{exp.type}</span>
+                    </div>
                   </div>
-                </GlowCard>
 
-                {i < experiences.length - 1 && <div className="h-5" />}
+                  {/* Points */}
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
+                    {exp.points.map((pt, j) => (
+                      <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                        <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: "rgba(0,212,255,0.5)", flexShrink: 0 }} />
+                        <span style={{ fontFamily: "sans-serif", fontSize: "clamp(0.82rem,1vw,0.9rem)", color: "rgba(232,229,223,0.55)", lineHeight: 1.65 }}>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
     </section>
   );
 }
