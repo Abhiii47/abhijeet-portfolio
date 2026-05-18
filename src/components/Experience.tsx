@@ -7,7 +7,7 @@ const experiences = [
     role: "Software Development Engineer & Product Manager",
     company: "Ecovis RKCA",
     period: "2024 – Present",
-    color: "#a78bfa",
+    color: "#84cc16",
     badge: "Full-Time",
     points: [
       "Architected and migrated legacy infrastructure to cloud (AWS/Azure), improving system uptime to 99.9%",
@@ -47,7 +47,7 @@ const experiences = [
     role: "Full-Stack Developer",
     company: "Room & Food Finder",
     period: "2023",
-    color: "#84cc16",
+    color: "#a3e635",
     badge: "Project",
     points: [
       "Next.js + Supabase + Google Maps full-stack app",
@@ -83,11 +83,10 @@ export default function Experience() {
       ref={containerRef}
       className="relative w-full py-32 px-6 md:px-12"
     >
-      {/* Ghost section number */}
       <span
         className="absolute right-0 top-16 font-serif text-[18vw] font-black select-none pointer-events-none leading-none"
         style={{
-          WebkitTextStroke: "1px rgba(167,139,250,0.04)",
+          WebkitTextStroke: "1px rgba(132,204,22,0.04)",
           color: "transparent",
         }}
         aria-hidden
@@ -96,7 +95,6 @@ export default function Experience() {
       </span>
 
       <div className="max-w-4xl mx-auto">
-        {/* Section header */}
         <div className="mb-16">
           <p className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-4">
             05 / Experience
@@ -119,7 +117,6 @@ export default function Experience() {
           </h2>
         </div>
 
-        {/* Timeline */}
         <div className="space-y-0">
           {experiences.map((exp, i) => {
             const isFirst = i === 0;
@@ -135,7 +132,6 @@ export default function Experience() {
                 onMouseEnter={() => setActiveIdx(i)}
                 onMouseLeave={() => setActiveIdx(null)}
               >
-                {/* Vertical line */}
                 <div
                   className="absolute left-0 top-0 bottom-0 w-px"
                   style={{
@@ -147,7 +143,6 @@ export default function Experience() {
                   }}
                 />
 
-                {/* Timeline dot */}
                 <div
                   className="absolute -left-[5px] top-6 w-2.5 h-2.5 rounded-full z-10 transition-all duration-300"
                   style={{
@@ -160,7 +155,6 @@ export default function Experience() {
                   }}
                 />
 
-                {/* Card */}
                 <div
                   className="py-8 px-6 mb-px rounded-xl transition-all duration-300"
                   style={{
@@ -174,7 +168,6 @@ export default function Experience() {
                         : "1px solid transparent",
                   }}
                 >
-                  {/* Header row */}
                   <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
                     <div>
                       {isFirst && (
@@ -218,7 +211,6 @@ export default function Experience() {
                     </div>
                   </div>
 
-                  {/* Bullet points */}
                   <ul className="space-y-2">
                     {exp.points.map((pt, j) => (
                       <li key={j} className="flex items-start gap-2.5">
