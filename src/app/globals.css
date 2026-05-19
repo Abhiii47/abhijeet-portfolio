@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   RESUMEMATCHER-STYLE LIGHT EDITORIAL SYSTEM
+   RESUMEMATCHER-STYLE EDITORIAL SYSTEM
+   Inspired by resumematcher.fyi
    BG base    = #F5F2EB  warm cream
    Accent     = #C4400A  rust
    Ink        = #0E0A04  warm near-black
-   Cards      = #FFFCF6  off-white
+   Font       = Space Grotesk (display) + Instrument Serif (italic)
 ═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&display=swap');
 
 :root {
   --accent:        #C4400A;
@@ -23,9 +27,12 @@
   --ink-muted:     rgba(14,10,4,0.55);
   --ink-hint:      rgba(14,10,4,0.32);
   --ink-border:    rgba(14,10,4,0.08);
-  --font-display:  'Cormorant Garamond', Georgia, serif;
-  --font-body:     'Inter', system-ui, sans-serif;
-  --font-mono:     'Inter', monospace;
+
+  /* RM-style fonts */
+  --font-display:  'Cabinet Grotesk', 'Space Grotesk', system-ui, sans-serif;
+  --font-serif:    'Instrument Serif', Georgia, serif;
+  --font-body:     'Space Grotesk', system-ui, sans-serif;
+  --font-mono:     'Space Mono', 'Courier New', monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,7 +63,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 99997;
-  opacity: 0.032;
+  opacity: 0.028;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.90' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
   background-repeat: repeat;
@@ -113,6 +120,178 @@ body::after {
   --space-16: 4rem;    --space-20: 5rem;   --space-24: 6rem;
 }
 
+/* ════════════════════════════════════
+   RESUMEMATCHER EDITORIAL ELEMENTS
+════════════════════════════════════ */
+
+/* ── Section heading style: numbered like 01, 02, 03 ── */
+.rm-section-label {
+  font-family: var(--font-mono);
+  font-size: clamp(0.6rem, 0.55rem + 0.2vw, 0.7rem);
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.rm-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--accent-dim);
+}
+
+/* ── Dashed box border (RM-style callout) ── */
+.rm-dashed {
+  border: 1.5px dashed rgba(196,64,10,0.28);
+  border-radius: 6px;
+  padding: clamp(14px, 2vw, 22px) clamp(16px, 2.5vw, 28px);
+  position: relative;
+}
+.rm-dashed-black {
+  border: 1.5px dashed rgba(14,10,4,0.20);
+  border-radius: 6px;
+  padding: clamp(14px, 2vw, 22px) clamp(16px, 2.5vw, 28px);
+  position: relative;
+}
+
+/* ── Thick left ruled box ── */
+.rm-ruled {
+  border-left: 3px solid var(--accent);
+  padding-left: 20px;
+}
+
+/* ── Stamp / badge tag ── */
+.rm-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: clamp(0.6rem, 0.55rem + 0.15vw, 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  padding: 4px 10px;
+  background: rgba(196,64,10,0.04);
+  transition: background 0.18s;
+}
+.rm-stamp:hover { background: rgba(196,64,10,0.10); }
+
+.rm-stamp-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: clamp(0.6rem, 0.55rem + 0.15vw, 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: 1.5px solid rgba(14,10,4,0.20);
+  border-radius: 3px;
+  padding: 4px 10px;
+  background: rgba(14,10,4,0.04);
+}
+
+/* ── Sticker / rotated label ── */
+.rm-sticker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 2px;
+  transform: rotate(-2.5deg);
+  box-shadow: 2px 2px 0 rgba(14,10,4,0.25);
+  user-select: none;
+}
+
+.rm-sticker-cream {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  background: var(--bg-card);
+  color: var(--ink);
+  border: 1.5px solid rgba(14,10,4,0.18);
+  border-radius: 2px;
+  transform: rotate(1.8deg);
+  box-shadow: 2px 2px 0 rgba(14,10,4,0.12);
+  user-select: none;
+}
+
+/* ── Funky arrow (SVG-based curly arrow sticker) ── */
+.rm-arrow {
+  display: inline-block;
+  font-size: 1.6rem;
+  line-height: 1;
+  transform: rotate(-15deg);
+  color: var(--accent);
+  user-select: none;
+}
+
+/* ── Underline squiggle on headings ── */
+.rm-underline {
+  position: relative;
+  display: inline-block;
+}
+.rm-underline::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  transform-origin: left;
+}
+
+/* ── Number counter callout (01, 02, 03) ── */
+.rm-counter {
+  font-family: var(--font-mono);
+  font-size: clamp(2.5rem, 1rem + 4vw, 5rem);
+  font-weight: 700;
+  color: rgba(196,64,10,0.08);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  user-select: none;
+  position: absolute;
+  top: -10px;
+  right: 0;
+}
+
+/* ── Horizontal rule with label ── */
+.rm-hr {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  margin: clamp(32px, 5vw, 64px) 0;
+}
+.rm-hr::before, .rm-hr::after {
+  content: '';
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196,64,10,0.22), transparent);
+}
+.rm-hr span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(196,64,10,0.40);
+}
+
 /* ── Section divider ── */
 .section-divider {
   width: 100%;
@@ -124,6 +303,42 @@ body::after {
     rgba(196,64,10,0.18) 80%,
     transparent 100%
   );
+}
+
+/* ── Funky big italic quote ── */
+.rm-pullquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.4rem, 1rem + 1.5vw, 2.4rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.35;
+  border-left: 3px solid var(--accent);
+  padding-left: clamp(16px, 2.5vw, 28px);
+  margin: clamp(24px, 4vw, 48px) 0;
+}
+
+/* ── Zigzag border (funky RM section separator) ── */
+.rm-zigzag {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  margin: 0;
+}
+.rm-zigzag svg { display: block; width: 100%; }
+
+/* ── Checkered mini block ── */
+.rm-check-block {
+  display: inline-block;
+  width: 10px; height: 10px;
+  background-image:
+    linear-gradient(45deg, var(--accent) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--accent) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--accent) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--accent) 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 0 2px, 2px -2px, -2px 0;
+  opacity: 0.35;
 }
 
 /* ── Animations ── */
@@ -156,6 +371,18 @@ body::after {
   animation: shimmer 3.2s linear infinite;
 }
 
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50%       { transform: rotate(1.5deg); }
+}
+.rm-sticker-wiggle { animation: wiggle 3s ease-in-out infinite; }
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0) rotate(-15deg); }
+  50%       { transform: translateY(-6px) rotate(-12deg); }
+}
+.rm-arrow-float { animation: floatY 2.4s ease-in-out infinite; }
+
 /* ── Word reveal (clip-path) ── */
 .word-reveal-wrap { overflow: hidden; display: inline-block; }
 .word-reveal      { display: inline-block; will-change: transform; }
@@ -166,33 +393,35 @@ body::after {
 /* ── Tag pills ── */
 .tag-hot {
   padding: 4px 10px;
-  border-radius: 4px;
-  background: rgba(196,64,10,0.10);
-  border: 1px solid rgba(196,64,10,0.25);
+  border-radius: 3px;
+  background: rgba(196,64,10,0.08);
+  border: 1.5px solid var(--accent);
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   line-height: 1;
   transition: background 0.18s, border-color 0.18s;
 }
-.tag-hot:hover   { background: rgba(196,64,10,0.16); border-color: rgba(196,64,10,0.40); }
+.tag-hot:hover { background: rgba(196,64,10,0.16); }
 
 .tag-normal {
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 3px;
   background: rgba(14,10,4,0.04);
-  border: 1px solid rgba(14,10,4,0.08);
+  border: 1px dashed rgba(14,10,4,0.18);
   color: rgba(14,10,4,0.42);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 0.6rem;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   line-height: 1;
   transition: background 0.18s, border-color 0.18s;
 }
-.tag-normal:hover { background: rgba(14,10,4,0.07); border-color: rgba(14,10,4,0.14); }
+.tag-normal:hover { background: rgba(14,10,4,0.08); border-style: solid; }
 
 /* ── Hover lift ── */
 .hover-lift {
@@ -201,4 +430,48 @@ body::after {
 .hover-lift:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(196,64,10,0.08);
+}
+
+/* ── RM-style big stat number ── */
+.rm-stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1rem + 3vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* ── Thick border card ── */
+.rm-card {
+  background: var(--bg-card);
+  border: 1.5px solid rgba(14,10,4,0.10);
+  border-radius: 8px;
+  transition: border-color 0.22s, box-shadow 0.22s;
+}
+.rm-card:hover {
+  border-color: rgba(196,64,10,0.30);
+  box-shadow: 0 8px 32px rgba(196,64,10,0.06), 4px 4px 0 rgba(196,64,10,0.08);
+}
+
+/* ── Offset shadow card (RM brutal style) ── */
+.rm-offset-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+.rm-offset-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+/* ── Inline highlight ── */
+.rm-highlight {
+  background: rgba(196,64,10,0.10);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.88em;
 }
