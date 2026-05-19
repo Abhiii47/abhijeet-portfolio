@@ -1,0 +1,138 @@
+/*
+  resumematcher.fyi-inspired animated section border
+  ─────────────────────────────────────────────────
+  Uses @property to animate a conic-gradient angle so the
+  border "rotates" around the section.
+
+  Architecture:
+    .sb-wrap              → position:relative container
+    .sb-wrap::before      → the animated border layer (absolute, inset:-1px,
+                            sits behind content)
+    .sb-wrap::after       → the inner mask that punches a hole, revealing
+                            only the 1-2px border strip
+    .sb-corner            → small L-shaped registration marks at each corner
+    .sb--active           → class toggled by ScrollTrigger; brightens the glow
+*/
+
+/* ── Animatable custom property ── */
+@property --sb-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Spin keyframes ── */
+@keyframes sbSpin {
+  to { --sb-angle: 360deg; }
+}
+
+/* ── Wrapper ── */
+.sb-wrap {
+  position: relative;
+  isolation: isolate;          /* new stacking context */
+  border-radius: 4px;          /* matches most section containers */
+}
+
+/* ── Animated conic border ── */
+.sb-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  z-index: 0;
+  padding: 1.5px;              /* thickness of the visible border */
+  background: conic-gradient(
+    from var(--sb-angle),
+    transparent 0deg,
+    transparent 60deg,
+    var(--sb-accent, #C4400A) 90deg,
+    transparent 120deg,
+    transparent 180deg,
+    var(--sb-accent, #C4400A) 210deg,
+    transparent 240deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.35;
+  animation: sbSpin var(--sb-dur, 8s) linear infinite;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+/* Active (in-viewport) → brighten */
+.sb-wrap.sb--active::before {
+  opacity: 0.75;
+}
+
+/* ── Outer glow behind the border ── */
+.sb-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  z-index: -1;
+  background: transparent;
+  box-shadow:
+    0 0 0 1px rgba(196,64,10,0.05),
+    0 0 24px -4px rgba(196,64,10,0.00);
+  opacity: 0;
+  transition: opacity 0.6s ease, box-shadow 0.6s ease;
+  pointer-events: none;
+}
+
+.sb-wrap.sb--active::after {
+  opacity: 1;
+  box-shadow:
+    0 0 0 1px rgba(196,64,10,0.08),
+    0 0 32px -4px rgba(196,64,10,0.12);
+}
+
+/* ── Corner registration marks ── */
+.sb-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* When section is active, corners appear */
+.sb-wrap.sb--active .sb-corner {
+  opacity: 0.55;
+}
+
+/* L-shaped corners via border */
+.sb-corner--tl {
+  top: 10px; left: 10px;
+  border-top: 1.5px solid var(--sb-accent, #C4400A);
+  border-left: 1.5px solid var(--sb-accent, #C4400A);
+}
+.sb-corner--tr {
+  top: 10px; right: 10px;
+  border-top: 1.5px solid var(--sb-accent, #C4400A);
+  border-right: 1.5px solid var(--sb-accent, #C4400A);
+}
+.sb-corner--bl {
+  bottom: 10px; left: 10px;
+  border-bottom: 1.5px solid var(--sb-accent, #C4400A);
+  border-left: 1.5px solid var(--sb-accent, #C4400A);
+}
+.sb-corner--br {
+  bottom: 10px; right: 10px;
+  border-bottom: 1.5px solid var(--sb-accent, #C4400A);
+  border-right: 1.5px solid var(--sb-accent, #C4400A);
+}
+
+/* ── Respect reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .sb-wrap::before {
+    animation: none;
+    opacity: 0.20;
+  }
+}
