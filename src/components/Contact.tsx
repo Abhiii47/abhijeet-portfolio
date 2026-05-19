@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -10,6 +10,12 @@ gsap.registerPlugin(ScrollTrigger);
 const ACCENT = "#C4400A";
 const INK    = "#0E0A04";
 const EMAIL  = "abhijeetkadu85@gmail.com";
+
+const CYCLE_WORDS = [
+  { text: "shy about it.",   strike: true  },
+  { text: "talk about it.",  strike: false },
+  { text: "build with me.",  strike: false },
+];
 
 const SOCIALS = [
   {
@@ -46,6 +52,87 @@ const SOCIALS = [
   },
 ];
 
+function CyclingHeading() {
+  const [idx, setIdx]         = useState(0);
+  const [striking, setStriking] = useState(false);
+  const [visible,  setVisible]  = useState(true);
+  const lineRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // 1. Draw strikethrough
+      setStriking(true);
+      setTimeout(() => {
+        // 2. Fade out
+        setVisible(false);
+        setTimeout(() => {
+          // 3. Next word, fade in
+          setIdx(i => (i + 1) % CYCLE_WORDS.length);
+          setStriking(false);
+          setVisible(true);
+        }, 280);
+      }, 500);
+    }, 2600);
+    return () => clearInterval(interval);
+  }, []);
+
+  const word = CYCLE_WORDS[idx];
+
+  return (
+    <div style={{ marginBottom: "clamp(24px,4vw,48px)" }}>
+      <h2 style={{
+        fontFamily: "'Cormorant Garamond',Georgia,serif",
+        fontSize: "clamp(3.2rem,9vw,9rem)",
+        fontWeight: 700, lineHeight: 1.0,
+        letterSpacing: "-0.02em",
+        margin: 0,
+      }}>
+        {/* Static line */}
+        <span style={{ display: "block", color: INK }}>Don&rsquo;t be</span>
+
+        {/* Cycling line */}
+        <span
+          style={{
+            display: "block",
+            color: word.strike ? "rgba(14,10,4,0.35)" : ACCENT,
+            position: "relative",
+            transition: "opacity 0.25s, color 0.25s",
+            opacity: visible ? 1 : 0,
+          }}
+        >
+          {word.text}
+          {/* Strikethrough line */}
+          <span
+            ref={lineRef}
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: 0,
+              top: "52%",
+              height: "2px",
+              background: ACCENT,
+              borderRadius: 99,
+              width: striking ? "100%" : "0%",
+              transition: striking
+                ? "width 0.45s cubic-bezier(0.16,1,0.3,1)"
+                : "width 0s",
+              pointerEvents: "none",
+            }}
+          />
+        </span>
+
+        {/* CTA line */}
+        <span style={{
+          display: "block",
+          color: "transparent",
+          WebkitTextStroke: `1.5px ${INK}`,
+          fontSize: "clamp(3rem,8vw,8rem)",
+        }}>Let&rsquo;s talk.</span>
+      </h2>
+    </div>
+  );
+}
+
 export default function Contact() {
   const ref = useRef<HTMLElement>(null);
 
@@ -63,65 +150,33 @@ export default function Contact() {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
-        .marquee-track {
-          display: flex;
-          white-space: nowrap;
-          animation: marquee 18s linear infinite;
-          width: max-content;
-        }
-        .marquee-wrap:hover .marquee-track {
-          animation-play-state: paused;
-        }
-        .marquee-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 24px;
-          padding-right: 24px;
-        }
-        .marquee-link {
-          font-family: 'Inter', monospace;
-          font-size: clamp(0.78rem, 1.1vw, 0.95rem);
-          letter-spacing: 0.04em;
-          color: rgba(14,10,4,0.32);
-          text-decoration: none;
-          position: relative;
-          transition: color 0.22s;
+        .marquee-track { display:flex; white-space:nowrap; animation: marquee 18s linear infinite; width:max-content; }
+        .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+        .marquee-item  { display:inline-flex; align-items:center; gap:24px; padding-right:24px; }
+        .marquee-link  {
+          font-family:'Inter',monospace; font-size:clamp(0.78rem,1.1vw,0.95rem);
+          letter-spacing:0.04em; color:rgba(14,10,4,0.32); text-decoration:none;
+          position:relative; transition:color 0.22s;
         }
         .marquee-link::after {
-          content: '';
-          position: absolute;
-          bottom: -2px; left: 0; right: 0;
-          height: 1px;
-          background: ${ACCENT};
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.32s cubic-bezier(0.16,1,0.3,1);
+          content:''; position:absolute; bottom:-2px; left:0; right:0; height:1px;
+          background:${ACCENT}; transform:scaleX(0); transform-origin:left;
+          transition:transform 0.32s cubic-bezier(0.16,1,0.3,1);
         }
-        .marquee-link:hover { color: ${INK}; }
-        .marquee-link:hover::after { transform: scaleX(1); }
-        .marquee-diamond { color: ${ACCENT}; opacity: 0.5; font-size: 0.5rem; }
-
+        .marquee-link:hover { color:${INK}; }
+        .marquee-link:hover::after { transform:scaleX(1); }
+        .marquee-diamond { color:${ACCENT}; opacity:0.5; font-size:0.5rem; }
         .social-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          text-decoration: none;
-          padding: 12px 0;
-          border-bottom: 1px solid rgba(14,10,4,0.07);
-          transition: border-color 0.2s;
+          display:flex; align-items:center; gap:10px; text-decoration:none;
+          padding:12px 0; border-bottom:1px solid rgba(14,10,4,0.07); transition:border-color 0.2s;
         }
-        .social-item:hover { border-color: rgba(196,64,10,0.25); }
-        .social-item:hover .social-label { color: ${INK}; }
-        .social-item:hover .social-arrow { transform: translate(2px,-2px); color: ${ACCENT}; }
-        .social-label {
-          font-family: 'Inter', monospace;
-          font-size: 11px; letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: rgba(14,10,4,0.35);
-          transition: color 0.2s; flex: 1;
-        }
-        .social-handle { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(14,10,4,0.22); }
-        .social-arrow { color: rgba(14,10,4,0.18); transition: transform 0.2s, color 0.2s; font-size: 14px; }
+        .social-item:hover { border-color:rgba(196,64,10,0.25); }
+        .social-item:hover .social-label { color:${INK}; }
+        .social-item:hover .social-arrow { transform:translate(2px,-2px); color:${ACCENT}; }
+        .social-label { font-family:'Inter',monospace; font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(14,10,4,0.35); transition:color 0.2s; flex:1; }
+        .social-handle { font-family:'Inter',sans-serif; font-size:12px; color:rgba(14,10,4,0.22); }
+        .social-arrow  { color:rgba(14,10,4,0.18); transition:transform 0.2s,color 0.2s; font-size:14px; }
+        @media(max-width:640px){ .contact-grid{ grid-template-columns:1fr!important; } }
       `}</style>
 
       <section
@@ -131,11 +186,9 @@ export default function Contact() {
           background: "var(--bg-base)",
           color: INK,
           padding: "clamp(80px,10vw,128px) clamp(20px,5vw,72px) clamp(48px,6vw,72px)",
-          position: "relative",
-          overflow: "hidden",
+          position: "relative", overflow: "hidden",
         }}
       >
-        {/* Top divider */}
         <div style={{
           height: 1,
           background: `linear-gradient(90deg,transparent,rgba(196,64,10,0.25),transparent)`,
@@ -146,33 +199,17 @@ export default function Contact() {
           fontFamily: "'Inter',monospace", fontSize: 10,
           letterSpacing: "0.38em", color: ACCENT,
           textTransform: "uppercase", marginBottom: 40,
-        }}>06 / Contact</p>
+        }}>07 / Contact</p>
 
-        {/* Giant heading */}
-        <div className="ct-reveal" style={{ marginBottom: "clamp(24px,4vw,48px)" }}>
-          <h2 style={{
-            fontFamily: "'Cormorant Garamond',Georgia,serif",
-            fontSize: "clamp(5rem,18vw,14rem)",
-            fontWeight: 700, lineHeight: 0.88,
-            letterSpacing: "-0.02em",
-            margin: 0,
-          }}>
-            <span style={{ display: "block", color: INK }}>LET&rsquo;S</span>
-            <span style={{
-              display: "block",
-              color: "transparent",
-              WebkitTextStroke: `2px ${ACCENT}`,
-            }}>TALK.</span>
-          </h2>
+        {/* ── Cycling heading ── */}
+        <div className="ct-reveal">
+          <CyclingHeading />
         </div>
 
         {/* Marquee email */}
-        <div className="ct-reveal marquee-wrap" style={{
-          overflow: "hidden",
-          marginBottom: "clamp(48px,7vw,88px)",
-        }}>
+        <div className="ct-reveal marquee-wrap" style={{ overflow:"hidden", marginBottom:"clamp(48px,7vw,88px)" }}>
           <div className="marquee-track">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(6)].map((_,i) => (
               <span key={i} className="marquee-item">
                 <a href={`mailto:${EMAIL}`} className="marquee-link">{EMAIL}</a>
                 <span className="marquee-diamond" aria-hidden>&#9670;</span>
@@ -182,27 +219,15 @@ export default function Contact() {
         </div>
 
         {/* Bottom row */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "clamp(32px,5vw,64px)",
-          alignItems: "end",
-        }}>
-          {/* Social links */}
+        <div
+          className="contact-grid"
+          style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"clamp(32px,5vw,64px)", alignItems:"end" }}
+        >
           <div className="ct-reveal">
-            <p style={{
-              fontFamily: "'Inter',monospace", fontSize: 9,
-              letterSpacing: "0.3em", textTransform: "uppercase",
-              color: "rgba(14,10,4,0.20)", marginBottom: 16,
-            }}>Find me</p>
+            <p style={{ fontFamily:"'Inter',monospace", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.20)", marginBottom:16 }}>Find me</p>
             {SOCIALS.map(s => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank" rel="noopener noreferrer"
-                className="social-item"
-              >
-                <span style={{ color: "rgba(14,10,4,0.22)" }}>{s.icon}</span>
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="social-item">
+                <span style={{ color:"rgba(14,10,4,0.22)" }}>{s.icon}</span>
                 <span className="social-label">{s.label}</span>
                 <span className="social-handle">{s.handle}</span>
                 <span className="social-arrow">&#8599;</span>
@@ -210,66 +235,17 @@ export default function Contact() {
             ))}
           </div>
 
-          {/* Right col */}
-          <div className="ct-reveal" style={{
-            display: "flex", flexDirection: "column",
-            alignItems: "flex-end", gap: 24,
-          }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "8px 18px",
-              border: "1px solid rgba(74,222,128,0.25)",
-              borderRadius: 9999,
-              background: "rgba(74,222,128,0.05)",
-            }}>
-              <span className="avail-dot" style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "#4ade80", display: "inline-block",
-              }} />
-              <span style={{
-                fontFamily: "'Inter',monospace",
-                fontSize: 9, letterSpacing: "0.28em",
-                color: "rgba(34,197,94,0.85)",
-                textTransform: "uppercase",
-              }}>Open to opportunities</span>
+          <div className="ct-reveal" style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:24 }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"8px 18px", border:"1px solid rgba(74,222,128,0.25)", borderRadius:9999, background:"rgba(74,222,128,0.05)" }}>
+              <span className="avail-dot" style={{ width:6, height:6, borderRadius:"50%", background:"#4ade80", display:"inline-block" }} />
+              <span style={{ fontFamily:"'Inter',monospace", fontSize:9, letterSpacing:"0.28em", color:"rgba(34,197,94,0.85)", textTransform:"uppercase" }}>Open to opportunities</span>
             </div>
-
-            <p style={{
-              fontFamily: "'Inter',monospace",
-              fontSize: 10, letterSpacing: "0.22em",
-              color: "rgba(14,10,4,0.28)",
-              textTransform: "uppercase", textAlign: "right",
-            }}>
-              Mumbai, IN&nbsp;&nbsp;·&nbsp;&nbsp;Available 2026
-            </p>
-
-            <p style={{
-              fontFamily: "'Inter',sans-serif",
-              fontSize: 10, color: "rgba(14,10,4,0.18)",
-              textAlign: "right",
-            }}>
-              &copy; {new Date().getFullYear()} Abhijeet Kadu
-            </p>
+            <p style={{ fontFamily:"'Inter',monospace", fontSize:10, letterSpacing:"0.22em", color:"rgba(14,10,4,0.28)", textTransform:"uppercase", textAlign:"right" }}>Mumbai, IN&nbsp;&nbsp;·&nbsp;&nbsp;Available 2026</p>
+            <p style={{ fontFamily:"'Inter',sans-serif", fontSize:10, color:"rgba(14,10,4,0.18)", textAlign:"right" }}>&copy; {new Date().getFullYear()} Abhijeet Kadu</p>
           </div>
         </div>
 
-        {/* Ghost AK watermark */}
-        <div aria-hidden style={{
-          position: "absolute", bottom: 0, right: 0,
-          fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontSize: "clamp(6rem,18vw,20rem)",
-          lineHeight: 0.85, color: "transparent",
-          WebkitTextStroke: "1px rgba(14,10,4,0.04)",
-          pointerEvents: "none", userSelect: "none",
-          letterSpacing: "0.01em",
-        }}>AK</div>
-
-        <style>{`
-          @media(max-width:640px){
-            .contact-grid { grid-template-columns: 1fr !important; }
-            .contact-right { align-items: flex-start !important; }
-          }
-        `}</style>
+        <div aria-hidden style={{ position:"absolute", bottom:0, right:0, fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:"clamp(6rem,18vw,20rem)", lineHeight:0.85, color:"transparent", WebkitTextStroke:"1px rgba(14,10,4,0.04)", pointerEvents:"none", userSelect:"none", letterSpacing:"0.01em" }}>AK</div>
       </section>
     </>
   );
