@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
 import { RMSticker, RMZigzag, RMHr } from "./RMDecorations";
 
@@ -31,40 +30,38 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 
-  useGSAP(() => {
+  // CSS IntersectionObserver reveal — no GSAP
+  useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-    gsap.fromTo(el,
-      { y: index % 2 === 0 ? 48 : 36, opacity: 0, scale: 0.97 },
-      {
-        y: 0, opacity: 1, scale: 1,
-        duration: 0.65,
-        delay: (index % 3) * 0.09,
-        ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 92%", once: true },
-      }
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("is-visible"); obs.disconnect(); } },
+      { threshold: 0.05, rootMargin: "0px 0px -30px 0px" }
     );
-  }, { dependencies: [index] });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <div
       ref={cardRef}
+      className="reveal-card"
       onClick={() => setOpen(o => !o)}
-      onMouseEnter={() => gsap.to(cardRef.current, { y: -4, duration: 0.2, ease: "power2.out" })}
-      onMouseLeave={() => gsap.to(cardRef.current, { y: 0,  duration: 0.2, ease: "power2.out" })}
       style={{
+        animationDelay: `${index * 0.08}s`,
         background: cert.accent ? "rgba(196,64,10,0.04)" : "var(--bg-card)",
         border: cert.accent ? `1.5px solid rgba(196,64,10,0.25)` : "1px solid rgba(14,10,4,0.08)",
         borderRadius: 10,
         padding: "clamp(16px,2.2vw,24px)",
         cursor: "pointer",
-        transition: "border-color 0.2s,box-shadow 0.2s,transform 0.2s",
+        transition: "border-color 0.2s,box-shadow 0.2s",
         position: "relative",
         overflow: "hidden",
         boxShadow: cert.accent ? "3px 3px 0 rgba(196,64,10,0.15)" : "none",
       }}
+      onMouseEnter={e => { const el = e.currentTarget; el.style.transform = "translateY(-3px)"; el.style.boxShadow = cert.accent ? "4px 8px 0 rgba(196,64,10,0.18)" : "0 8px 24px rgba(196,64,10,0.07)"; }}
+      onMouseLeave={e => { const el = e.currentTarget; el.style.transform = ""; el.style.boxShadow = cert.accent ? "3px 3px 0 rgba(196,64,10,0.15)" : "none"; }}
     >
-      {/* Left accent bar */}
       {cert.accent && (
         <div aria-hidden style={{
           position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
@@ -73,7 +70,6 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
         }} />
       )}
 
-      {/* Ghost index */}
       <span aria-hidden style={{
         position: "absolute", right: 10, top: 4,
         fontFamily: "var(--font-display)", fontWeight: 800,
@@ -97,17 +93,13 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
       </div>
 
       {open && (
-        <div style={{
-          marginTop: 12, borderTop: "1px dashed rgba(14,10,4,0.10)", paddingTop: 12,
-          fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300,
-          color: "rgba(14,10,4,0.50)", lineHeight: 1.65,
-        }}>
+        <div style={{ marginTop: 12, borderTop: "1px dashed rgba(14,10,4,0.10)", paddingTop: 12 }}>
           {cert.link
             ? <a href={cert.link} target="_blank" rel="noopener noreferrer"
                 style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT, textDecoration: "none" }}
                 onClick={e => e.stopPropagation()}
               >View related project ↗</a>
-            : <span>Click to collapse</span>
+            : <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(14,10,4,0.30)" }}>Click to collapse</span>
           }
         </div>
       )}
@@ -121,6 +113,26 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
 
 export default function Certifications() {
   const sectionRef = useRef<HTMLElement>(null);
+  const gridRef    = useRef<HTMLDivElement>(null);
+
+  // Trigger all cards at once when the grid enters view
+  useEffect(() => {
+    const container = gridRef.current;
+    if (!container) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          container.querySelectorAll<HTMLElement>(".reveal-card").forEach(el => {
+            el.classList.add("is-visible");
+          });
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.01 }
+    );
+    obs.observe(container);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <section id="certifications" ref={sectionRef} style={{
@@ -152,12 +164,15 @@ export default function Certifications() {
 
         <RMHr label="verified learning" />
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(min(300px,100%),1fr))",
-          gap: "clamp(10px,1.5vw,16px)",
-          marginTop: "clamp(20px,3vw,32px)",
-        }}>
+        <div
+          ref={gridRef}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill,minmax(min(300px,100%),1fr))",
+            gap: "clamp(10px,1.5vw,16px)",
+            marginTop: "clamp(20px,3vw,32px)",
+          }}
+        >
           {CERTS.map((cert, i) => <CertCard key={cert.id} cert={cert} index={i} />)}
         </div>
       </div>

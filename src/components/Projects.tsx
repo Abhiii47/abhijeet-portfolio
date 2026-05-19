@@ -32,7 +32,6 @@ const PROJECTS: Project[] = [
     hotTags: ["FastAPI", "XGBoost", "Python"],
     normalTags: ["OAuth2", "JWT", "PostgreSQL"],
     links: { github: "https://github.com/Abhiii47/SmartResume", live: "https://smart-resume-orcin.vercel.app/" },
-    image: "https://api.microlink.io/?url=https%3A%2F%2Fsmart-resume-orcin.vercel.app%2F&screenshot=true&meta=false&embed=screenshot.url",
   },
   {
     number: "02", org: "Personal Project · 2023",
@@ -43,7 +42,6 @@ const PROJECTS: Project[] = [
     hotTags: ["Node.js", "Socket.io", "Next.js"],
     normalTags: ["MongoDB", "Docker", "Maps API", "RBAC"],
     links: { github: "https://github.com/Abhiii47/Room_and_Food", live: "https://room-and-food.vercel.app/" },
-    image: "https://api.microlink.io/?url=https%3A%2F%2Froom-and-food.vercel.app%2F&screenshot=true&meta=false&embed=screenshot.url",
   },
   {
     number: "03", org: "Ecovis RKCA · GCP · 2024",
@@ -64,7 +62,6 @@ const PROJECTS: Project[] = [
     hotTags: ["XGBoost", "Python", "Feature Eng."],
     normalTags: ["Pandas", "Scikit-learn", "EDA"],
     links: { github: "https://github.com/Abhiii47/AmazonML_challange" },
-    image: "https://opengraph.githubassets.com/1/Abhiii47/AmazonML_challange",
   },
   {
     number: "05", org: "Personal Project · 2024",
@@ -75,7 +72,6 @@ const PROJECTS: Project[] = [
     hotTags: ["Power BI", "DAX", "Data Modeling"],
     normalTags: ["Star Schema", "ROAS", "CPA"],
     links: { github: "https://github.com/Abhiii47/Marketing-Analytics-Dashboard" },
-    image: "https://opengraph.githubassets.com/1/Abhiii47/Marketing-Analytics-Dashboard",
   },
   {
     number: "06", org: "Personal Project · 2026",
@@ -85,8 +81,7 @@ const PROJECTS: Project[] = [
     stats: [{ num: "RL", label: "Policy" }, { num: "Gym", label: "Compatible" }],
     hotTags: ["Reinforcement Learning", "Python", "OpenAI Gym"],
     normalTags: ["PPO", "Q-Learning", "Healthcare AI"],
-    links: { github: "https://github.com/Abhiii47/medical-triage-env" },
-    image: "https://opengraph.githubassets.com/1/Abhiii47/medical-triage-env",
+    links: { github: "https://github.com/Abhiii47" },
   },
   {
     number: "07", org: "Personal Project · 2026",
@@ -97,7 +92,6 @@ const PROJECTS: Project[] = [
     hotTags: ["JavaScript", "Analytics", "Dashboard"],
     normalTags: ["Charts.js", "REST API", "Forecasting"],
     links: { github: "https://github.com/Abhiii47/SalesVision" },
-    image: "https://opengraph.githubassets.com/1/Abhiii47/SalesVision",
   },
 ];
 
@@ -110,8 +104,8 @@ function AnimatedStat({ num, label }: Stat) {
     const el = wrapRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setReady(true); obs.disconnect(); } },
-      { threshold: 0.2, rootMargin: "0px 0px -40px 0px" }
+      ([e]) => { if (e.isIntersecting) { setReady(true); obs.disconnect(); } },
+      { threshold: 0.2 }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -142,6 +136,24 @@ function AnimatedStat({ num, label }: Stat) {
   );
 }
 
+function useCardReveal(ref: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("is-visible");
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+}
+
 function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
   p: Project; index: number;
   onEnter: (id: string) => void;
@@ -150,47 +162,14 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const edgeRef = useRef<HTMLDivElement>(null);
-  const imgRef  = useRef<HTMLDivElement>(null);
-
-  // Use CSS class-based reveal — no inline opacity:0 that blocks visibility
-  useGSAP(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    gsap.fromTo(el,
-      { y: 40, opacity: 0 },
-      {
-        y: 0, opacity: 1, duration: 0.65,
-        delay: (index % 4) * 0.07,
-        ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 92%", once: true },
-      }
-    );
-  }, { dependencies: [index] });
-
-  const handleEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    gsap.to(cardRef.current, { y: -4, duration: 0.22, ease: "power2.out" });
-    gsap.to(edgeRef.current, { opacity: 1, duration: 0.2 });
-    if (imgRef.current) gsap.to(imgRef.current, { scale: 1.03, duration: 0.35, ease: "power2.out" });
-    const el = e.currentTarget as HTMLDivElement;
-    el.style.borderColor = "rgba(196,64,10,0.22)";
-    el.style.boxShadow   = "0 10px 36px rgba(196,64,10,0.07)";
-    onEnter(p.number);
-  };
-  const handleLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    gsap.to(cardRef.current, { y: 0, duration: 0.22, ease: "power2.out" });
-    gsap.to(edgeRef.current, { opacity: 0, duration: 0.2 });
-    if (imgRef.current) gsap.to(imgRef.current, { scale: 1, duration: 0.35, ease: "power2.out" });
-    const el = e.currentTarget as HTMLDivElement;
-    el.style.borderColor = "rgba(14,10,4,0.07)";
-    el.style.boxShadow   = "none";
-    onLeave();
-  };
+  useCardReveal(cardRef);
 
   return (
     <div
       ref={cardRef}
-      data-cursor="view"
+      className="reveal-card"
       style={{
+        animationDelay: `${index * 0.07}s`,
         background: "var(--bg-card)",
         border: "1px solid rgba(14,10,4,0.07)",
         borderRadius: 10,
@@ -200,10 +179,22 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
         gap: "0 clamp(14px,2vw,24px)",
         transition: "border-color 0.22s,box-shadow 0.22s",
         position: "relative", overflow: "hidden",
-        // NO inline opacity:0 here — GSAP sets fromTo so initial is handled by GSAP
+        cursor: "default",
       }}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
+      onMouseEnter={e => {
+        gsap.to(cardRef.current, { y: -4, duration: 0.22, ease: "power2.out" });
+        gsap.to(edgeRef.current, { opacity: 1, duration: 0.2 });
+        e.currentTarget.style.borderColor = "rgba(196,64,10,0.22)";
+        e.currentTarget.style.boxShadow   = "0 10px 36px rgba(196,64,10,0.07)";
+        onEnter(p.number);
+      }}
+      onMouseLeave={e => {
+        gsap.to(cardRef.current, { y: 0,  duration: 0.22, ease: "power2.out" });
+        gsap.to(edgeRef.current, { opacity: 0, duration: 0.2 });
+        e.currentTarget.style.borderColor = "rgba(14,10,4,0.07)";
+        e.currentTarget.style.boxShadow   = "none";
+        onLeave();
+      }}
       onMouseMove={onMouseMove}
     >
       <div ref={edgeRef} aria-hidden style={{
@@ -229,15 +220,6 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
         </div>
 
         <h3 style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 500, color: INK, marginBottom: 10, lineHeight: 1.3 }}>{p.name}</h3>
-
-        {p.image && (
-          <div style={{ marginBottom: 14, borderRadius: 7, overflow: "hidden", border: "1px solid rgba(14,10,4,0.07)", maxHeight: 180 }}>
-            <div ref={imgRef} style={{ transformOrigin: "center center" }}>
-              <img src={p.image} alt={`${p.name} preview`} width={900} height={180} loading="lazy" decoding="async"
-                style={{ width: "100%", height: 180, objectFit: "cover", objectPosition: "top", display: "block" }} />
-            </div>
-          </div>
-        )}
 
         <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "0 clamp(20px,3vw,40px)", alignItems: "start" }}>
           <div>
@@ -275,7 +257,27 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
+  const listRef    = useRef<HTMLDivElement>(null);
   const { previewRef, active, onMouseMove, onEnter, onLeave } = useProjectPreview();
+
+  // Trigger .is-visible on all reveal-cards when list enters viewport
+  useEffect(() => {
+    const container = listRef.current;
+    if (!container) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          container.querySelectorAll<HTMLElement>(".reveal-card").forEach(el => {
+            el.classList.add("is-visible");
+          });
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.01 }
+    );
+    obs.observe(container);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <>
@@ -310,7 +312,7 @@ export default function Projects() {
 
           <RMHr label="all projects" />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: "clamp(20px,3vw,32px)" }}>
+          <div ref={listRef} style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: "clamp(20px,3vw,32px)" }}>
             {PROJECTS.map((p, i) => (
               <ProjectCard key={p.number} p={p} index={i} onEnter={onEnter} onLeave={onLeave} onMouseMove={onMouseMove} />
             ))}
