@@ -18,9 +18,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         const mod = await import("lenis" as string);
         const Lenis = (mod.default ?? mod) as new (o: object) => LenisInstance;
         const lenis = new Lenis({
-          duration: 1.2,
+          duration: 1.1,
           easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        });
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.8,
+        } as object);
         lenisRef.current = lenis;
         const loop = (time: number) => { lenis.raf(time); raf = requestAnimationFrame(loop); };
         raf = requestAnimationFrame(loop);
