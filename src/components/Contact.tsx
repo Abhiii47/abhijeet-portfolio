@@ -7,7 +7,8 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = "#00d4ff";
+const ACCENT = "#C4400A";
+const INK    = "#0E0A04";
 const EMAIL  = "abhijeetkadu85@gmail.com";
 
 const SOCIALS = [
@@ -58,8 +59,6 @@ export default function Contact() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
-
         @keyframes marquee {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
@@ -83,7 +82,7 @@ export default function Contact() {
           font-family: 'Inter', monospace;
           font-size: clamp(0.78rem, 1.1vw, 0.95rem);
           letter-spacing: 0.04em;
-          color: rgba(255,255,255,0.28);
+          color: rgba(14,10,4,0.32);
           text-decoration: none;
           position: relative;
           transition: color 0.22s;
@@ -98,9 +97,9 @@ export default function Contact() {
           transform-origin: left;
           transition: transform 0.32s cubic-bezier(0.16,1,0.3,1);
         }
-        .marquee-link:hover { color: rgba(255,255,255,0.85); }
+        .marquee-link:hover { color: ${INK}; }
         .marquee-link:hover::after { transform: scaleX(1); }
-        .marquee-diamond { color: ${ACCENT}; opacity: 0.4; font-size: 0.5rem; }
+        .marquee-diamond { color: ${ACCENT}; opacity: 0.5; font-size: 0.5rem; }
 
         .social-item {
           display: flex;
@@ -108,28 +107,29 @@ export default function Contact() {
           gap: 10px;
           text-decoration: none;
           padding: 12px 0;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          border-bottom: 1px solid rgba(14,10,4,0.07);
           transition: border-color 0.2s;
         }
-        .social-item:hover { border-color: ${ACCENT}50; }
-        .social-item:hover .social-label { color: white; }
+        .social-item:hover { border-color: rgba(196,64,10,0.25); }
+        .social-item:hover .social-label { color: ${INK}; }
         .social-item:hover .social-arrow { transform: translate(2px,-2px); color: ${ACCENT}; }
         .social-label {
           font-family: 'Inter', monospace;
           font-size: 11px; letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.35);
+          color: rgba(14,10,4,0.35);
           transition: color 0.2s; flex: 1;
         }
-        .social-handle { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255,255,255,0.18); }
-        .social-arrow { color: rgba(255,255,255,0.15); transition: transform 0.2s, color 0.2s; font-size: 14px; }
+        .social-handle { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(14,10,4,0.22); }
+        .social-arrow { color: rgba(14,10,4,0.18); transition: transform 0.2s, color 0.2s; font-size: 14px; }
       `}</style>
 
       <section
         id="contact"
         ref={ref}
         style={{
-          background: "#080c14",
+          background: "var(--bg-base)",
+          color: INK,
           padding: "clamp(80px,10vw,128px) clamp(20px,5vw,72px) clamp(48px,6vw,72px)",
           position: "relative",
           overflow: "hidden",
@@ -138,11 +138,10 @@ export default function Contact() {
         {/* Top divider */}
         <div style={{
           height: 1,
-          background: `linear-gradient(90deg,transparent,${ACCENT}30,transparent)`,
+          background: `linear-gradient(90deg,transparent,rgba(196,64,10,0.25),transparent)`,
           marginBottom: "clamp(56px,8vw,96px)",
         }} />
 
-        {/* Section label — fixed to 06 */}
         <p className="ct-reveal" style={{
           fontFamily: "'Inter',monospace", fontSize: 10,
           letterSpacing: "0.38em", color: ACCENT,
@@ -152,13 +151,13 @@ export default function Contact() {
         {/* Giant heading */}
         <div className="ct-reveal" style={{ marginBottom: "clamp(24px,4vw,48px)" }}>
           <h2 style={{
-            fontFamily: "'Bebas Neue','Arial Black',sans-serif",
+            fontFamily: "'Cormorant Garamond',Georgia,serif",
             fontSize: "clamp(5rem,18vw,14rem)",
-            fontWeight: 400, lineHeight: 0.88,
-            letterSpacing: "0.01em",
-            margin: 0, color: "#f0ede8",
+            fontWeight: 700, lineHeight: 0.88,
+            letterSpacing: "-0.02em",
+            margin: 0,
           }}>
-            <span style={{ display: "block" }}>LET&rsquo;S</span>
+            <span style={{ display: "block", color: INK }}>LET&rsquo;S</span>
             <span style={{
               display: "block",
               color: "transparent",
@@ -194,7 +193,7 @@ export default function Contact() {
             <p style={{
               fontFamily: "'Inter',monospace", fontSize: 9,
               letterSpacing: "0.3em", textTransform: "uppercase",
-              color: "rgba(255,255,255,0.15)", marginBottom: 16,
+              color: "rgba(14,10,4,0.20)", marginBottom: 16,
             }}>Find me</p>
             {SOCIALS.map(s => (
               <a
@@ -203,7 +202,7 @@ export default function Contact() {
                 target="_blank" rel="noopener noreferrer"
                 className="social-item"
               >
-                <span style={{ color: "rgba(255,255,255,0.2)" }}>{s.icon}</span>
+                <span style={{ color: "rgba(14,10,4,0.22)" }}>{s.icon}</span>
                 <span className="social-label">{s.label}</span>
                 <span className="social-handle">{s.handle}</span>
                 <span className="social-arrow">&#8599;</span>
@@ -219,19 +218,18 @@ export default function Contact() {
             <div style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "8px 18px",
-              border: "1px solid rgba(74,222,128,0.2)",
+              border: "1px solid rgba(74,222,128,0.25)",
               borderRadius: 9999,
-              background: "rgba(74,222,128,0.04)",
+              background: "rgba(74,222,128,0.05)",
             }}>
-              <span style={{
+              <span className="avail-dot" style={{
                 width: 6, height: 6, borderRadius: "50%",
                 background: "#4ade80", display: "inline-block",
-                boxShadow: "0 0 6px #4ade8099",
               }} />
               <span style={{
                 fontFamily: "'Inter',monospace",
                 fontSize: 9, letterSpacing: "0.28em",
-                color: "rgba(74,222,128,0.75)",
+                color: "rgba(34,197,94,0.85)",
                 textTransform: "uppercase",
               }}>Open to opportunities</span>
             </div>
@@ -239,7 +237,7 @@ export default function Contact() {
             <p style={{
               fontFamily: "'Inter',monospace",
               fontSize: 10, letterSpacing: "0.22em",
-              color: "rgba(255,255,255,0.18)",
+              color: "rgba(14,10,4,0.28)",
               textTransform: "uppercase", textAlign: "right",
             }}>
               Mumbai, IN&nbsp;&nbsp;·&nbsp;&nbsp;Available 2026
@@ -247,7 +245,7 @@ export default function Contact() {
 
             <p style={{
               fontFamily: "'Inter',sans-serif",
-              fontSize: 10, color: "rgba(255,255,255,0.1)",
+              fontSize: 10, color: "rgba(14,10,4,0.18)",
               textAlign: "right",
             }}>
               &copy; {new Date().getFullYear()} Abhijeet Kadu
@@ -258,10 +256,10 @@ export default function Contact() {
         {/* Ghost AK watermark */}
         <div aria-hidden style={{
           position: "absolute", bottom: 0, right: 0,
-          fontFamily: "'Bebas Neue',sans-serif",
+          fontFamily: "'Cormorant Garamond',Georgia,serif",
           fontSize: "clamp(6rem,18vw,20rem)",
           lineHeight: 0.85, color: "transparent",
-          WebkitTextStroke: "1px rgba(255,255,255,0.025)",
+          WebkitTextStroke: "1px rgba(14,10,4,0.04)",
           pointerEvents: "none", userSelect: "none",
           letterSpacing: "0.01em",
         }}>AK</div>
