@@ -3,6 +3,7 @@ import About        from "@/components/About";
 import Experience   from "@/components/Experience";
 import Projects     from "@/components/Projects";
 import Skills       from "@/components/Skills";
+import SkillMatcher from "@/components/SkillMatcher";
 import Certifications from "@/components/Certifications";
 import Contact      from "@/components/Contact";
 import Preloader    from "@/components/Preloader";
@@ -22,6 +23,7 @@ export default function Home() {
         <Projects />
         <SectionWipe id="skills-wipe" />
         <Skills />
+        <SkillMatcher />
         <SectionWipe id="certs-wipe" />
         <Certifications />
         <SectionWipe id="contact-wipe" />

@@ -17,13 +17,6 @@ const STATS = [
   { end: 5,    suffix: "+",  prefix: "",     label: "Products Shipped",     note: "end-to-end in production" },
 ];
 
-const SKILLS = [
-  { category: "Backend & Systems", items: ["Node.js","FastAPI","REST APIs","Socket.io","SSE","Docker","CI/CD","OAuth2","RBAC"] },
-  { category: "ML & Data",         items: ["XGBoost","LightGBM","CatBoost","Scikit-learn","Pandas","NumPy","FAISS","RAG","LLMs"] },
-  { category: "Cloud & Infra",     items: ["AWS (EC2/S3/IAM)","GCP Vertex AI","GCP Vision","Microsoft Fabric","DP-600","CloudWatch"] },
-  { category: "Frontend & BI",     items: ["React","Next.js","Tailwind","TypeScript","Power BI","DAX","GSAP"] },
-];
-
 function Counter({ end, suffix, prefix, triggered }: { end: number; suffix: string; prefix: string; triggered: boolean }) {
   const [val, setVal] = useState(0);
   const raf = useRef<number | null>(null);
@@ -83,34 +76,11 @@ export default function About() {
       duration: 0.6, stagger: 0.1,
       ease: "back.out(1.4)", transformOrigin: "bottom center",
     });
-    gsap.from(".sk-about-card", {
-      scrollTrigger: { trigger: ".sk-about-grid", start: "top 82%" },
-      y: 36, opacity: 0, rotateX: 12, scale: 0.96,
-      duration: 0.7, stagger: 0.1,
-      ease: "power3.out", transformOrigin: "bottom center",
-    });
     gsap.from(".ab-divider", {
       scrollTrigger: { trigger: ".ab-divider", start: "top 90%" },
       scaleX: 0, duration: 0.8, ease: "power2.inOut", transformOrigin: "left center",
     });
   }, { scope: ref });
-
-  const onCardEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    const rect = el.getBoundingClientRect();
-    const onMove = (ev: MouseEvent) => {
-      const x = ((ev.clientX - rect.left) / rect.width  - 0.5) * 14;
-      const y = ((ev.clientY - rect.top)  / rect.height - 0.5) * -14;
-      gsap.to(el, { rotateY: x, rotateX: y, scale: 1.03, duration: 0.3, ease: "power2.out", transformPerspective: 800 });
-    };
-    el.addEventListener("mousemove", onMove);
-    (el as HTMLDivElement & { _mv: (ev: MouseEvent) => void })._mv = onMove;
-  };
-  const onCardLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget as HTMLDivElement & { _mv: (ev: MouseEvent) => void };
-    el.removeEventListener("mousemove", el._mv);
-    gsap.to(el, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power3.out" });
-  };
 
   return (
     <section
@@ -124,13 +94,12 @@ export default function About() {
         overflow: "hidden",
       }}
     >
-      {/* Ghost number */}
       <span aria-hidden style={{
         position: "absolute", right: "-2%", top: "50%", transform: "translateY(-50%)",
         fontFamily: "'Cormorant Garamond',Georgia,serif",
         fontSize: "clamp(10rem,24vw,26rem)",
         lineHeight: 1, color: "transparent",
-        WebkitTextStroke: `1px rgba(14,10,4,0.04)`,
+        WebkitTextStroke: "1px rgba(14,10,4,0.04)",
         pointerEvents: "none", userSelect: "none",
       }}>01</span>
 
@@ -142,7 +111,6 @@ export default function About() {
           textTransform: "uppercase", marginBottom: 48,
         }}>01 / About</p>
 
-        {/* Two-col */}
         <div className="about-2col" style={{
           display: "grid",
           gridTemplateColumns: "1.1fr 1fr",
@@ -150,7 +118,6 @@ export default function About() {
           alignItems: "start",
           marginBottom: "clamp(56px,7vw,96px)",
         }}>
-          {/* LEFT */}
           <div>
             <h2 className="ab-headline" style={{
               fontFamily: "'Cormorant Garamond',Georgia,serif",
@@ -204,7 +171,6 @@ export default function About() {
             </div>
           </div>
 
-          {/* RIGHT */}
           <div className="ab-body" style={{ display: "flex", flexDirection: "column", gap: 22, paddingTop: 6 }}>
             {[
               <>I&rsquo;ve been writing code that runs in production since my second year. Not toy projects &mdash; a room-finder platform with live users, a resume analysis engine scoring <strong style={{ color: INK }}>50,000+ CVs</strong>, an OCR finance system processing receipts in real time.</>,
@@ -256,7 +222,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* Stats row */}
         <div ref={statsRef} style={{
           display: "grid",
           gridTemplateColumns: "repeat(4,1fr)",
@@ -272,7 +237,7 @@ export default function About() {
                 fontFamily: "'Cormorant Garamond',Georgia,serif",
                 fontSize: "clamp(2.4rem,4.5vw,3.8rem)",
                 fontWeight: 700, color: INK,
-                lineHeight: 1, marginBottom: 8, letterSpacing: "0.02em",
+                lineHeight: 1, marginBottom: 8,
               }}>
                 <Counter end={s.end} suffix={s.suffix} prefix={s.prefix} triggered={fired} />
               </p>
@@ -288,60 +253,11 @@ export default function About() {
             </div>
           ))}
         </div>
-
-        {/* Skill cards */}
-        <div className="sk-about-grid" style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(min(250px,100%),1fr))",
-          gap: 12,
-          marginTop: "clamp(56px,7vw,88px)",
-          perspective: "1200px",
-        }}>
-          {SKILLS.map((group, i) => (
-            <div
-              key={i}
-              className="sk-about-card"
-              onMouseEnter={onCardEnter}
-              onMouseLeave={onCardLeave}
-              style={{
-                padding: "clamp(20px,2.8vw,30px)",
-                background: "var(--bg-card)",
-                border: "1px solid rgba(14,10,4,0.07)",
-                borderRadius: 10,
-                transformStyle: "preserve-3d",
-                transition: "border-color 0.25s, box-shadow 0.25s",
-                cursor: "default",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                <div style={{ width: 7, height: 7, borderRadius: "50%", background: ACCENT, opacity: 0.7 }} />
-                <span style={{
-                  fontFamily: "var(--font-mono)", fontSize: 9,
-                  letterSpacing: "0.26em", textTransform: "uppercase",
-                  color: ACCENT, fontWeight: 500,
-                }}>{group.category}</span>
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {group.items.map(item => (
-                  <span key={item} style={{
-                    fontFamily: "var(--font-body)", fontSize: 11,
-                    color: "rgba(14,10,4,0.50)",
-                    padding: "4px 10px",
-                    background: "rgba(196,64,10,0.05)",
-                    border: "1px solid rgba(196,64,10,0.12)",
-                    borderRadius: 9999, lineHeight: 1,
-                  }}>{item}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       <style>{`
         @media(max-width:768px){ .about-2col{ grid-template-columns:1fr!important; } }
         .ab-stat{ perspective: 600px; }
-        .sk-about-card:hover { border-color: rgba(196,64,10,0.18) !important; box-shadow: 0 8px 32px rgba(196,64,10,0.06); }
       `}</style>
     </section>
   );
