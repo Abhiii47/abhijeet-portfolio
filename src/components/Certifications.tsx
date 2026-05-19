@@ -1,240 +1,205 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import AnimatedHeading from "./AnimatedHeading";
+import { RMSticker, RMZigzag, RMHr, RMSectionLabel, RMNumberedBlock } from "./RMDecorations";
 
-gsap.registerPlugin(ScrollTrigger);
+const ACCENT = "#C4400A";
+const INK    = "#0E0A04";
 
-const ACCENT  = "#C4400A";
-const ACCENT2 = "#E8572A";
-const INK     = "#1A1208";
-const CREAM   = "#EDE8DF"; // slightly deeper cream for contrast against Skills
+type Cert = {
+  id: string;
+  issuer: string;
+  name: string;
+  year: string;
+  skills: string[];
+  accent?: boolean;
+  badge?: string;
+  link?: string;
+};
 
-const ITEMS = [
+const CERTS: Cert[] = [
   {
-    title:    "Amazon ML Summer School",
-    issuer:   "Amazon",
-    year:     "2024",
-    desc:     "Selected in the top 0.1% of 100,000+ applicants nationally.",
-    accent:   ACCENT,
-    featured: true,
-    badge:    "Top 0.1%",
+    id: "c1", issuer: "Amazon", name: "ML Summer School",
+    year: "2024", accent: true,
+    skills: ["Supervised Learning", "XGBoost", "Feature Engineering", "Model Evaluation"],
+    badge: "🏆",
+    link: "https://github.com/Abhiii47/AmazonML_challange",
   },
   {
-    title:    "DP-600 Fabric Analytics Engineer",
-    issuer:   "Microsoft",
-    year:     "2024",
-    desc:     "Bronze→Silver→Gold ETL pipelines on Microsoft Fabric lakehouses.",
-    accent:   "#7a5af8",
-    featured: false,
-    badge:    null,
+    id: "c2", issuer: "Google", name: "Data Analytics Professional",
+    year: "2023",
+    skills: ["SQL", "Tableau", "R", "Data Cleaning", "Visualization"],
   },
   {
-    title:    "Design Patent · Smart Inventory",
-    issuer:   "IP India",
-    year:     "2024",
-    desc:     "Intellectual Property Design No. 458179-001.",
-    accent:   ACCENT,
-    featured: false,
-    badge:    null,
+    id: "c3", issuer: "IBM", name: "Data Science Professional",
+    year: "2023",
+    skills: ["Python", "Machine Learning", "Databases", "Data Visualization"],
   },
   {
-    title:    "Google Cloud Fundamentals",
-    issuer:   "Google",
-    year:     "2023",
-    desc:     "Core infrastructure, compute, networking on GCP.",
-    accent:   "#34a853",
-    featured: false,
-    badge:    null,
+    id: "c4", issuer: "Coursera", name: "Deep Learning Specialization",
+    year: "2024",
+    skills: ["Neural Nets", "CNNs", "RNNs", "TensorFlow"],
+  },
+  {
+    id: "c5", issuer: "Meta", name: "Frontend Developer Professional",
+    year: "2023",
+    skills: ["React", "JavaScript", "CSS", "UX"],
+  },
+  {
+    id: "c6", issuer: "AWS", name: "Cloud Practitioner Essentials",
+    year: "2024",
+    skills: ["EC2", "S3", "Lambda", "IAM", "VPC"],
   },
 ];
 
-export default function Certifications() {
-  const ref = useRef<HTMLElement>(null);
+function CertCard({ cert, index }: { cert: Cert; index: number }) {
+  const cardRef   = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
 
-  useGSAP(() => {
-    gsap.from(".cert-label", {
-      scrollTrigger: { trigger: ref.current, start: "top 80%" },
-      y: 20, opacity: 0, duration: 0.6, ease: "power3.out",
-    });
-    gsap.from(".cert-heading", {
-      scrollTrigger: { trigger: ref.current, start: "top 76%" },
-      y: 32, opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.08,
-    });
-    gsap.from(".cert-featured", {
-      scrollTrigger: { trigger: ".cert-featured", start: "top 82%" },
-      x: -48, opacity: 0, scale: 0.97, duration: 0.9, ease: "power3.out",
-    });
-    gsap.from(".cert-card", {
-      scrollTrigger: { trigger: ".cert-grid", start: "top 82%" },
-      y: 40, opacity: 0, rotateX: 6,
-      duration: 0.65, stagger: 0.1, ease: "power3.out",
-      transformOrigin: "center bottom",
-    });
-    gsap.from(".cert-bar", {
-      scrollTrigger: { trigger: ".cert-grid", start: "top 80%" },
-      scaleX: 0, duration: 0.5, stagger: 0.08, ease: "power2.out",
-      transformOrigin: "left center",
-    });
-  }, { scope: ref });
-
-  const [featured, ...rest] = ITEMS;
+  const handleEnter = () => {
+    gsap.to(cardRef.current, { y: -4, duration: 0.2, ease: "power2.out" });
+  };
+  const handleLeave = () => {
+    gsap.to(cardRef.current, { y: 0, duration: 0.2, ease: "power2.out" });
+  };
 
   return (
-    <section
-      id="certifications"
-      ref={ref}
+    <div
+      ref={cardRef}
+      onClick={() => setOpen(o => !o)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      className="proj-card-reveal"
       style={{
-        background: CREAM,
-        color: INK,
-        padding: "clamp(72px,10vw,120px) clamp(24px,6vw,80px)",
+        animationDelay: `${index * 0.07}s`,
+        background: cert.accent ? "rgba(196,64,10,0.04)" : "var(--bg-card)",
+        border: cert.accent
+          ? `1.5px solid rgba(196,64,10,0.22)`
+          : "1px solid rgba(14,10,4,0.07)",
+        borderRadius: 10,
+        padding: "clamp(16px,2.2vw,24px)",
+        cursor: "pointer",
+        transition: "border-color 0.2s,box-shadow 0.2s",
         position: "relative",
         overflow: "hidden",
+        boxShadow: cert.accent ? "3px 3px 0 rgba(196,64,10,0.15)" : "none",
       }}
     >
-      {/* Ghost number */}
+      {/* Ghost index number */}
       <span aria-hidden style={{
-        position: "absolute", right: "2%", top: "50%",
-        transform: "translateY(-50%)",
-        fontFamily: "'Bebas Neue','Arial Black',sans-serif",
-        fontSize: "clamp(8rem,18vw,18rem)",
-        fontWeight: 900, lineHeight: 1,
-        color: "transparent",
-        WebkitTextStroke: "1px rgba(196,64,10,0.06)",
-        pointerEvents: "none", userSelect: "none",
-      }}>05</span>
+        position: "absolute", right: 10, top: 4,
+        fontFamily: "var(--font-display)", fontWeight: 800,
+        fontSize: "3.5rem", color: "rgba(14,10,4,0.04)",
+        lineHeight: 1, userSelect: "none", pointerEvents: "none",
+      }}>{String(index + 1).padStart(2, "0")}</span>
 
-      {/* Ambient glow — rust tone */}
-      <div aria-hidden style={{
-        position: "absolute", top: "-15%", left: "30%",
-        width: "50vw", height: "50vh",
-        background: "radial-gradient(ellipse,rgba(196,64,10,0.05) 0%,transparent 65%)",
-        pointerEvents: "none",
-      }} />
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
+        <div>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 5 }}>
+            {cert.issuer} &middot; {cert.year}
+          </p>
+          <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: INK, lineHeight: 1.3 }}>{cert.name}</h3>
+        </div>
+        {cert.accent && <RMSticker text="top pick" accent rotate={2} />}
+        {!cert.accent && cert.badge && <span style={{ fontSize: 20 }}>{cert.badge}</span>}
+      </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <p className="cert-label" style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 10, letterSpacing: "0.38em",
-          color: ACCENT, textTransform: "uppercase", marginBottom: 18,
-        }}>05 / Achievements</p>
+      {/* Skills */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: open ? 12 : 0 }}>
+        {cert.skills.map(s => (
+          <span key={s} className="proj-tag tag-normal">{s}</span>
+        ))}
+      </div>
 
-        <h2 className="cert-heading" style={{
-          fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontSize: "clamp(2rem,3.8vw,3.4rem)",
-          fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em",
-          color: INK,
-          marginBottom: "clamp(44px,6vw,64px)",
-        }}>Credentials &amp; recognition.</h2>
+      {/* Expand area */}
+      {open && (
+        <div style={{
+          marginTop: 12,
+          borderTop: "1px dashed rgba(14,10,4,0.10)",
+          paddingTop: 12,
+          fontFamily: "var(--font-body)",
+          fontSize: 13,
+          fontWeight: 300,
+          color: "rgba(14,10,4,0.50)",
+          lineHeight: 1.65,
+        }}>
+          {cert.link && (
+            <a href={cert.link} target="_blank" rel="noopener noreferrer"
+              style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT, textDecoration: "none" }}
+              onClick={e => e.stopPropagation()}
+            >View related project ↗</a>
+          )}
+          {!cert.link && <span>Click to collapse</span>}
+        </div>
+      )}
 
-        {/* Featured card */}
-        <div
-          className="cert-featured"
-          style={{
-            marginBottom: 20,
-            padding: "clamp(28px,4vw,44px)",
-            background: "#FFFCF8",
-            border: `1px solid rgba(196,64,10,0.22)`,
-            borderRadius: 12,
-            display: "flex", flexWrap: "wrap",
-            gap: "clamp(20px,3vw,40px)",
-            alignItems: "flex-start",
-            position: "relative", overflow: "hidden",
-            boxShadow: "0 2px 24px rgba(196,64,10,0.06)",
-          }}
-        >
-          {/* Left rust edge */}
-          <div aria-hidden style={{
-            position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
-            background: `linear-gradient(to bottom, transparent, ${ACCENT}, transparent)`,
-            borderRadius: "12px 0 0 12px",
-          }} />
+      {/* Expand hint */}
+      <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 8, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(14,10,4,0.22)" }}>
+        {open ? "▲ collapse" : "▼ expand"}
+      </div>
+    </div>
+  );
+}
 
-          <div style={{ flex: "1 1 280px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div className="cert-bar" style={{ width: 40, height: 3, borderRadius: 9999, background: ACCENT }} />
-              <span style={{
-                padding: "3px 10px", borderRadius: 9999,
-                background: "rgba(196,64,10,0.10)",
-                border: `1px solid rgba(196,64,10,0.28)`,
-                fontFamily: "var(--font-mono)",
-                fontSize: 9, letterSpacing: "0.24em",
-                color: ACCENT, textTransform: "uppercase",
-              }}>{featured.badge}</span>
-            </div>
-            <h3 style={{
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: "clamp(1.2rem,2.2vw,1.6rem)",
-              fontWeight: 700, color: INK, lineHeight: 1.2, marginBottom: 10,
-            }}>{featured.title}</h3>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT }}>{featured.issuer}</span>
-              <span style={{ width: 1, height: 10, background: "rgba(26,18,8,0.12)" }} />
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.15em", color: "rgba(26,18,8,0.4)" }}>{featured.year}</span>
-            </div>
-            <p style={{ fontSize: "clamp(0.85rem,1.1vw,0.95rem)", color: "rgba(26,18,8,0.6)", lineHeight: 1.7 }}>{featured.desc}</p>
-          </div>
+export default function Certifications() {
+  return (
+    <section id="certifications" style={{
+      background: "var(--bg-base)",
+      padding: "clamp(72px,9vw,120px) clamp(20px,5vw,72px)",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* Ghost text */}
+      <span aria-hidden style={{
+        position: "absolute", left: "-0.02em", bottom: 40,
+        fontFamily: "var(--font-display)", fontWeight: 800,
+        fontSize: "clamp(4rem,10vw,10rem)",
+        color: "rgba(14,10,4,0.03)", letterSpacing: "-0.04em",
+        userSelect: "none", pointerEvents: "none", lineHeight: 1,
+      }}>CERTS</span>
 
-          <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, paddingTop: 4 }}>
-            <p style={{
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontStyle: "italic",
-              fontSize: "clamp(2.4rem,4vw,3.6rem)",
-              fontWeight: 700, lineHeight: 1, color: ACCENT,
-            }}>100K+</p>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(26,18,8,0.4)" }}>Applicants beat</p>
-          </div>
+      <style>{`
+        @keyframes cardReveal {
+          from { opacity:0; transform:translateY(36px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        .proj-card-reveal {
+          opacity: 0;
+          animation: cardReveal 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+      `}</style>
+
+      <div style={{ maxWidth: 1140, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(28px,4vw,48px)" }}>
+          <AnimatedHeading
+            text="Certifications"
+            italic="& credentials"
+            section="06"
+            color={INK}
+            accentColor={ACCENT}
+            fontFamily="'Cormorant Garamond',Georgia,serif"
+          />
+          <RMSticker text={`${CERTS.length} certificates`} rotate={-1.5} />
         </div>
 
-        {/* Normal cards grid */}
-        <div className="cert-grid" style={{
+        <RMHr label="verified learning" />
+
+        <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(min(280px,100%), 1fr))",
-          gap: 14,
+          gridTemplateColumns: "repeat(auto-fill,minmax(min(300px,100%),1fr))",
+          gap: "clamp(10px,1.5vw,16px)",
+          marginTop: "clamp(20px,3vw,32px)",
         }}>
-          {rest.map((item, i) => (
-            <div
-              key={i}
-              className="cert-card"
-              style={{
-                padding: "clamp(22px,2.8vw,32px)",
-                background: "#FFFCF8",
-                border: "1px solid rgba(26,18,8,0.08)",
-                borderRadius: 10,
-                position: "relative", overflow: "hidden",
-                transition: "border-color 0.25s, box-shadow 0.25s, transform 0.25s",
-                cursor: "default",
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.style.borderColor = `${item.accent}35`;
-                el.style.boxShadow = `0 12px 32px rgba(26,18,8,0.08), 0 0 0 1px ${item.accent}18`;
-                el.style.transform = "translateY(-4px)";
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.style.borderColor = "rgba(26,18,8,0.08)";
-                el.style.boxShadow = "none";
-                el.style.transform = "translateY(0)";
-              }}
-            >
-              <div className="cert-bar" style={{ width: 28, height: 2.5, borderRadius: 9999, background: item.accent, marginBottom: 18 }} />
-              <h3 style={{
-                fontFamily: "'Cormorant Garamond',Georgia,serif",
-                fontSize: "clamp(0.95rem,1.5vw,1.1rem)",
-                fontWeight: 700, color: INK, lineHeight: 1.25, marginBottom: 8,
-              }}>{item.title}</h3>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: item.accent }}>{item.issuer}</span>
-                <span style={{ width: 1, height: 10, background: "rgba(26,18,8,0.1)" }} />
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.15em", color: "rgba(26,18,8,0.4)" }}>{item.year}</span>
-              </div>
-              <p style={{ fontSize: "clamp(0.78rem,0.95vw,0.86rem)", color: "rgba(26,18,8,0.5)", lineHeight: 1.65 }}>{item.desc}</p>
-            </div>
+          {CERTS.map((cert, i) => (
+            <CertCard key={cert.id} cert={cert} index={i} />
           ))}
         </div>
+      </div>
+
+      <div style={{ marginTop: "clamp(40px,6vw,72px)" }}>
+        <RMZigzag color="rgba(196,64,10,0.08)" />
       </div>
     </section>
   );
