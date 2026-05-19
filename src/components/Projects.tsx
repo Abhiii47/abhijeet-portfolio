@@ -62,34 +62,57 @@ const PROJECTS: Project[] = [
   },
 ];
 
-function AnimatedStat({ num, label, triggered }: Stat & { triggered: boolean }) {
-  const [display, setDisplay] = useState("0");
-  const raf = useRef<number | null>(null);
+function AnimatedStat({ num, label }: Stat) {
+  const wrapRef   = useRef<HTMLDivElement>(null);
+  const [display, setDisplay] = useState("");
+  const [ready,   setReady]   = useState(false);
+
+  // Show raw value immediately so it’s never blank
+  useEffect(() => { setDisplay(num); }, [num]);
+
   useEffect(() => {
-    if (!triggered) return;
+    const el = wrapRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setReady(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
     const numeric = parseFloat(num.replace(/[^0-9.]/g, ""));
-    const suffix  = num.replace(/[0-9.]/g, "");
+    const suffix  = num.replace(/[0-9.,]/g, "");
     const isNum   = !isNaN(numeric) && suffix !== num;
     if (!isNum) { setDisplay(num); return; }
     const dur = 1400, t0 = performance.now();
+    let raf: number;
     const tick = (now: number) => {
       const p = Math.min((now - t0) / dur, 1);
       const v = (1 - Math.pow(1 - p, 3)) * numeric;
       setDisplay((numeric % 1 === 0 ? Math.round(v).toLocaleString() : v.toFixed(1)) + suffix);
-      if (p < 1) raf.current = requestAnimationFrame(tick);
+      if (p < 1) raf = requestAnimationFrame(tick);
     };
-    raf.current = requestAnimationFrame(tick);
-    return () => { if (raf.current) cancelAnimationFrame(raf.current); };
-  }, [triggered, num]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [ready, num]);
 
   return (
-    <div style={{ textAlign: "right" }}>
+    <div ref={wrapRef} style={{ textAlign: "right" }}>
       <p style={{
         fontFamily: "'Cormorant Garamond',Georgia,serif",
         fontStyle: "italic",
         fontSize: 26, fontWeight: 700,
         color: ACCENT, lineHeight: 1, marginBottom: 4,
-      }}>{display}</p>
+        minWidth: 60,
+      }}>{display || num}</p>
       <p style={{
         fontFamily: "var(--font-mono)",
         fontSize: 9, letterSpacing: "0.26em",
@@ -100,24 +123,12 @@ function AnimatedStat({ num, label, triggered }: Stat & { triggered: boolean }) 
   );
 }
 
-function ProjectCard({ p }: { p: Project; index: number }) {
+function ProjectCard({ p }: { p: Project }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const numRef  = useRef<HTMLSpanElement>(null);
   const hookRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
   const edgeRef = useRef<HTMLDivElement>(null);
-  const [triggered, setTriggered] = useState(false);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); obs.disconnect(); } },
-      { threshold: 0.2 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   useGSAP(() => {
     const card = cardRef.current;
@@ -136,8 +147,8 @@ function ProjectCard({ p }: { p: Project; index: number }) {
     gsap.to(cardRef.current, { y: -5, duration: 0.28, ease: "power2.out" });
     gsap.to(edgeRef.current, { opacity: 1, duration: 0.25 });
     const el = e.currentTarget as HTMLDivElement;
-    el.style.borderColor = `rgba(196,64,10,0.22)`;
-    el.style.boxShadow   = `0 12px 40px rgba(196,64,10,0.07), 0 0 0 1px rgba(196,64,10,0.08)`;
+    el.style.borderColor = "rgba(196,64,10,0.22)";
+    el.style.boxShadow   = "0 12px 40px rgba(196,64,10,0.07), 0 0 0 1px rgba(196,64,10,0.08)";
   };
   const onLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: 0, duration: 0.28, ease: "power2.out" });
@@ -165,30 +176,21 @@ function ProjectCard({ p }: { p: Project; index: number }) {
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
-      {/* Rust left edge on hover */}
-      <div
-        ref={edgeRef}
-        aria-hidden
-        style={{
-          position: "absolute", left: 0, top: 0, bottom: 0, width: 2,
-          background: `linear-gradient(to bottom, transparent, ${ACCENT}80, transparent)`,
-          opacity: 0, pointerEvents: "none",
-        }}
-      />
+      <div ref={edgeRef} aria-hidden style={{
+        position: "absolute", left: 0, top: 0, bottom: 0, width: 2,
+        background: `linear-gradient(to bottom, transparent, ${ACCENT}80, transparent)`,
+        opacity: 0, pointerEvents: "none",
+      }} />
 
-      {/* Ghost number */}
       <div style={{ paddingTop: 2 }}>
         <span ref={numRef} style={{
           fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontStyle: "italic",
-          fontSize: 52, fontWeight: 400,
-          color: `rgba(196,64,10,0.10)`,
-          lineHeight: 1, display: "block",
-          userSelect: "none",
+          fontStyle: "italic", fontSize: 52, fontWeight: 400,
+          color: "rgba(196,64,10,0.10)", lineHeight: 1,
+          display: "block", userSelect: "none",
         }}>{p.number}</span>
       </div>
 
-      {/* Content */}
       <div>
         <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 6 }}>{p.org}</p>
         <h3 style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 500, color: INK, marginBottom: 10, lineHeight: 1.3 }}>{p.name}</h3>
@@ -197,8 +199,7 @@ function ProjectCard({ p }: { p: Project; index: number }) {
           <div>
             <p ref={hookRef} style={{
               fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontStyle: "italic",
-              fontSize: 15, fontWeight: 400,
+              fontStyle: "italic", fontSize: 15, fontWeight: 400,
               color: ACCENT, lineHeight: 1.55, marginBottom: 10,
             }}>{p.hook}</p>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "rgba(14,10,4,0.50)", lineHeight: 1.65, marginBottom: 14 }}>{p.description}</p>
@@ -218,7 +219,7 @@ function ProjectCard({ p }: { p: Project; index: number }) {
               )}
               {p.links.live && (
                 <a href={p.links.live} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(14,10,4,0.35)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, transition: "color 0.18s" }}
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(14,10,4,0.35)", textDecoration: "none", transition: "color 0.18s" }}
                   onMouseEnter={e => (e.currentTarget.style.color = ACCENT)}
                   onMouseLeave={e => (e.currentTarget.style.color = "rgba(14,10,4,0.35)")}
                 >Live ↗</a>
@@ -227,7 +228,7 @@ function ProjectCard({ p }: { p: Project; index: number }) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 18, paddingTop: 2, minWidth: 90 }}>
-            {p.stats.map(s => <AnimatedStat key={s.label} {...s} triggered={triggered} />)}
+            {p.stats.map(s => <AnimatedStat key={s.label} {...s} />)}
           </div>
         </div>
       </div>
@@ -236,21 +237,13 @@ function ProjectCard({ p }: { p: Project; index: number }) {
 }
 
 export default function Projects() {
-  const ref = useRef<HTMLElement>(null);
-
   return (
     <>
-      <style>{`
-        @media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }
-      `}</style>
-      <section
-        id="work"
-        ref={ref}
-        style={{
-          background: "var(--bg-section)",
-          padding: "clamp(72px,9vw,120px) clamp(20px,5vw,72px)",
-        }}
-      >
+      <style>{`@media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }`}</style>
+      <section id="work" style={{
+        background: "var(--bg-section)",
+        padding: "clamp(72px,9vw,120px) clamp(20px,5vw,72px)",
+      }}>
         <div style={{ maxWidth: 1140, margin: "0 auto" }}>
           <AnimatedHeading
             text="Selected"
@@ -261,7 +254,7 @@ export default function Projects() {
             fontFamily="'Cormorant Garamond',Georgia,serif"
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {PROJECTS.map((p, i) => <ProjectCard key={p.number} p={p} index={i} />)}
+            {PROJECTS.map((p) => <ProjectCard key={p.number} p={p} />)}
           </div>
         </div>
       </section>
