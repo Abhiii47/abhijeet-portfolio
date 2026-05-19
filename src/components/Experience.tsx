@@ -3,15 +3,11 @@
 import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
 import HorizontalParallax from "./HorizontalParallax";
 
 gsap.registerPlugin(ScrollTrigger);
-// DrawSVGPlugin is a Club GSAP plugin — if not available, we fall back to a
-// simple stroke-dashoffset approach that works without the plugin.
-try { gsap.registerPlugin(DrawSVGPlugin); } catch { /* not available */ }
 
 const ACCENT = "#C4400A";
 const INK    = "#0E0A04";
@@ -60,16 +56,16 @@ const EXP = [
 export default function Experience() {
   const ref    = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGPathElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
 
-  /* SVG path draw on scroll — works with or without DrawSVGPlugin */
+  // SVG timeline line draws on scroll
   useEffect(() => {
     const path = svgRef.current;
     if (!path) return;
     const len = path.getTotalLength();
     path.style.strokeDasharray  = `${len}`;
     path.style.strokeDashoffset = `${len}`;
-
     const onScroll = () => {
       const el = ref.current;
       if (!el) return;
@@ -79,16 +75,51 @@ export default function Experience() {
       ));
       path.style.strokeDashoffset = `${len * (1 - p)}`;
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Staggered card reveal — each card slides up and fades in when it enters viewport
   useGSAP(() => {
-    gsap.from(".ex-item", {
-      scrollTrigger: { trigger: ref.current, start: "top 74%" },
-      x: -24, opacity: 0, duration: 0.8, stagger: 0.14, ease: "power3.out",
+    const cards = gsap.utils.toArray<HTMLElement>(".ex-card");
+    cards.forEach((card, i) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 88%",
+          once: true,
+        },
+        y: 48,
+        opacity: 0,
+        duration: 0.75,
+        delay: i * 0.08,
+        ease: "power3.out",
+      });
+    });
+
+    // Dot pops in with a bounce for each card
+    const dots = gsap.utils.toArray<HTMLElement>(".ex-dot");
+    dots.forEach((dot, i) => {
+      gsap.from(dot, {
+        scrollTrigger: { trigger: dot, start: "top 90%", once: true },
+        scale: 0,
+        opacity: 0,
+        duration: 0.45,
+        delay: i * 0.08 + 0.15,
+        ease: "back.out(2.5)",
+      });
+    });
+
+    // Bullet points stagger inside each card
+    gsap.from(".ex-bullet", {
+      scrollTrigger: { trigger: listRef.current, start: "top 82%", once: true },
+      x: -16,
+      opacity: 0,
+      duration: 0.45,
+      stagger: 0.055,
+      ease: "power2.out",
+      delay: 0.3,
     });
   }, { scope: ref });
 
@@ -103,7 +134,6 @@ export default function Experience() {
         position: "relative", overflow: "hidden",
       }}
     >
-      {/* Horizontal parallax ghost text — replaces static watermark */}
       <HorizontalParallax
         text="EXPERIENCE"
         speed={-0.38}
@@ -112,7 +142,6 @@ export default function Experience() {
       />
 
       <div style={{ maxWidth: 800, margin: "0 auto", position: "relative", zIndex: 1 }}>
-
         <AnimatedHeading
           text="Where I've"
           italic="shipped."
@@ -122,32 +151,18 @@ export default function Experience() {
           fontFamily="'Cormorant Garamond',Georgia,serif"
         />
 
-        <div style={{ position: "relative" }}>
-
-          {/* SVG path timeline — draws itself on scroll */}
-          <svg
-            aria-hidden
-            style={{
-              position: "absolute",
-              left: -1, top: 0,
-              width: 2,
-              height: "100%",
-              overflow: "visible",
-              pointerEvents: "none",
-            }}
-            preserveAspectRatio="none"
-            viewBox="0 0 2 100"
-          >
-            {/* Track (faint) */}
+        <div style={{ position: "relative" }} ref={listRef}>
+          {/* SVG timeline line */}
+          <svg aria-hidden style={{
+            position: "absolute", left: -1, top: 0,
+            width: 2, height: "100%",
+            overflow: "visible", pointerEvents: "none",
+          }} preserveAspectRatio="none" viewBox="0 0 2 100">
             <line x1="1" y1="0" x2="1" y2="100" stroke="rgba(14,10,4,0.08)" strokeWidth="1" />
-            {/* Animated fill path */}
             <path
               ref={svgRef}
               d="M1,0 L1,100"
-              stroke={ACCENT}
-              strokeWidth="1.5"
-              fill="none"
-              strokeLinecap="round"
+              stroke={ACCENT} strokeWidth="1.5" fill="none" strokeLinecap="round"
               style={{ transition: "stroke-dashoffset 0.08s linear" }}
             />
           </svg>
@@ -156,31 +171,33 @@ export default function Experience() {
             {EXP.map((e, i) => (
               <div
                 key={i}
-                className="ex-item"
-                onMouseEnter={() => setActive(i)}
-                onMouseLeave={() => setActive(null)}
                 style={{ position: "relative", paddingBottom: i < EXP.length - 1 ? "clamp(32px,5vw,56px)" : 0 }}
               >
                 {/* Animated dot */}
-                <div style={{
+                <div className="ex-dot" style={{
                   position: "absolute", left: -40, top: 8,
                   width: 10, height: 10, borderRadius: "50%",
                   background: active === i ? ACCENT : "rgba(14,10,4,0.12)",
                   border: `1px solid ${active === i ? ACCENT : "rgba(14,10,4,0.10)"}`,
-                  boxShadow: active === i ? `0 0 12px rgba(196,64,10,0.45)` : "none",
-                  transition: "all 0.25s ease",
+                  boxShadow: active === i ? `0 0 14px rgba(196,64,10,0.50)` : "none",
+                  transition: "background 0.25s,box-shadow 0.25s",
                   zIndex: 2,
                 }} />
 
                 {/* Card */}
-                <div style={{
-                  padding: "clamp(20px,3vw,32px)",
-                  border: `1px solid ${active === i ? "rgba(196,64,10,0.18)" : "rgba(14,10,4,0.07)"}`,
-                  borderRadius: 12,
-                  background: active === i ? "rgba(196,64,10,0.025)" : "var(--bg-card)",
-                  transition: "border-color 0.25s, background 0.25s, box-shadow 0.25s",
-                  boxShadow: active === i ? "0 8px 32px rgba(196,64,10,0.06)" : "none",
-                }}>
+                <div
+                  className="ex-card"
+                  onMouseEnter={() => setActive(i)}
+                  onMouseLeave={() => setActive(null)}
+                  style={{
+                    padding: "clamp(20px,3vw,32px)",
+                    border: `1px solid ${active === i ? "rgba(196,64,10,0.18)" : "rgba(14,10,4,0.07)"}`,
+                    borderRadius: 12,
+                    background: active === i ? "rgba(196,64,10,0.025)" : "var(--bg-card)",
+                    transition: "border-color 0.25s,background 0.25s,box-shadow 0.25s",
+                    boxShadow: active === i ? "0 8px 32px rgba(196,64,10,0.07)" : "none",
+                  }}
+                >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
                     <div>
                       {e.current && (
@@ -192,7 +209,7 @@ export default function Experience() {
                           border: `1px solid rgba(196,64,10,0.22)`,
                           background: "rgba(196,64,10,0.04)", marginBottom: 10,
                         }}>
-                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "pulse 2s infinite", display: "inline-block" }} />
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "expPulse 2s infinite", display: "inline-block" }} />
                           Current
                         </span>
                       )}
@@ -216,9 +233,10 @@ export default function Experience() {
                       }}>{e.type}</span>
                     </div>
                   </div>
+
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
                     {e.points.map((pt, j) => (
-                      <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
+                      <li key={j} className="ex-bullet" style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
                         <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: `rgba(196,64,10,0.50)`, flexShrink: 0 }} />
                         <span style={{
                           fontFamily: "var(--font-body)",
@@ -234,7 +252,7 @@ export default function Experience() {
           </div>
         </div>
       </div>
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
+      <style>{`@keyframes expPulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
     </section>
   );
 }

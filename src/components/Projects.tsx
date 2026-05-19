@@ -2,10 +2,13 @@
 
 import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
 import { useProjectPreview, ProjectPreviewCard } from "./ProjectPreview";
-import { RMSticker, RMZigzag, RMHr, RMSectionLabel } from "./RMDecorations";
+import { RMSticker, RMZigzag, RMHr } from "./RMDecorations";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const ACCENT = "#C4400A";
 const INK    = "#0E0A04";
@@ -100,7 +103,7 @@ const PROJECTS: Project[] = [
 
 function AnimatedStat({ num, label }: Stat) {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [display, setDisplay] = useState(num);
+  const [display, setDisplay] = useState("—");
   const [ready,   setReady]   = useState(false);
 
   useEffect(() => {
@@ -108,7 +111,7 @@ function AnimatedStat({ num, label }: Stat) {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setReady(true); obs.disconnect(); } },
-      { threshold: 0.1 }
+      { threshold: 0.2, rootMargin: "0px 0px -60px 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -119,7 +122,7 @@ function AnimatedStat({ num, label }: Stat) {
     const numeric = parseFloat(num.replace(/[^0-9.]/g, ""));
     const suffix  = num.replace(/[0-9.,]/g, "");
     if (isNaN(numeric) || suffix === num) { setDisplay(num); return; }
-    const dur = 1200, t0 = performance.now();
+    const dur = 1400, t0 = performance.now();
     let raf: number;
     const tick = (now: number) => {
       const p = Math.min((now - t0) / dur, 1);
@@ -149,8 +152,19 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
   const edgeRef = useRef<HTMLDivElement>(null);
   const imgRef  = useRef<HTMLDivElement>(null);
 
-  // CSS-based reveal — no ScrollTrigger per card (eliminates lag)
-  const delay = `${index * 0.06}s`;
+  // Scroll-aware reveal — fires when card enters viewport
+  useGSAP(() => {
+    gsap.from(cardRef.current, {
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: "top 90%",
+        once: true,
+      },
+      y: 40, opacity: 0, duration: 0.65,
+      delay: (index % 4) * 0.07,
+      ease: "power3.out",
+    });
+  });
 
   const handleEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: -4, duration: 0.22, ease: "power2.out" });
@@ -175,9 +189,7 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
     <div
       ref={cardRef}
       data-cursor="view"
-      className="proj-card-reveal"
       style={{
-        animationDelay: delay,
         background: "var(--bg-card)",
         border: "1px solid rgba(14,10,4,0.07)",
         borderRadius: 10,
@@ -187,19 +199,18 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
         gap: "0 clamp(14px,2vw,24px)",
         transition: "border-color 0.22s,box-shadow 0.22s",
         position: "relative", overflow: "hidden",
+        opacity: 0, // starts hidden; GSAP reveals it
       }}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
       onMouseMove={onMouseMove}
     >
-      {/* Accent edge */}
       <div ref={edgeRef} aria-hidden style={{
         position: "absolute", left: 0, top: 0, bottom: 0, width: 2,
         background: `linear-gradient(to bottom,transparent,${ACCENT}80,transparent)`,
         opacity: 0, pointerEvents: "none",
       }} />
 
-      {/* Number */}
       <div style={{ paddingTop: 2 }}>
         <span style={{
           fontFamily: "'Cormorant Garamond',Georgia,serif",
@@ -218,7 +229,6 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
 
         <h3 style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 500, color: INK, marginBottom: 10, lineHeight: 1.3 }}>{p.name}</h3>
 
-        {/* Screenshot */}
         {p.image && (
           <div style={{ marginBottom: 14, borderRadius: 7, overflow: "hidden", border: "1px solid rgba(14,10,4,0.07)", maxHeight: 180 }}>
             <div ref={imgRef} style={{ transformOrigin: "center center" }}>
@@ -263,30 +273,27 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
 }
 
 export default function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
   const { previewRef, active, onMouseMove, onEnter, onLeave } = useProjectPreview();
+
+  useGSAP(() => {
+    gsap.from(".proj-heading", {
+      scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
+      y: 30, opacity: 0, duration: 0.7, stagger: 0.08, ease: "power3.out",
+    });
+  }, { scope: sectionRef });
 
   return (
     <>
-      <style>{`
-        @keyframes cardReveal {
-          from { opacity:0; transform:translateY(40px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        .proj-card-reveal {
-          opacity: 0;
-          animation: cardReveal 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
-        }
-        @media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }
-      `}</style>
+      <style>{`@media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }`}</style>
 
       <ProjectPreviewCard previewRef={previewRef} active={active} />
 
-      <section id="work" style={{
+      <section id="work" ref={sectionRef} style={{
         background: "var(--bg-section)",
         padding: "clamp(72px,9vw,120px) clamp(20px,5vw,72px)",
         position: "relative",
       }}>
-        {/* Funky ghost text */}
         <span aria-hidden style={{
           position: "absolute", right: "clamp(12px,3vw,40px)", top: 60,
           fontFamily: "var(--font-display)", fontWeight: 800,
@@ -296,7 +303,7 @@ export default function Projects() {
         }}>WORK</span>
 
         <div style={{ maxWidth: 1140, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(32px,5vw,56px)" }}>
+          <div className="proj-heading" style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(32px,5vw,56px)" }}>
             <AnimatedHeading
               text="Selected"
               italic="projects"
@@ -312,14 +319,7 @@ export default function Projects() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: "clamp(20px,3vw,32px)" }}>
             {PROJECTS.map((p, i) => (
-              <ProjectCard
-                key={p.number}
-                p={p}
-                index={i}
-                onEnter={onEnter}
-                onLeave={onLeave}
-                onMouseMove={onMouseMove}
-              />
+              <ProjectCard key={p.number} p={p} index={i} onEnter={onEnter} onLeave={onLeave} onMouseMove={onMouseMove} />
             ))}
           </div>
         </div>
