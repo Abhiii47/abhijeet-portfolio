@@ -12,13 +12,6 @@ gsap.registerPlugin(ScrollTrigger);
 const ACCENT = "#C4400A";
 const INK    = "#0E0A04";
 
-const STATS = [
-  { end: 0.1,  suffix: "%",  prefix: "Top ", label: "Amazon ML School",  note: "of 100,000+ applicants" },
-  { end: 99.9, suffix: "%",  prefix: "",     label: "Cloud Uptime",       note: "post-migration at Ecovis" },
-  { end: 60,   suffix: "%",  prefix: "",     label: "Reporting Time Cut", note: "Next.js internal tooling" },
-  { end: 5,    suffix: "+",  prefix: "",     label: "Products Shipped",   note: "end-to-end in production" },
-];
-
 const STACK = ["Next.js","FastAPI","AWS","GCP","Python","TypeScript","PostgreSQL","Docker","RAG","XGBoost"];
 
 function Counter({ end, suffix, prefix, triggered }: { end: number; suffix: string; prefix: string; triggered: boolean }) {
@@ -30,7 +23,7 @@ function Counter({ end, suffix, prefix, triggered }: { end: number; suffix: stri
     const tick = (now: number) => {
       const p = Math.min((now - t0) / duration, 1);
       const v = (1 - Math.pow(1 - p, 3)) * end;
-      setVal(parseFloat((v).toFixed(end < 1 ? 1 : 0)));
+      setVal(parseFloat(v.toFixed(end < 1 ? 1 : 0)));
       if (p < 1) raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
@@ -39,14 +32,13 @@ function Counter({ end, suffix, prefix, triggered }: { end: number; suffix: stri
   return <span>{prefix}{end < 1 ? val.toFixed(1) : Math.round(val)}{suffix}</span>;
 }
 
-/* Tilt-on-hover util */
 function useTilt(strength = 8) {
   const ref = useRef<HTMLDivElement>(null);
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current; if (!el) return;
-    const r  = el.getBoundingClientRect();
-    const x  = ((e.clientX - r.left) / r.width  - 0.5) * strength;
-    const y  = ((e.clientY - r.top)  / r.height - 0.5) * -strength;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  - 0.5) *  strength;
+    const y = ((e.clientY - r.top)  / r.height - 0.5) * -strength;
     gsap.to(el, { rotateX: y, rotateY: x, duration: 0.25, ease: "power2.out", transformPerspective: 800 });
   };
   const onLeave = () => gsap.to(ref.current, { rotateX: 0, rotateY: 0, duration: 0.55, ease: "elastic.out(1,0.5)" });
@@ -59,7 +51,7 @@ function BentoCell({ children, style, delay = 0, className = "" }: {
   delay?: number;
   className?: string;
 }) {
-  const tilt   = useTilt(5);
+  const tilt    = useTilt(5);
   const cellRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
@@ -70,15 +62,31 @@ function BentoCell({ children, style, delay = 0, className = "" }: {
     });
   });
 
+  // Single combined ref callback
+  const setRef = (node: HTMLDivElement | null) => {
+    (cellRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    (tilt.ref  as React.MutableRefObject<HTMLDivElement | null>).current = node;
+  };
+
+  // Single combined onMouseLeave — no duplicate handlers
+  const handleLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget as HTMLDivElement;
+    el.style.boxShadow   = "none";
+    el.style.borderColor = "rgba(14,10,4,0.07)";
+    tilt.onLeave();
+  };
+
   return (
     <div
-      ref={(node) => {
-        (cellRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-        (tilt.ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-      }}
+      ref={setRef}
       className={className}
       onMouseMove={tilt.onMove}
-      onMouseLeave={tilt.onLeave}
+      onMouseEnter={e => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.boxShadow   = "0 12px 40px rgba(196,64,10,0.07)";
+        el.style.borderColor = "rgba(196,64,10,0.18)";
+      }}
+      onMouseLeave={handleLeave}
       style={{
         background: "var(--bg-card)",
         border: "1px solid rgba(14,10,4,0.07)",
@@ -90,15 +98,6 @@ function BentoCell({ children, style, delay = 0, className = "" }: {
         willChange: "transform",
         transformStyle: "preserve-3d",
         ...style,
-      }}
-      onMouseEnter={e => {
-        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 12px 40px rgba(196,64,10,0.07)";
-        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(196,64,10,0.18)";
-      }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
-        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(14,10,4,0.07)";
-        tilt.onLeave();
       }}
     >
       {children}
@@ -152,7 +151,6 @@ export default function About() {
         position: "relative", overflow: "hidden",
       }}
     >
-      {/* Ghost watermark */}
       <span aria-hidden style={{
         position: "absolute", right: "-2%", top: "50%", transform: "translateY(-50%)",
         fontFamily: "'Cormorant Garamond',Georgia,serif",
@@ -164,7 +162,6 @@ export default function About() {
 
       <div style={{ maxWidth: 1140, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
-        {/* Section label via AnimatedHeading */}
         <AnimatedHeading
           text="Building systems"
           italic="that ship."
@@ -174,7 +171,6 @@ export default function About() {
           fontFamily="'Cormorant Garamond',Georgia,serif"
         />
 
-        {/* Two-col copy */}
         <div className="about-2col" style={{
           display: "grid",
           gridTemplateColumns: "1.1fr 1fr",
@@ -209,7 +205,7 @@ export default function About() {
 
           <div className="ab-body" style={{ display: "flex", flexDirection: "column", gap: 22, paddingTop: 6 }}>
             {[
-              <>I&rsquo;ve been writing code that runs in production since my second year. Not toy projects &mdash; a room-finder with live users, a resume engine scoring <strong style={{ color: INK }}>50,000+ CVs</strong>, an OCR finance system processing receipts in real time.</>,
+              <>I&rsquo;ve been writing code that runs in production since my second year &mdash; a room-finder with live users, a resume engine scoring <strong style={{ color: INK }}>50,000+ CVs</strong>, an OCR finance system processing receipts in real time.</>,
               <>Right now I&rsquo;m at <strong style={{ color: INK }}>Ecovis RKCA</strong>: migrating legacy infra to AWS, building a RAG assistant on GCP, and acting as PM on a client-facing product &mdash; all at once.</>,
               <>I graduate in 2026. Looking for a backend, ML, or full-stack role where I can own something end-to-end from day one.</>,
             ].map((p, i) => (
@@ -233,8 +229,7 @@ export default function About() {
                     fontFamily: "var(--font-mono)",
                     fontSize: 9, letterSpacing: "0.24em",
                     textTransform: "uppercase", fontWeight: 600,
-                    textDecoration: "none",
-                    transition: "opacity 0.2s",
+                    textDecoration: "none", transition: "opacity 0.2s",
                   }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = "0.82")}
                   onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
@@ -260,127 +255,83 @@ export default function About() {
           </div>
         </div>
 
-        {/* ──────────── BENTO GRID ──────────── */}
+        {/* BENTO GRID */}
         <div
           ref={bentoRef}
           className="bento-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gridTemplateRows: "auto auto",
-            gap: 12,
-          }}
+          style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}
         >
-          {/* Cell 1 — wide stat: Top 0.1% */}
           <BentoCell delay={0} style={{ gridColumn: "span 2" }}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 12 }}>Amazon ML School</p>
-            <p style={{
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: "clamp(3rem,6vw,5.5rem)",
-              fontWeight: 700, lineHeight: 1, color: INK, marginBottom: 6,
-            }}>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:12 }}>Amazon ML School</p>
+            <p style={{ fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:"clamp(3rem,6vw,5.5rem)", fontWeight:700, lineHeight:1, color:INK, marginBottom:6 }}>
               <Counter end={0.1} suffix="%" prefix="Top " triggered={fired} />
             </p>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(14,10,4,0.38)", lineHeight: 1.4 }}>of 100,000+ applicants nationally</p>
-            {/* Rust accent corner */}
-            <div aria-hidden style={{
-              position: "absolute", bottom: 0, right: 0,
-              width: 60, height: 60,
-              background: `radial-gradient(circle at bottom right, ${ACCENT}18, transparent 70%)`,
-              pointerEvents: "none",
-            }} />
+            <p style={{ fontFamily:"var(--font-body)", fontSize:11, color:"rgba(14,10,4,0.38)", lineHeight:1.4 }}>of 100,000+ applicants nationally</p>
+            <div aria-hidden style={{ position:"absolute", bottom:0, right:0, width:60, height:60, background:`radial-gradient(circle at bottom right,${ACCENT}18,transparent 70%)`, pointerEvents:"none" }} />
           </BentoCell>
 
-          {/* Cell 2 — location */}
           <BentoCell delay={0.06}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 14 }}>Location</p>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:14 }}>Location</p>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                  fill={ACCENT} fillOpacity="0.7"/>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill={ACCENT} fillOpacity="0.7"/>
               </svg>
-              <span style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 22, fontWeight: 700, color: INK }}>Mumbai</span>
+              <span style={{ fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:22, fontWeight:700, color:INK }}>Mumbai</span>
             </div>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(14,10,4,0.38)" }}>India · Open to remote &amp; relocation</p>
+            <p style={{ fontFamily:"var(--font-body)", fontSize:11, color:"rgba(14,10,4,0.38)" }}>India · Open to remote &amp; relocation</p>
           </BentoCell>
 
-          {/* Cell 3 — availability */}
           <BentoCell delay={0.10}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 14 }}>Status</p>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span className="avail-dot" style={{ width: 9, height: 9, background: "#4ade80", display: "inline-block", borderRadius: "50%", flexShrink: 0 }} />
-              <span style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 20, fontWeight: 700, color: INK }}>Available</span>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:14 }}>Status</p>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
+              <span style={{ width:9, height:9, background:"#4ade80", display:"inline-block", borderRadius:"50%", flexShrink:0 }} />
+              <span style={{ fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:20, fontWeight:700, color:INK }}>Available</span>
             </div>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(14,10,4,0.38)" }}>June 2026 · Full-time roles</p>
+            <p style={{ fontFamily:"var(--font-body)", fontSize:11, color:"rgba(14,10,4,0.38)" }}>June 2026 · Full-time roles</p>
           </BentoCell>
 
-          {/* Cell 4 — uptime stat */}
           <BentoCell delay={0.04}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 12 }}>Cloud Uptime</p>
-            <p style={{
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: "clamp(2.2rem,4vw,3.5rem)",
-              fontWeight: 700, lineHeight: 1, color: INK, marginBottom: 6,
-            }}>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:12 }}>Cloud Uptime</p>
+            <p style={{ fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:"clamp(2.2rem,4vw,3.5rem)", fontWeight:700, lineHeight:1, color:INK, marginBottom:6 }}>
               <Counter end={99.9} suffix="%" prefix="" triggered={fired} />
             </p>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(14,10,4,0.38)", lineHeight: 1.4 }}>post-migration at Ecovis</p>
+            <p style={{ fontFamily:"var(--font-body)", fontSize:11, color:"rgba(14,10,4,0.38)", lineHeight:1.4 }}>post-migration at Ecovis</p>
           </BentoCell>
 
-          {/* Cell 5 — tech stack chips (wide) */}
           <BentoCell delay={0.14} style={{ gridColumn: "span 2" }}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 16 }}>Tech Stack</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:16 }}>Tech Stack</p>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
               {STACK.map((t, i) => (
-                <span
-                  key={t}
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10, letterSpacing: "0.12em",
-                    padding: "5px 11px", borderRadius: 6,
-                    background: i < 4 ? "rgba(196,64,10,0.08)" : "rgba(14,10,4,0.04)",
-                    border: i < 4 ? "1px solid rgba(196,64,10,0.22)" : "1px solid rgba(14,10,4,0.08)",
-                    color: i < 4 ? ACCENT : "rgba(14,10,4,0.45)",
-                    transition: "background 0.18s, border-color 0.18s, transform 0.18s",
-                    cursor: "default",
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(196,64,10,0.12)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                    (e.currentTarget as HTMLElement).style.background = i < 4 ? "rgba(196,64,10,0.08)" : "rgba(14,10,4,0.04)";
-                  }}
+                <span key={t} style={{
+                  fontFamily:"var(--font-mono)", fontSize:10, letterSpacing:"0.12em",
+                  padding:"5px 11px", borderRadius:6,
+                  background: i < 4 ? "rgba(196,64,10,0.08)" : "rgba(14,10,4,0.04)",
+                  border: i < 4 ? "1px solid rgba(196,64,10,0.22)" : "1px solid rgba(14,10,4,0.08)",
+                  color: i < 4 ? ACCENT : "rgba(14,10,4,0.45)",
+                  transition:"background 0.18s,border-color 0.18s,transform 0.18s",
+                  cursor:"default",
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform="translateY(-2px)"; (e.currentTarget as HTMLElement).style.background="rgba(196,64,10,0.12)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform="translateY(0)"; (e.currentTarget as HTMLElement).style.background = i < 4 ? "rgba(196,64,10,0.08)" : "rgba(14,10,4,0.04)"; }}
                 >{t}</span>
               ))}
             </div>
           </BentoCell>
 
-          {/* Cell 6 — reporting stat */}
           <BentoCell delay={0.18}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 12 }}>Reporting Cut</p>
-            <p style={{
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: "clamp(2.2rem,4vw,3.5rem)",
-              fontWeight: 700, lineHeight: 1, color: INK, marginBottom: 6,
-            }}>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:12 }}>Reporting Cut</p>
+            <p style={{ fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:"clamp(2.2rem,4vw,3.5rem)", fontWeight:700, lineHeight:1, color:INK, marginBottom:6 }}>
               <Counter end={60} suffix="%" prefix="" triggered={fired} />
             </p>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(14,10,4,0.38)", lineHeight: 1.4 }}>via Next.js internal tooling</p>
+            <p style={{ fontFamily:"var(--font-body)", fontSize:11, color:"rgba(14,10,4,0.38)", lineHeight:1.4 }}>via Next.js internal tooling</p>
           </BentoCell>
 
-          {/* Cell 7 — products shipped */}
           <BentoCell delay={0.22}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 12 }}>Shipped</p>
-            <p style={{
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: "clamp(2.2rem,4vw,3.5rem)",
-              fontWeight: 700, lineHeight: 1, color: INK, marginBottom: 6,
-            }}>
+            <p style={{ fontFamily:"var(--font-mono)", fontSize:9, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(14,10,4,0.30)", marginBottom:12 }}>Shipped</p>
+            <p style={{ fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:"clamp(2.2rem,4vw,3.5rem)", fontWeight:700, lineHeight:1, color:INK, marginBottom:6 }}>
               <Counter end={5} suffix="+" prefix="" triggered={fired} />
             </p>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(14,10,4,0.38)", lineHeight: 1.4 }}>products end-to-end in production</p>
+            <p style={{ fontFamily:"var(--font-body)", fontSize:11, color:"rgba(14,10,4,0.38)", lineHeight:1.4 }}>products end-to-end in production</p>
           </BentoCell>
         </div>
       </div>
@@ -389,11 +340,9 @@ export default function About() {
         @media(max-width:768px){
           .about-2col{ grid-template-columns:1fr!important; }
           .bento-grid{ grid-template-columns:1fr 1fr!important; }
-          .bento-grid > div[style*="span 2"]{ grid-column: span 2!important; }
         }
         @media(max-width:480px){
           .bento-grid{ grid-template-columns:1fr!important; }
-          .bento-grid > div[style*="span 2"]{ grid-column: span 1!important; }
         }
       `}</style>
     </section>
