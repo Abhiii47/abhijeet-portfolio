@@ -1,295 +1,241 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+/**
+ * Entry.tsx — Main hero / landing section
+ * ResumeMatcher-style: Space Grotesk font, funky stickers, dashed borders,
+ * curly arrow, zigzag divider, 01/02/03 pain-point blocks
+ */
+
+import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import MagneticButton from "./MagneticButton";
+import {
+  RMSticker,
+  RMArrow,
+  RMZigzag,
+  RMPainPoints,
+  RMHr,
+  RMPullquote,
+} from "./RMDecorations";
 
-gsap.registerPlugin(ScrollTrigger);
+const ACCENT = "#C4400A";
+const INK    = "#0E0A04";
 
-const ACCENT  = "#C4400A";
-const ACCENT2 = "#A83408";
-const INK     = "#0E0A04";
-const CREAM   = "#F5F2EB";
-const ROLES   = ["SDE", "ML Engineer", "Cloud Engineer", "Product Manager", "Builder"];
-
-function useRoleCycler() {
-  const [text, setText]       = useState("");
-  const [roleIdx, setRoleIdx] = useState(0);
-  useEffect(() => {
-    const role = ROLES[roleIdx];
-    let i = 0, erasing = false;
-    let timeout: ReturnType<typeof setTimeout>;
-    const tick = () => {
-      if (!erasing) {
-        setText(role.slice(0, i + 1)); i++;
-        if (i === role.length) { timeout = setTimeout(() => { erasing = true; tick(); }, 1800); return; }
-      } else {
-        setText(role.slice(0, i - 1)); i--;
-        if (i === 0) { setRoleIdx(idx => (idx + 1) % ROLES.length); return; }
-      }
-      timeout = setTimeout(tick, erasing ? 40 : 68);
-    };
-    timeout = setTimeout(tick, 120);
-    return () => clearTimeout(timeout);
-  }, [roleIdx]);
-  return text;
-}
+const PAIN_POINTS = [
+  {
+    number: "01",
+    title: "The Generalist Trap",
+    body: "Recruiters see \"SDE & Product Manager\" and assume you\u2019re a diluted version of both. You\u2019re actually just rare.",
+  },
+  {
+    number: "02",
+    title: "The Silent Rejection",
+    body: "A portfolio without live projects is a resume in disguise. Every repo here ships.",
+  },
+  {
+    number: "03",
+    title: "The Experience Gap",
+    body: "50K resumes scored. 150K ML records processed. Top 0.1% nationally. The gap is already closed.",
+  },
+];
 
 export default function Entry() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const nameRef    = useRef<HTMLHeadingElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
-  const metaRef    = useRef<HTMLDivElement>(null);
-  const role       = useRoleCycler();
+  const sectionRef   = useRef<HTMLElement>(null);
+  const headRef      = useRef<HTMLHeadingElement>(null);
+  const subRef       = useRef<HTMLParagraphElement>(null);
+  const badgeRef     = useRef<HTMLDivElement>(null);
+  const arrowAreaRef = useRef<HTMLDivElement>(null);
+  const ctaRef       = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const el    = nameRef.current;
-    if (!el) return;
-    const scrambleLine = (node: Element, final: string) => {
-      let frame = 0;
-      const total = 18;
-      const id = setInterval(() => {
-        if (frame >= total) { (node as HTMLElement).textContent = final; clearInterval(id); return; }
-        const progress = frame / total;
-        const revealed = Math.floor(progress * final.length);
-        (node as HTMLElement).textContent = final.split("").map((ch, idx) =>
-          idx < revealed ? ch : ch === " " ? " " : chars[Math.floor(Math.random() * chars.length)]
-        ).join("");
-        frame++;
-      }, 55);
-    };
-    el.querySelectorAll(".name-line").forEach((line, i) => {
-      const final = (line as HTMLElement).dataset.text || "";
-      setTimeout(() => scrambleLine(line, final), 200 + i * 320);
-    });
-    gsap.from(".h-reveal", { y: 40, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out", delay: 0.3 });
-  }, { scope: sectionRef });
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-  useGSAP(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    gsap.to(nameRef.current, {
-      yPercent: -18, ease: "none",
-      scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: true },
-    });
-    gsap.to(taglineRef.current, {
-      yPercent: -10, opacity: 0, ease: "none",
-      scrollTrigger: { trigger: section, start: "top top", end: "60% top", scrub: true },
-    });
-    gsap.to(metaRef.current, {
-      yPercent: -6, opacity: 0, ease: "none",
-      scrollTrigger: { trigger: section, start: "top top", end: "45% top", scrub: true },
-    });
+    tl.from(badgeRef.current, { y: -16, opacity: 0, duration: 0.5 }, 0.2)
+      .from(headRef.current, { y: 40, opacity: 0, duration: 0.85 }, 0.4)
+      .from(subRef.current,  { y: 24, opacity: 0, duration: 0.65 }, 0.72)
+      .from(arrowAreaRef.current, { x: -20, opacity: 0, duration: 0.5 }, 0.95)
+      .from(ctaRef.current, { y: 20, opacity: 0, duration: 0.55 }, 1.05);
   }, { scope: sectionRef });
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Inter:wght@300;400;500&display=swap');
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-      `}</style>
-
-      <section
-        id="hero"
-        ref={sectionRef}
+    <section
+      ref={sectionRef}
+      id="hero"
+      style={{
+        background: "var(--bg-base)",
+        minHeight: "100dvh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "clamp(80px,10vw,140px) clamp(20px,5vw,72px) 0",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* ─ Background grid lines ─ */}
+      <div
+        aria-hidden
         style={{
-          minHeight: "100svh", background: CREAM,
-          display: "flex", flexDirection: "column",
-          justifyContent: "flex-end",
-          padding: "100px clamp(20px,5vw,72px) clamp(44px,6vw,72px)",
-          position: "relative", overflow: "hidden",
-        }}
-      >
-        <div aria-hidden style={{
-          position: "absolute", top: "-10%", right: "-5%",
-          width: "45vw", height: "45vh",
-          background: "radial-gradient(ellipse,rgba(196,64,10,0.04) 0%,transparent 65%)",
+          position: "absolute", inset: 0,
+          backgroundImage:
+            "linear-gradient(rgba(196,64,10,0.04) 1px, transparent 1px)," +
+            "linear-gradient(90deg, rgba(196,64,10,0.04) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
           pointerEvents: "none",
-        }} />
+        }}
+      />
 
-        {/* Top bar */}
-        <div style={{
-          position: "absolute",
-          top: "clamp(20px,3.5vw,36px)",
-          left: "clamp(20px,5vw,72px)",
-          right: "clamp(20px,5vw,72px)",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-        }}>
-          <a href="#hero" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-label="AK">
-              <path d="M3 25L9 8l6 17M5 17h8" stroke={INK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M20 8v17M20 17l8-9M20 17l8 9" stroke={ACCENT} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
+      <div style={{ maxWidth: 1140, margin: "0 auto", width: "100%", position: "relative" }}>
+
+        {/* ─ Top row: availability badge + stickers ─ */}
+        <div
+          ref={badgeRef}
+          style={{
+            display: "flex", alignItems: "center", flexWrap: "wrap",
+            gap: 12, marginBottom: "clamp(28px,4vw,48px)",
+          }}
+        >
+          {/* Available badge */}
           <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "6px 14px",
-            border: "1px solid rgba(74,222,128,0.30)",
-            borderRadius: 9999, background: "rgba(74,222,128,0.07)",
+            display: "inline-flex", alignItems: "center", gap: 7,
+            background: "var(--bg-card)",
+            border: "1.5px dashed rgba(74,222,128,0.5)",
+            borderRadius: 4, padding: "6px 14px",
           }}>
-            <span className="avail-dot" style={{ width: 7, height: 7, background: "#4ade80", display: "inline-block" }} />
+            <span
+              className="avail-dot"
+              style={{ width: 7, height: 7, background: "#4ADE80", display: "inline-block" }}
+            />
             <span style={{
-              fontFamily: "'Inter',monospace", fontSize: 9,
-              letterSpacing: "0.28em", color: "rgba(34,197,94,0.9)",
-              textTransform: "uppercase",
-            }}>Available · June 2026</span>
+              fontFamily: "var(--font-mono)", fontSize: "0.6rem",
+              fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase",
+              color: INK,
+            }}>Open to Work</span>
           </div>
+
+          {/* Funky stickers */}
+          <RMSticker text="Mumbai, IN" rotate={-1.8} />
+          <RMSticker text="2026" accent rotate={2.2} wiggle />
+          <RMSticker text="SDE + PM" rotate={-2.5} />
         </div>
 
-        <div style={{ maxWidth: 1100, position: "relative", zIndex: 2 }}>
-          <p className="h-reveal" style={{
-            fontFamily: "'Inter',monospace", fontSize: 10,
-            letterSpacing: "0.42em", color: ACCENT,
-            textTransform: "uppercase",
+        {/* ─ Main heading ─ */}
+        <h1
+          ref={headRef}
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 800,
+            fontSize: "clamp(2.8rem,7vw,7.5rem)",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.0,
+            color: INK,
             marginBottom: "clamp(16px,2.5vw,28px)",
-          }}>Mumbai, India  ·  CE Student · 2026</p>
+          }}
+        >
+          Building things
+          <br />
+          <span style={{ color: ACCENT, fontStyle: "italic" }}>that ship.</span>
+        </h1>
 
-          <h1
-            ref={nameRef}
+        {/* ─ Subtitle row with curly arrow ─ */}
+        <div
+          ref={arrowAreaRef}
+          style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: "clamp(24px,3.5vw,40px)" }}
+        >
+          <RMArrow size={36} float />
+          <p
+            ref={subRef}
             style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: "clamp(5rem,16vw,14rem)",
-              fontWeight: 700, lineHeight: 0.88,
-              letterSpacing: "-0.02em", margin: 0,
-              willChange: "transform",
+              fontFamily: "var(--font-body)",
+              fontWeight: 300,
+              fontSize: "clamp(1rem,1.6vw,1.3rem)",
+              color: "rgba(14,10,4,0.55)",
+              lineHeight: 1.65,
+              maxWidth: "54ch",
             }}
           >
-            <span className="name-line" data-text="ABHIJEET" style={{ display: "block", color: INK }}>ABHIJEET</span>
-            <span className="name-line" data-text="KADU" style={{ display: "block", color: "transparent", WebkitTextStroke: `2px ${ACCENT}` }}>KADU</span>
-          </h1>
-
-          <div className="h-reveal" style={{
-            width: "100%", height: 1,
-            background: `linear-gradient(90deg,rgba(14,10,4,0.10) 0%,rgba(196,64,10,0.25) 40%,rgba(14,10,4,0.10) 100%)`,
-            margin: "clamp(20px,3vw,32px) 0",
-          }} />
-
-          <div className="h-reveal" style={{ display: "flex", alignItems: "center", gap: 14, minHeight: 24 }}>
-            <div style={{ width: 32, height: 1, background: `linear-gradient(90deg,${ACCENT},transparent)`, flexShrink: 0 }} />
-            <span style={{
-              fontFamily: "'Inter',monospace",
-              fontSize: "clamp(0.7rem,1.3vw,0.92rem)",
-              color: "rgba(14,10,4,0.42)",
-              letterSpacing: "0.16em", textTransform: "uppercase",
-            }}>
-              {role}
-              <span style={{
-                display: "inline-block", width: 1.5, height: "1em",
-                background: ACCENT, marginLeft: 3, verticalAlign: "middle",
-                animation: "blink 1s step-end infinite",
-              }} />
-            </span>
-          </div>
-
-          <p ref={taglineRef} className="h-reveal" style={{
-            marginTop: "clamp(16px,2vw,24px)",
-            fontFamily: "'Inter',sans-serif",
-            fontSize: "clamp(0.9rem,1.2vw,1.05rem)",
-            color: "rgba(14,10,4,0.38)",
-            maxWidth: "50ch", lineHeight: 1.65, fontWeight: 300,
-            willChange: "transform, opacity",
-          }}>I make things work. Then I make them fast.</p>
-
-          {/* ── Magnetic CTAs ── */}
-          <div className="h-reveal" style={{
-            marginTop: "clamp(32px,4vw,48px)",
-            display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
-          }}>
-            <MagneticButton strength={0.30}>
-              <a
-                href="#work"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 9,
-                  padding: "13px 30px",
-                  background: ACCENT, color: "#FFFCF6",
-                  borderRadius: 9999,
-                  fontFamily: "'Inter',monospace",
-                  fontSize: 10, letterSpacing: "0.24em",
-                  textTransform: "uppercase", fontWeight: 600,
-                  textDecoration: "none",
-                  transition: "background 0.18s",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = ACCENT2)}
-                onMouseLeave={e => (e.currentTarget.style.background = ACCENT)}
-              >
-                View Work
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                  <path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
-            </MagneticButton>
-
-            <MagneticButton strength={0.25}>
-              <a
-                href="#contact"
-                style={{
-                  display: "inline-flex", alignItems: "center",
-                  padding: "13px 30px",
-                  border: "1px solid rgba(14,10,4,0.14)",
-                  color: "rgba(14,10,4,0.50)",
-                  borderRadius: 9999,
-                  fontFamily: "'Inter',monospace",
-                  fontSize: 10, letterSpacing: "0.24em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  transition: "border-color 0.18s, color 0.18s",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.color = ACCENT; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(14,10,4,0.14)"; e.currentTarget.style.color = "rgba(14,10,4,0.50)"; }}
-              >Get in Touch</a>
-            </MagneticButton>
-          </div>
-
-          <div ref={metaRef} className="h-reveal" style={{
-            marginTop: "clamp(40px,5vw,64px)",
-            display: "flex", gap: 40, flexWrap: "wrap",
-            willChange: "transform, opacity",
-          }}>
-            {[
-              ["Role",    "SDE & Product Manager"],
-              ["Company", "Ecovis RKCA"],
-              ["Stack",   "AWS · GCP · Next.js · ML"],
-              ["Status",  "Open to 2026 roles"],
-            ].map(([k, v]) => (
-              <div key={k}>
-                <p style={{
-                  fontFamily: "'Inter',monospace", fontSize: 8,
-                  letterSpacing: "0.32em", color: "rgba(14,10,4,0.22)",
-                  textTransform: "uppercase", marginBottom: 5,
-                }}>{k}</p>
-                <p style={{
-                  fontFamily: "'Inter',monospace", fontSize: 11,
-                  color: "rgba(14,10,4,0.45)", letterSpacing: "0.04em",
-                }}>{v}</p>
-              </div>
-            ))}
-          </div>
+            SDE · Product Manager · ML Engineer.
+            Full-stack from Jupyter notebooks to
+            production deployments.
+            Mumbai-based, globally useful.
+          </p>
         </div>
 
-        {/* Scroll indicator */}
-        <div style={{
-          position: "absolute",
-          bottom: "clamp(24px,4vw,40px)",
-          right: "clamp(20px,5vw,72px)",
-          display: "flex", flexDirection: "column",
-          alignItems: "center", gap: 8, opacity: 0.28,
-        }}>
-          <span style={{
-            fontFamily: "'Inter',monospace", fontSize: 8,
-            letterSpacing: "0.32em", color: INK,
-            textTransform: "uppercase", writingMode: "vertical-rl",
-          }}>Scroll</span>
-          <div style={{ width: 1, height: 44, background: `linear-gradient(to bottom,${ACCENT},transparent)` }} />
+        {/* ─ Pullquote ─ */}
+        <RMPullquote style={{ maxWidth: 540, marginBottom: "clamp(28px,4vw,48px)" }}>
+          &ldquo;Stop guessing what good engineers look like. Here’s one.”
+        </RMPullquote>
+
+        {/* ─ CTA row ─ */}
+        <div
+          ref={ctaRef}
+          style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "clamp(48px,7vw,96px)" }}
+        >
+          <a
+            href="#work"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "0.68rem",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              padding: "12px 28px",
+              background: ACCENT,
+              color: "#fff",
+              borderRadius: 4,
+              textDecoration: "none",
+              boxShadow: `3px 3px 0 rgba(14,10,4,0.30)`,
+              transition: "transform 0.18s, box-shadow 0.18s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLAnchorElement).style.transform = "translate(-2px,-2px)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "5px 5px 0 rgba(14,10,4,0.30)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLAnchorElement).style.transform = "";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "3px 3px 0 rgba(14,10,4,0.30)";
+            }}
+          >
+            View Work ↗
+          </a>
+          <a
+            href="#contact"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "0.68rem",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              padding: "12px 28px",
+              background: "transparent",
+              color: INK,
+              border: "1.5px solid rgba(14,10,4,0.22)",
+              borderRadius: 4,
+              textDecoration: "none",
+              transition: "border-color 0.18s, background 0.18s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = ACCENT;
+              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(196,64,10,0.04)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(14,10,4,0.22)";
+              (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+            }}
+          >
+            Let’s Talk
+          </a>
         </div>
 
-        <div aria-hidden style={{
-          position: "absolute", bottom: 0, left: 0, right: 0, height: 1,
-          background: `linear-gradient(90deg,transparent 0%,rgba(196,64,10,0.30) 30%,rgba(196,64,10,0.30) 70%,transparent 100%)`,
-        }} />
-      </section>
-    </>
+        {/* ─ Pain point blocks (RM 01/02/03 style) ─ */}
+        <RMHr label="why me though" />
+        <RMPainPoints items={PAIN_POINTS} />
+      </div>
+
+      {/* ─ Zigzag bottom edge ─ */}
+      <div style={{ marginTop: "clamp(48px,7vw,80px)" }}>
+        <RMZigzag />
+      </div>
+    </section>
   );
 }
