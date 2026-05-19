@@ -28,37 +28,30 @@ export default function Entry() {
   const arrowAreaRef = useRef<HTMLDivElement>(null);
   const ctaRef       = useRef<HTMLDivElement>(null);
   const painRef      = useRef<HTMLDivElement>(null);
+  const pullRef      = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    // Hero entrance
+    // Hero entrance — fromTo so end state is always guaranteed
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(nameRef.current,      { y: -20, opacity: 0, duration: 0.55 }, 0)
-      .from(badgeRef.current,     { y: -16, opacity: 0, duration: 0.5  }, 0.25)
-      .from(headRef.current,      { y: 40,  opacity: 0, duration: 0.85 }, 0.45)
-      .from(subRef.current,       { y: 24,  opacity: 0, duration: 0.65 }, 0.72)
-      .from(arrowAreaRef.current, { x: -20, opacity: 0, duration: 0.5  }, 0.90)
-      .from(ctaRef.current,       { y: 20,  opacity: 0, duration: 0.55 }, 1.0);
+    tl.fromTo(nameRef.current,      { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, 0)
+      .fromTo(badgeRef.current,     { y: -16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5  }, 0.25)
+      .fromTo(headRef.current,      { y: 40,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.85 }, 0.45)
+      .fromTo(subRef.current,       { y: 24,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.65 }, 0.72)
+      .fromTo(arrowAreaRef.current, { x: -20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5  }, 0.90)
+      .fromTo(pullRef.current,      { y: 18,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, 0.95)
+      .fromTo(ctaRef.current,       { y: 20,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, 1.0);
 
-    // Pain-point cards — staggered scroll reveal
-    gsap.from(".pain-card", {
-      scrollTrigger: {
-        trigger: painRef.current,
-        start: "top 88%",
-        once: true,
-      },
-      y: 44,
-      opacity: 0,
-      scale: 0.97,
-      duration: 0.65,
-      stagger: 0.12,
-      ease: "power3.out",
-    });
-
-    // RMHr line draws in
-    gsap.from(".pain-hr", {
-      scrollTrigger: { trigger: painRef.current, start: "top 90%", once: true },
-      scaleX: 0, opacity: 0, duration: 0.7, ease: "power2.inOut",
-      transformOrigin: "left center",
+    // Pain-point cards
+    const cards = gsap.utils.toArray<HTMLElement>(".pain-card");
+    cards.forEach((card, i) => {
+      gsap.fromTo(card,
+        { y: 44, opacity: 0, scale: 0.97 },
+        {
+          y: 0, opacity: 1, scale: 1,
+          duration: 0.65, delay: i * 0.12, ease: "power3.out",
+          scrollTrigger: { trigger: painRef.current, start: "top 88%", once: true },
+        }
+      );
     });
   }, { scope: sectionRef });
 
@@ -90,7 +83,7 @@ export default function Entry() {
       <div style={{ maxWidth: 1140, margin: "0 auto", width: "100%", position: "relative" }}>
 
         {/* Name label */}
-        <div ref={nameRef} style={{ marginBottom: "clamp(16px,2.5vw,24px)" }}>
+        <div ref={nameRef}>
           <span style={{
             fontFamily: "var(--font-mono)", fontSize: "clamp(0.62rem,1vw,0.78rem)",
             fontWeight: 700, letterSpacing: "0.35em", textTransform: "uppercase", color: ACCENT,
@@ -98,7 +91,7 @@ export default function Entry() {
         </div>
 
         {/* Badges */}
-        <div ref={badgeRef} style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: "clamp(28px,4vw,48px)" }}>
+        <div ref={badgeRef} style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, margin: "clamp(16px,2.5vw,24px) 0 clamp(28px,4vw,48px)" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "var(--bg-card)", border: "1.5px dashed rgba(74,222,128,0.5)", borderRadius: 4, padding: "6px 14px" }}>
             <span className="avail-dot" style={{ width: 7, height: 7, background: "#4ADE80", display: "inline-block", borderRadius: "50%" }} />
             <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: INK }}>Open to Work</span>
@@ -134,29 +127,29 @@ export default function Entry() {
         </div>
 
         {/* Pullquote */}
-        <RMPullquote style={{ maxWidth: 520, marginBottom: "clamp(24px,3.5vw,40px)" }}>
-          &ldquo;Stop guessing what good engineers look like. Here&rsquo;s one.&rdquo;
-        </RMPullquote>
+        <div ref={pullRef}>
+          <RMPullquote style={{ maxWidth: 520, marginBottom: "clamp(24px,3.5vw,40px)" }}>
+            &ldquo;Stop guessing what good engineers look like. Here&rsquo;s one.&rdquo;
+          </RMPullquote>
+        </div>
 
         {/* CTAs */}
         <div ref={ctaRef} style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "clamp(48px,7vw,96px)" }}>
           <a href="#work"
             style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", padding: "12px 28px", background: ACCENT, color: "#fff", borderRadius: 4, textDecoration: "none", boxShadow: "3px 3px 0 rgba(14,10,4,0.28)", transition: "transform 0.16s,box-shadow 0.16s" }}
-            onMouseEnter={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.transform = "translate(-2px,-2px)"; a.style.boxShadow = "5px 5px 0 rgba(14,10,4,0.28)"; }}
-            onMouseLeave={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.transform = ""; a.style.boxShadow = "3px 3px 0 rgba(14,10,4,0.28)"; }}
+            onMouseEnter={e => { const a = e.currentTarget; a.style.transform = "translate(-2px,-2px)"; a.style.boxShadow = "5px 5px 0 rgba(14,10,4,0.28)"; }}
+            onMouseLeave={e => { const a = e.currentTarget; a.style.transform = ""; a.style.boxShadow = "3px 3px 0 rgba(14,10,4,0.28)"; }}
           >View Work ↗</a>
           <a href="#contact"
             style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", padding: "12px 28px", background: "transparent", color: INK, border: "1.5px solid rgba(14,10,4,0.22)", borderRadius: 4, textDecoration: "none", transition: "border-color 0.18s,background 0.18s" }}
-            onMouseEnter={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.borderColor = ACCENT; a.style.background = "rgba(196,64,10,0.04)"; }}
-            onMouseLeave={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.borderColor = "rgba(14,10,4,0.22)"; a.style.background = "transparent"; }}
+            onMouseEnter={e => { const a = e.currentTarget; a.style.borderColor = ACCENT; a.style.background = "rgba(196,64,10,0.04)"; }}
+            onMouseLeave={e => { const a = e.currentTarget; a.style.borderColor = "rgba(14,10,4,0.22)"; a.style.background = "transparent"; }}
           >Let&rsquo;s Talk</a>
         </div>
 
         {/* Pain-point grid */}
         <div ref={painRef}>
-          <div className="pain-hr">
-            <RMHr label="why me though" />
-          </div>
+          <RMHr label="why me though" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(280px,100%),1fr))", gap: "clamp(10px,1.5vw,16px)", marginTop: 8 }}>
             {PAIN_POINTS.map((pp) => (
               <div key={pp.number} className="pain-card" style={{
@@ -182,7 +175,6 @@ export default function Entry() {
         </div>
       </div>
 
-      {/* Zigzag */}
       <div style={{ marginTop: "clamp(48px,7vw,80px)" }}>
         <RMZigzag />
       </div>

@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
 import HorizontalParallax from "./HorizontalParallax";
+import { RMHr, RMZigzag, RMSticker } from "./RMDecorations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,10 +55,14 @@ const EXP = [
 ];
 
 export default function Experience() {
-  const ref    = useRef<HTMLElement>(null);
-  const svgRef = useRef<SVGPathElement>(null);
+  const ref     = useRef<HTMLElement>(null);
+  const svgRef  = useRef<SVGPathElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
+  const cardRefs   = useRef<(HTMLDivElement | null)[]>([]);
+  const dotRefs    = useRef<(HTMLDivElement | null)[]>([]);
+  const bulletRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   // SVG timeline line draws on scroll
   useEffect(() => {
@@ -80,46 +85,39 @@ export default function Experience() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Staggered card reveal — each card slides up and fades in when it enters viewport
   useGSAP(() => {
-    const cards = gsap.utils.toArray<HTMLElement>(".ex-card");
-    cards.forEach((card, i) => {
-      gsap.from(card, {
-        scrollTrigger: {
-          trigger: card,
-          start: "top 88%",
-          once: true,
-        },
-        y: 48,
-        opacity: 0,
-        duration: 0.75,
-        delay: i * 0.08,
-        ease: "power3.out",
-      });
+    // Heading
+    gsap.fromTo(headRef.current,
+      { y: 32, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.75, ease: "power3.out",
+        scrollTrigger: { trigger: headRef.current, start: "top 85%", once: true } }
+    );
+    // Cards — individual refs, no class selector
+    cardRefs.current.forEach((card, i) => {
+      if (!card) return;
+      gsap.fromTo(card,
+        { y: 48, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.75, delay: i * 0.08, ease: "power3.out",
+          scrollTrigger: { trigger: card, start: "top 88%", once: true } }
+      );
     });
-
-    // Dot pops in with a bounce for each card
-    const dots = gsap.utils.toArray<HTMLElement>(".ex-dot");
-    dots.forEach((dot, i) => {
-      gsap.from(dot, {
-        scrollTrigger: { trigger: dot, start: "top 90%", once: true },
-        scale: 0,
-        opacity: 0,
-        duration: 0.45,
-        delay: i * 0.08 + 0.15,
-        ease: "back.out(2.5)",
-      });
+    // Dots
+    dotRefs.current.forEach((dot, i) => {
+      if (!dot) return;
+      gsap.fromTo(dot,
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.45, delay: i * 0.08 + 0.15, ease: "back.out(2.5)",
+          scrollTrigger: { trigger: dot, start: "top 90%", once: true } }
+      );
     });
-
-    // Bullet points stagger inside each card
-    gsap.from(".ex-bullet", {
-      scrollTrigger: { trigger: listRef.current, start: "top 82%", once: true },
-      x: -16,
-      opacity: 0,
-      duration: 0.45,
-      stagger: 0.055,
-      ease: "power2.out",
-      delay: 0.3,
+    // Bullets
+    bulletRefs.current.forEach((li, i) => {
+      if (!li) return;
+      gsap.fromTo(li,
+        { x: -16, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.45, delay: 0.3 + i * 0.055, ease: "power2.out",
+          scrollTrigger: { trigger: listRef.current, start: "top 82%", once: true } }
+      );
     });
   }, { scope: ref });
 
@@ -142,14 +140,18 @@ export default function Experience() {
       />
 
       <div style={{ maxWidth: 800, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <AnimatedHeading
-          text="Where I've"
-          italic="shipped."
-          section="02"
-          color={INK}
-          accentColor={ACCENT}
-          fontFamily="'Cormorant Garamond',Georgia,serif"
-        />
+        <div ref={headRef}>
+          <AnimatedHeading
+            text="Where I've"
+            italic="shipped."
+            section="02"
+            color={INK}
+            accentColor={ACCENT}
+            fontFamily="'Cormorant Garamond',Georgia,serif"
+          />
+        </div>
+
+        <RMHr label="work history" />
 
         <div style={{ position: "relative" }} ref={listRef}>
           {/* SVG timeline line */}
@@ -168,89 +170,102 @@ export default function Experience() {
           </svg>
 
           <div style={{ paddingLeft: 36, display: "flex", flexDirection: "column" }}>
-            {EXP.map((e, i) => (
-              <div
-                key={i}
-                style={{ position: "relative", paddingBottom: i < EXP.length - 1 ? "clamp(32px,5vw,56px)" : 0 }}
-              >
-                {/* Animated dot */}
-                <div className="ex-dot" style={{
-                  position: "absolute", left: -40, top: 8,
-                  width: 10, height: 10, borderRadius: "50%",
-                  background: active === i ? ACCENT : "rgba(14,10,4,0.12)",
-                  border: `1px solid ${active === i ? ACCENT : "rgba(14,10,4,0.10)"}`,
-                  boxShadow: active === i ? `0 0 14px rgba(196,64,10,0.50)` : "none",
-                  transition: "background 0.25s,box-shadow 0.25s",
-                  zIndex: 2,
-                }} />
-
-                {/* Card */}
+            {EXP.map((e, i) => {
+              let bulletIndex = 0;
+              EXP.slice(0, i).forEach(prev => { bulletIndex += prev.points.length; });
+              return (
                 <div
-                  className="ex-card"
-                  onMouseEnter={() => setActive(i)}
-                  onMouseLeave={() => setActive(null)}
-                  style={{
-                    padding: "clamp(20px,3vw,32px)",
-                    border: `1px solid ${active === i ? "rgba(196,64,10,0.18)" : "rgba(14,10,4,0.07)"}`,
-                    borderRadius: 12,
-                    background: active === i ? "rgba(196,64,10,0.025)" : "var(--bg-card)",
-                    transition: "border-color 0.25s,background 0.25s,box-shadow 0.25s",
-                    boxShadow: active === i ? "0 8px 32px rgba(196,64,10,0.07)" : "none",
-                  }}
+                  key={i}
+                  style={{ position: "relative", paddingBottom: i < EXP.length - 1 ? "clamp(32px,5vw,56px)" : 0 }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-                    <div>
-                      {e.current && (
-                        <span style={{
-                          display: "inline-flex", alignItems: "center", gap: 5,
-                          fontFamily: "var(--font-mono)", fontSize: 8,
-                          letterSpacing: "0.3em", textTransform: "uppercase",
-                          color: ACCENT, padding: "3px 10px", borderRadius: 9999,
-                          border: `1px solid rgba(196,64,10,0.22)`,
-                          background: "rgba(196,64,10,0.04)", marginBottom: 10,
-                        }}>
-                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "expPulse 2s infinite", display: "inline-block" }} />
-                          Current
-                        </span>
-                      )}
-                      <h3 style={{
-                        fontFamily: "'Cormorant Garamond',Georgia,serif",
-                        fontSize: "clamp(1.05rem,2vw,1.35rem)",
-                        fontWeight: 600, color: INK, lineHeight: 1.2, margin: 0,
-                      }}>{e.role}</h3>
-                      <p style={{
-                        fontFamily: "var(--font-mono)", fontSize: 10,
-                        color: ACCENT, marginTop: 6, letterSpacing: "0.1em",
-                      }}>{e.company}</p>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "rgba(14,10,4,0.35)", letterSpacing: "0.15em" }}>{e.period}</span>
-                      <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: 8,
-                        padding: "2px 8px", borderRadius: 9999,
-                        background: "rgba(14,10,4,0.05)", color: "rgba(14,10,4,0.38)",
-                        letterSpacing: "0.15em", textTransform: "uppercase",
-                      }}>{e.type}</span>
-                    </div>
-                  </div>
+                  {/* Dot */}
+                  <div ref={el => { dotRefs.current[i] = el; }} style={{
+                    position: "absolute", left: -40, top: 8,
+                    width: 10, height: 10, borderRadius: "50%",
+                    background: active === i ? ACCENT : "rgba(14,10,4,0.12)",
+                    border: `1px solid ${active === i ? ACCENT : "rgba(14,10,4,0.10)"}`,
+                    boxShadow: active === i ? `0 0 14px rgba(196,64,10,0.50)` : "none",
+                    transition: "background 0.25s,box-shadow 0.25s",
+                    zIndex: 2,
+                  }} />
 
-                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
-                    {e.points.map((pt, j) => (
-                      <li key={j} className="ex-bullet" style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
-                        <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: `rgba(196,64,10,0.50)`, flexShrink: 0 }} />
+                  {/* Card */}
+                  <div
+                    ref={el => { cardRefs.current[i] = el; }}
+                    onMouseEnter={() => setActive(i)}
+                    onMouseLeave={() => setActive(null)}
+                    style={{
+                      padding: "clamp(20px,3vw,32px)",
+                      border: `1px solid ${active === i ? "rgba(196,64,10,0.18)" : "rgba(14,10,4,0.07)"}`,
+                      borderRadius: 12,
+                      background: active === i ? "rgba(196,64,10,0.025)" : "var(--bg-card)",
+                      transition: "border-color 0.25s,background 0.25s,box-shadow 0.25s",
+                      boxShadow: active === i ? "0 8px 32px rgba(196,64,10,0.07)" : "none",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+                      <div>
+                        {e.current && (
+                          <span style={{
+                            display: "inline-flex", alignItems: "center", gap: 5,
+                            fontFamily: "var(--font-mono)", fontSize: 8,
+                            letterSpacing: "0.3em", textTransform: "uppercase",
+                            color: ACCENT, padding: "3px 10px", borderRadius: 9999,
+                            border: `1px solid rgba(196,64,10,0.22)`,
+                            background: "rgba(196,64,10,0.04)", marginBottom: 10,
+                          }}>
+                            <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "expPulse 2s infinite", display: "inline-block" }} />
+                            Current
+                          </span>
+                        )}
+                        {i === 1 && <RMSticker text="Microsoft DP-600" rotate={-1.5} style={{ display: "block", marginBottom: 8, width: "fit-content" }} />}
+                        {i === 2 && <RMSticker text="top 0.1%" accent rotate={2} style={{ display: "block", marginBottom: 8, width: "fit-content" }} />}
+                        <h3 style={{
+                          fontFamily: "'Cormorant Garamond',Georgia,serif",
+                          fontSize: "clamp(1.05rem,2vw,1.35rem)",
+                          fontWeight: 600, color: INK, lineHeight: 1.2, margin: 0,
+                        }}>{e.role}</h3>
+                        <p style={{
+                          fontFamily: "var(--font-mono)", fontSize: 10,
+                          color: ACCENT, marginTop: 6, letterSpacing: "0.1em",
+                        }}>{e.company}</p>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "rgba(14,10,4,0.35)", letterSpacing: "0.15em" }}>{e.period}</span>
                         <span style={{
-                          fontFamily: "var(--font-body)",
-                          fontSize: "clamp(0.8rem,1vw,0.88rem)",
-                          color: "rgba(14,10,4,0.55)", lineHeight: 1.65,
-                        }}>{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
+                          fontFamily: "var(--font-mono)", fontSize: 8,
+                          padding: "2px 8px", borderRadius: 9999,
+                          background: "rgba(14,10,4,0.05)", color: "rgba(14,10,4,0.38)",
+                          letterSpacing: "0.15em", textTransform: "uppercase",
+                        }}>{e.type}</span>
+                      </div>
+                    </div>
+
+                    <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
+                      {e.points.map((pt, j) => (
+                        <li
+                          key={j}
+                          ref={el => { bulletRefs.current[bulletIndex + j] = el; }}
+                          style={{ display: "flex", alignItems: "flex-start", gap: 11 }}
+                        >
+                          <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: `rgba(196,64,10,0.50)`, flexShrink: 0 }} />
+                          <span style={{
+                            fontFamily: "var(--font-body)",
+                            fontSize: "clamp(0.8rem,1vw,0.88rem)",
+                            color: "rgba(14,10,4,0.55)", lineHeight: 1.65,
+                          }}>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
+      </div>
+      <div style={{ marginTop: "clamp(40px,6vw,72px)" }}>
+        <RMZigzag color="rgba(196,64,10,0.07)" />
       </div>
       <style>{`@keyframes expPulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
     </section>
