@@ -3,18 +3,18 @@
 import { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { TextPlugin } from "gsap/TextPlugin";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(TextPlugin, ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
 
 const ACCENT  = "#C4400A";
-const ACCENT2 = "#E8572A"; // hover / brighter
-const BG      = "#0E0C0A";
+const ACCENT2 = "#A83408";
+const INK     = "#0E0A04";
+const CREAM   = "#F5F2EB";
 const ROLES   = ["SDE", "ML Engineer", "Cloud Engineer", "Product Manager", "Builder"];
 
 function useRoleCycler() {
-  const [text, setText] = useState("");
+  const [text, setText]       = useState("");
   const [roleIdx, setRoleIdx] = useState(0);
   useEffect(() => {
     const role = ROLES[roleIdx];
@@ -41,10 +41,9 @@ export default function Entry() {
   const nameRef    = useRef<HTMLHeadingElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
   const metaRef    = useRef<HTMLDivElement>(null);
-  const glowRef    = useRef<HTMLDivElement>(null);
   const role       = useRoleCycler();
 
-  /* ── Scramble + reveal ── */
+  /* Scramble + reveal */
   useGSAP(() => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const el    = nameRef.current;
@@ -69,7 +68,7 @@ export default function Entry() {
     gsap.from(".h-reveal", { y: 40, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out", delay: 0.3 });
   }, { scope: sectionRef });
 
-  /* ── Scroll parallax ── */
+  /* Scroll parallax */
   useGSAP(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -85,16 +84,12 @@ export default function Entry() {
       yPercent: -6, opacity: 0, ease: "none",
       scrollTrigger: { trigger: section, start: "top top", end: "45% top", scrub: true },
     });
-    gsap.to(glowRef.current, {
-      yPercent: -12, ease: "none",
-      scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: true },
-    });
   }, { scope: sectionRef });
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Inter:wght@300;400;500&display=swap');
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
       `}</style>
 
@@ -103,7 +98,7 @@ export default function Entry() {
         ref={sectionRef}
         style={{
           minHeight: "100svh",
-          background: BG,
+          background: CREAM,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
@@ -112,19 +107,11 @@ export default function Entry() {
           overflow: "hidden",
         }}
       >
-        {/* Warm ambient glow — rust tone */}
-        <div ref={glowRef} aria-hidden style={{
-          position: "absolute", top: "-15%", right: "-8%",
-          width: "55vw", height: "55vh",
-          background: "radial-gradient(ellipse,rgba(196,64,10,0.055) 0%,transparent 65%)",
-          pointerEvents: "none",
-        }} />
-
-        {/* Second glow — bottom left warm fill */}
+        {/* Subtle rust texture — top right */}
         <div aria-hidden style={{
-          position: "absolute", bottom: "-10%", left: "-5%",
-          width: "40vw", height: "40vh",
-          background: "radial-gradient(ellipse,rgba(196,64,10,0.03) 0%,transparent 70%)",
+          position: "absolute", top: "-10%", right: "-5%",
+          width: "45vw", height: "45vh",
+          background: "radial-gradient(ellipse,rgba(196,64,10,0.04) 0%,transparent 65%)",
           pointerEvents: "none",
         }} />
 
@@ -138,21 +125,21 @@ export default function Entry() {
         }}>
           <a href="#hero" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-label="AK">
-              <path d="M3 25L9 8l6 17M5 17h8" stroke="#F0EDE8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 25L9 8l6 17M5 17h8" stroke={INK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M20 8v17M20 17l8-9M20 17l8 9" stroke={ACCENT} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
           <div style={{
             display: "flex", alignItems: "center", gap: 8,
             padding: "6px 14px",
-            border: "1px solid rgba(74,222,128,0.25)",
+            border: "1px solid rgba(74,222,128,0.30)",
             borderRadius: 9999,
-            background: "rgba(74,222,128,0.06)",
+            background: "rgba(74,222,128,0.07)",
           }}>
             <span className="avail-dot" style={{ width: 7, height: 7, background: "#4ade80", display: "inline-block" }} />
             <span style={{
               fontFamily: "'Inter',monospace", fontSize: 9,
-              letterSpacing: "0.28em", color: "rgba(74,222,128,0.85)",
+              letterSpacing: "0.28em", color: "rgba(34,197,94,0.9)",
               textTransform: "uppercase",
             }}>Available · June 2026</span>
           </div>
@@ -166,21 +153,21 @@ export default function Entry() {
             letterSpacing: "0.42em", color: ACCENT,
             textTransform: "uppercase",
             marginBottom: "clamp(16px,2.5vw,28px)",
-          }}>Mumbai, India &nbsp;·&nbsp; CE Student · 2026</p>
+          }}>Mumbai, India  ·  CE Student · 2026</p>
 
           {/* Giant name */}
           <h1
             ref={nameRef}
             style={{
-              fontFamily: "'Bebas Neue','Arial Black',sans-serif",
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(5rem,16vw,14rem)",
-              fontWeight: 400, lineHeight: 0.88,
-              letterSpacing: "0.01em",
-              margin: 0, color: "#F0EDE8",
+              fontWeight: 700, lineHeight: 0.88,
+              letterSpacing: "-0.02em",
+              margin: 0,
               willChange: "transform",
             }}
           >
-            <span className="name-line" data-text="ABHIJEET" style={{ display: "block" }}>ABHIJEET</span>
+            <span className="name-line" data-text="ABHIJEET" style={{ display: "block", color: INK }}>ABHIJEET</span>
             <span
               className="name-line"
               data-text="KADU"
@@ -192,9 +179,15 @@ export default function Entry() {
             >KADU</span>
           </h1>
 
+          {/* Divider */}
+          <div className="h-reveal" style={{
+            width: "100%", height: 1,
+            background: `linear-gradient(90deg, rgba(14,10,4,0.10) 0%, rgba(196,64,10,0.25) 40%, rgba(14,10,4,0.10) 100%)`,
+            margin: "clamp(20px,3vw,32px) 0",
+          }} />
+
           {/* Role row */}
           <div className="h-reveal" style={{
-            marginTop: "clamp(20px,3vw,32px)",
             display: "flex", alignItems: "center", gap: 14, minHeight: 24,
           }}>
             <div style={{
@@ -205,7 +198,7 @@ export default function Entry() {
             <span style={{
               fontFamily: "'Inter',monospace",
               fontSize: "clamp(0.7rem,1.3vw,0.92rem)",
-              color: "rgba(240,237,232,0.5)",
+              color: "rgba(14,10,4,0.42)",
               letterSpacing: "0.16em", textTransform: "uppercase",
             }}>
               {role}
@@ -226,7 +219,7 @@ export default function Entry() {
               marginTop: "clamp(16px,2vw,24px)",
               fontFamily: "'Inter',sans-serif",
               fontSize: "clamp(0.9rem,1.2vw,1.05rem)",
-              color: "rgba(240,237,232,0.30)",
+              color: "rgba(14,10,4,0.38)",
               maxWidth: "50ch", lineHeight: 1.65, fontWeight: 300,
               willChange: "transform, opacity",
             }}
@@ -244,7 +237,7 @@ export default function Entry() {
               style={{
                 display: "inline-flex", alignItems: "center", gap: 9,
                 padding: "13px 30px",
-                background: ACCENT, color: "#F0EDE8",
+                background: ACCENT, color: "#FFFCF6",
                 borderRadius: 9999,
                 fontFamily: "'Inter',monospace",
                 fontSize: 10, letterSpacing: "0.24em",
@@ -265,8 +258,8 @@ export default function Entry() {
               style={{
                 display: "inline-flex", alignItems: "center",
                 padding: "13px 30px",
-                border: "1px solid rgba(240,237,232,0.14)",
-                color: "rgba(240,237,232,0.45)",
+                border: `1px solid rgba(14,10,4,0.14)`,
+                color: "rgba(14,10,4,0.50)",
                 borderRadius: 9999,
                 fontFamily: "'Inter',monospace",
                 fontSize: 10, letterSpacing: "0.24em",
@@ -275,7 +268,7 @@ export default function Entry() {
                 transition: "border-color 0.18s, color 0.18s, transform 0.18s",
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.color = ACCENT; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(240,237,232,0.14)"; e.currentTarget.style.color = "rgba(240,237,232,0.45)"; e.currentTarget.style.transform = "translateY(0)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(14,10,4,0.14)"; e.currentTarget.style.color = "rgba(14,10,4,0.50)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >Get in Touch</a>
           </div>
 
@@ -298,12 +291,12 @@ export default function Entry() {
               <div key={k}>
                 <p style={{
                   fontFamily: "'Inter',monospace", fontSize: 8,
-                  letterSpacing: "0.32em", color: "rgba(240,237,232,0.18)",
+                  letterSpacing: "0.32em", color: "rgba(14,10,4,0.22)",
                   textTransform: "uppercase", marginBottom: 5,
                 }}>{k}</p>
                 <p style={{
                   fontFamily: "'Inter',monospace", fontSize: 11,
-                  color: "rgba(240,237,232,0.5)", letterSpacing: "0.04em",
+                  color: "rgba(14,10,4,0.45)", letterSpacing: "0.04em",
                 }}>{v}</p>
               </div>
             ))}
@@ -316,24 +309,24 @@ export default function Entry() {
           bottom: "clamp(24px,4vw,40px)",
           right: "clamp(20px,5vw,72px)",
           display: "flex", flexDirection: "column",
-          alignItems: "center", gap: 8, opacity: 0.22,
+          alignItems: "center", gap: 8, opacity: 0.28,
         }}>
           <span style={{
             fontFamily: "'Inter',monospace", fontSize: 8,
-            letterSpacing: "0.32em", color: "white",
+            letterSpacing: "0.32em", color: INK,
             textTransform: "uppercase", writingMode: "vertical-rl",
           }}>Scroll</span>
           <div style={{
             width: 1, height: 44,
-            background: "linear-gradient(to bottom,rgba(255,255,255,0.5),transparent)",
+            background: `linear-gradient(to bottom,${ACCENT},transparent)`,
           }} />
         </div>
 
-        {/* Bottom accent line — rust */}
+        {/* Bottom rust divider */}
         <div aria-hidden style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
           height: 1,
-          background: `linear-gradient(90deg,transparent 0%,${ACCENT}50 30%,${ACCENT}50 70%,transparent 100%)`,
+          background: `linear-gradient(90deg,transparent 0%,rgba(196,64,10,0.30) 30%,rgba(196,64,10,0.30) 70%,transparent 100%)`,
         }} />
       </section>
     </>
