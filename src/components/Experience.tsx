@@ -8,7 +8,8 @@ import AnimatedHeading from "./AnimatedHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = "#00d4ff";
+const ACCENT = "#C4400A";
+const INK    = "#0E0A04";
 
 const EXP = [
   {
@@ -56,7 +57,7 @@ export default function Experience() {
   const lineRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
 
-  /* Scroll-driven timeline line fill */
+  /* Scroll-driven timeline fill */
   useEffect(() => {
     const fn = () => {
       const el = ref.current;
@@ -81,8 +82,8 @@ export default function Experience() {
       id="experience"
       ref={ref}
       style={{
-        background: "var(--bg-section)",
-        color: "var(--ink)",
+        background: "var(--bg-base)",
+        color: INK,
         padding: "clamp(72px,10vw,120px) clamp(24px,6vw,80px)",
         position: "relative", overflow: "hidden",
       }}
@@ -90,10 +91,10 @@ export default function Experience() {
       {/* Ghost number */}
       <span aria-hidden style={{
         position: "absolute", right: "2%", top: "50%", transform: "translateY(-50%)",
-        fontFamily: "'Bebas Neue','Arial Black',sans-serif",
-        fontSize: "clamp(8rem,20vw,20rem)", fontWeight: 900, lineHeight: 1,
+        fontFamily: "'Cormorant Garamond',Georgia,serif",
+        fontSize: "clamp(8rem,20vw,20rem)", fontWeight: 700, lineHeight: 1,
         color: "transparent",
-        WebkitTextStroke: "1px rgba(0,212,255,0.03)",
+        WebkitTextStroke: "1px rgba(14,10,4,0.04)",
         pointerEvents: "none", userSelect: "none",
       }}>02</span>
 
@@ -103,18 +104,18 @@ export default function Experience() {
           text="Where I've"
           italic="shipped."
           section="02"
-          color="var(--ink, #f0ede8)"
-          accentColor="#00d4ff"
+          color={INK}
+          accentColor={ACCENT}
           fontFamily="'Cormorant Garamond',Georgia,serif"
         />
 
         <div style={{ position: "relative" }}>
           {/* Track */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 1, background: "rgba(255,255,255,0.05)" }} />
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 1, background: "rgba(14,10,4,0.08)" }} />
           {/* Fill */}
           <div ref={lineRef} style={{
             position: "absolute", left: 0, top: 0, width: 1, height: "0%",
-            background: ACCENT, boxShadow: `0 0 8px ${ACCENT}`,
+            background: ACCENT,
             transition: "height 0.1s linear",
           }} />
 
@@ -131,18 +132,18 @@ export default function Experience() {
                 <div style={{
                   position: "absolute", left: -40, top: 8,
                   width: 10, height: 10, borderRadius: "50%",
-                  background: active === i ? ACCENT : "rgba(255,255,255,0.12)",
-                  border: `1px solid ${active === i ? ACCENT : "rgba(255,255,255,0.08)"}`,
-                  boxShadow: active === i ? `0 0 14px ${ACCENT}` : "none",
+                  background: active === i ? ACCENT : "rgba(14,10,4,0.12)",
+                  border: `1px solid ${active === i ? ACCENT : "rgba(14,10,4,0.10)"}`,
+                  boxShadow: active === i ? `0 0 10px rgba(196,64,10,0.35)` : "none",
                   transition: "all 0.25s ease",
                 }} />
 
                 {/* Card */}
                 <div style={{
                   padding: "clamp(20px,3vw,32px)",
-                  border: `1px solid ${active === i ? "rgba(0,212,255,0.18)" : "rgba(255,255,255,0.05)"}`,
+                  border: `1px solid ${active === i ? "rgba(196,64,10,0.18)" : "rgba(14,10,4,0.07)"}`,
                   borderRadius: 12,
-                  background: active === i ? "rgba(0,212,255,0.025)" : "transparent",
+                  background: active === i ? "rgba(196,64,10,0.025)" : "var(--bg-card)",
                   transition: "border-color 0.25s, background 0.25s",
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
@@ -153,7 +154,9 @@ export default function Experience() {
                           fontFamily: "var(--font-mono)", fontSize: 8,
                           letterSpacing: "0.3em", textTransform: "uppercase",
                           color: ACCENT, padding: "3px 10px", borderRadius: 9999,
-                          border: `1px solid rgba(0,212,255,0.22)`, marginBottom: 10,
+                          border: `1px solid rgba(196,64,10,0.22)`,
+                          background: "rgba(196,64,10,0.04)",
+                          marginBottom: 10,
                         }}>
                           <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "pulse 2s infinite", display: "inline-block" }} />
                           Current
@@ -162,7 +165,7 @@ export default function Experience() {
                       <h3 style={{
                         fontFamily: "'Cormorant Garamond',Georgia,serif",
                         fontSize: "clamp(1.05rem,2vw,1.35rem)",
-                        fontWeight: 600, color: "var(--ink)",
+                        fontWeight: 600, color: INK,
                         lineHeight: 1.2, margin: 0,
                       }}>{e.role}</h3>
                       <p style={{
@@ -171,12 +174,12 @@ export default function Experience() {
                       }}>{e.company}</p>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--ink-hint)", letterSpacing: "0.15em" }}>{e.period}</span>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "rgba(14,10,4,0.35)", letterSpacing: "0.15em" }}>{e.period}</span>
                       <span style={{
                         fontFamily: "var(--font-mono)", fontSize: 8,
                         padding: "2px 8px", borderRadius: 9999,
-                        background: "rgba(255,255,255,0.05)",
-                        color: "var(--ink-hint)",
+                        background: "rgba(14,10,4,0.05)",
+                        color: "rgba(14,10,4,0.38)",
                         letterSpacing: "0.15em", textTransform: "uppercase",
                       }}>{e.type}</span>
                     </div>
@@ -185,11 +188,11 @@ export default function Experience() {
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
                     {e.points.map((pt, j) => (
                       <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
-                        <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: "rgba(0,212,255,0.45)", flexShrink: 0 }} />
+                        <span style={{ marginTop: 7, width: 3, height: 3, borderRadius: "50%", background: `rgba(196,64,10,0.50)`, flexShrink: 0 }} />
                         <span style={{
                           fontFamily: "var(--font-body)",
                           fontSize: "clamp(0.8rem,1vw,0.88rem)",
-                          color: "var(--ink-muted)", lineHeight: 1.65,
+                          color: "rgba(14,10,4,0.55)", lineHeight: 1.65,
                         }}>{pt}</span>
                       </li>
                     ))}
