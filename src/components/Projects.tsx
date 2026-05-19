@@ -18,6 +18,7 @@ type Project = {
   hook: string; description: string;
   stats: Stat[]; hotTags: string[]; normalTags: string[];
   links: { github?: string; live?: string };
+  image?: string;
 };
 
 const PROJECTS: Project[] = [
@@ -29,7 +30,11 @@ const PROJECTS: Project[] = [
     stats: [{ num: "50K+", label: "Resumes processed" }, { num: "Live", label: "In production" }],
     hotTags: ["FastAPI", "XGBoost", "Python"],
     normalTags: ["OAuth2", "JWT", "PostgreSQL", "Clean Architecture"],
-    links: { github: "https://github.com/Abhiii47", live: "https://github.com/Abhiii47" },
+    links: {
+      github: "https://github.com/Abhiii47/SmartResume",
+      live: "https://smart-resume-orcin.vercel.app/",
+    },
+    image: "https://opengraph.githubassets.com/1/Abhiii47/SmartResume",
   },
   {
     number: "02", org: "Personal Project · 2023",
@@ -39,7 +44,11 @@ const PROJECTS: Project[] = [
     stats: [{ num: "Live", label: "Active users" }, { num: "RT", label: "Real-time chat" }],
     hotTags: ["Node.js", "Socket.io", "Next.js"],
     normalTags: ["MongoDB", "Docker", "Maps API", "RBAC", "GitHub Actions"],
-    links: { github: "https://github.com/Abhiii47" },
+    links: {
+      github: "https://github.com/Abhiii47/Room_and_Food",
+      live: "https://room-and-food.vercel.app/",
+    },
+    image: "https://opengraph.githubassets.com/1/Abhiii47/Room_and_Food",
   },
   {
     number: "03", org: "Ecovis RKCA · GCP · 2024",
@@ -53,13 +62,14 @@ const PROJECTS: Project[] = [
   },
   {
     number: "04", org: "Amazon ML Summer School · 2024",
-    name: "Product Price Prediction Pipeline",
+    name: "Amazon ML — Product Price Prediction",
     hook: "End-to-end regression pipeline on 150,000+ records. Built for Amazon ML School — top 0.1% program.",
     description: "EDA → feature engineering → XGBoost regressor → hyperparameter optimization. Optimized on MAE and SMAPE metrics. Ensemble approach with bias-variance analysis.",
     stats: [{ num: "150K+", label: "Records processed" }, { num: "Top 0.1%", label: "Nationally" }],
     hotTags: ["XGBoost", "Python", "Feature Engineering"],
     normalTags: ["Pandas", "Scikit-learn", "MAE/SMAPE", "EDA"],
-    links: { github: "https://github.com/Abhiii47" },
+    links: { github: "https://github.com/Abhiii47/AmazonML_challange" },
+    image: "https://opengraph.githubassets.com/1/Abhiii47/AmazonML_challange",
   },
 ];
 
@@ -126,6 +136,7 @@ function ProjectCard({ p, onEnter, onLeave, onMouseMove }: {
   const hookRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
   const edgeRef = useRef<HTMLDivElement>(null);
+  const imgRef  = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     const card = cardRef.current;
@@ -138,11 +149,13 @@ function ProjectCard({ p, onEnter, onLeave, onMouseMove }: {
     if (num)  tl.from(num,  { x: -24, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.1);
     if (hook) tl.from(hook, { x: 28,  opacity: 0, duration: 0.6, ease: "power3.out" }, 0.28);
     if (tags?.length) tl.from(Array.from(tags), { y: 8, opacity: 0, duration: 0.3, stagger: 0.03, ease: "power2.out" }, 0.42);
+    if (imgRef.current) tl.from(imgRef.current, { opacity: 0, scale: 0.95, duration: 0.6, ease: "power2.out" }, 0.3);
   }, { scope: cardRef });
 
   const handleEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: -5, duration: 0.28, ease: "power2.out" });
     gsap.to(edgeRef.current, { opacity: 1, duration: 0.25 });
+    if (imgRef.current) gsap.to(imgRef.current, { scale: 1.03, duration: 0.4, ease: "power2.out" });
     const el = e.currentTarget as HTMLDivElement;
     el.style.borderColor = "rgba(196,64,10,0.22)";
     el.style.boxShadow   = "0 12px 40px rgba(196,64,10,0.07)";
@@ -151,6 +164,7 @@ function ProjectCard({ p, onEnter, onLeave, onMouseMove }: {
   const handleLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: 0, duration: 0.28, ease: "power2.out" });
     gsap.to(edgeRef.current, { opacity: 0, duration: 0.25 });
+    if (imgRef.current) gsap.to(imgRef.current, { scale: 1, duration: 0.4, ease: "power2.out" });
     const el = e.currentTarget as HTMLDivElement;
     el.style.borderColor = "rgba(14,10,4,0.07)";
     el.style.boxShadow   = "none";
@@ -194,6 +208,23 @@ function ProjectCard({ p, onEnter, onLeave, onMouseMove }: {
       <div>
         <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.30)", marginBottom: 6 }}>{p.org}</p>
         <h3 style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 500, color: INK, marginBottom: 10, lineHeight: 1.3 }}>{p.name}</h3>
+
+        {/* Screenshot preview */}
+        {p.image && (
+          <div style={{ marginBottom: 14, borderRadius: 7, overflow: "hidden", border: "1px solid rgba(14,10,4,0.07)", maxHeight: 180 }}>
+            <div ref={imgRef} style={{ transformOrigin: "center center" }}>
+              <img
+                src={p.image}
+                alt={`${p.name} preview`}
+                width={900}
+                height={180}
+                loading="lazy"
+                decoding="async"
+                style={{ width: "100%", height: 180, objectFit: "cover", objectPosition: "top", display: "block" }}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "0 clamp(24px,4vw,48px)", alignItems: "start" }}>
           <div>
