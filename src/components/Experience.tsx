@@ -3,10 +3,15 @@
 import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
+import HorizontalParallax from "./HorizontalParallax";
 
 gsap.registerPlugin(ScrollTrigger);
+// DrawSVGPlugin is a Club GSAP plugin — if not available, we fall back to a
+// simple stroke-dashoffset approach that works without the plugin.
+try { gsap.registerPlugin(DrawSVGPlugin); } catch { /* not available */ }
 
 const ACCENT = "#C4400A";
 const INK    = "#0E0A04";
@@ -53,21 +58,31 @@ const EXP = [
 ];
 
 export default function Experience() {
-  const ref     = useRef<HTMLElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
+  const ref    = useRef<HTMLElement>(null);
+  const svgRef = useRef<SVGPathElement>(null);
   const [active, setActive] = useState<number | null>(null);
 
-  /* Scroll-driven timeline fill */
+  /* SVG path draw on scroll — works with or without DrawSVGPlugin */
   useEffect(() => {
-    const fn = () => {
+    const path = svgRef.current;
+    if (!path) return;
+    const len = path.getTotalLength();
+    path.style.strokeDasharray  = `${len}`;
+    path.style.strokeDashoffset = `${len}`;
+
+    const onScroll = () => {
       const el = ref.current;
-      if (!el || !lineRef.current) return;
+      if (!el) return;
       const r = el.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / (r.height + window.innerHeight * 0.3)));
-      lineRef.current.style.height = `${p * 100}%`;
+      const p = Math.min(1, Math.max(0,
+        (window.innerHeight - r.top) / (r.height + window.innerHeight * 0.3)
+      ));
+      path.style.strokeDashoffset = `${len * (1 - p)}`;
     };
-    window.addEventListener("scroll", fn, { passive: true }); fn();
-    return () => window.removeEventListener("scroll", fn);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useGSAP(() => {
@@ -88,15 +103,13 @@ export default function Experience() {
         position: "relative", overflow: "hidden",
       }}
     >
-      {/* Ghost number */}
-      <span aria-hidden style={{
-        position: "absolute", right: "2%", top: "50%", transform: "translateY(-50%)",
-        fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: "clamp(8rem,20vw,20rem)", fontWeight: 700, lineHeight: 1,
-        color: "transparent",
-        WebkitTextStroke: "1px rgba(14,10,4,0.04)",
-        pointerEvents: "none", userSelect: "none",
-      }}>02</span>
+      {/* Horizontal parallax ghost text — replaces static watermark */}
+      <HorizontalParallax
+        text="EXPERIENCE"
+        speed={-0.38}
+        color="rgba(14,10,4,0.04)"
+        fontSize="clamp(7rem,18vw,18rem)"
+      />
 
       <div style={{ maxWidth: 800, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
@@ -110,14 +123,34 @@ export default function Experience() {
         />
 
         <div style={{ position: "relative" }}>
-          {/* Track */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 1, background: "rgba(14,10,4,0.08)" }} />
-          {/* Fill */}
-          <div ref={lineRef} style={{
-            position: "absolute", left: 0, top: 0, width: 1, height: "0%",
-            background: ACCENT,
-            transition: "height 0.1s linear",
-          }} />
+
+          {/* SVG path timeline — draws itself on scroll */}
+          <svg
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: -1, top: 0,
+              width: 2,
+              height: "100%",
+              overflow: "visible",
+              pointerEvents: "none",
+            }}
+            preserveAspectRatio="none"
+            viewBox="0 0 2 100"
+          >
+            {/* Track (faint) */}
+            <line x1="1" y1="0" x2="1" y2="100" stroke="rgba(14,10,4,0.08)" strokeWidth="1" />
+            {/* Animated fill path */}
+            <path
+              ref={svgRef}
+              d="M1,0 L1,100"
+              stroke={ACCENT}
+              strokeWidth="1.5"
+              fill="none"
+              strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 0.08s linear" }}
+            />
+          </svg>
 
           <div style={{ paddingLeft: 36, display: "flex", flexDirection: "column" }}>
             {EXP.map((e, i) => (
@@ -128,14 +161,15 @@ export default function Experience() {
                 onMouseLeave={() => setActive(null)}
                 style={{ position: "relative", paddingBottom: i < EXP.length - 1 ? "clamp(32px,5vw,56px)" : 0 }}
               >
-                {/* Dot */}
+                {/* Animated dot */}
                 <div style={{
                   position: "absolute", left: -40, top: 8,
                   width: 10, height: 10, borderRadius: "50%",
                   background: active === i ? ACCENT : "rgba(14,10,4,0.12)",
                   border: `1px solid ${active === i ? ACCENT : "rgba(14,10,4,0.10)"}`,
-                  boxShadow: active === i ? `0 0 10px rgba(196,64,10,0.35)` : "none",
+                  boxShadow: active === i ? `0 0 12px rgba(196,64,10,0.45)` : "none",
                   transition: "all 0.25s ease",
+                  zIndex: 2,
                 }} />
 
                 {/* Card */}
@@ -144,7 +178,8 @@ export default function Experience() {
                   border: `1px solid ${active === i ? "rgba(196,64,10,0.18)" : "rgba(14,10,4,0.07)"}`,
                   borderRadius: 12,
                   background: active === i ? "rgba(196,64,10,0.025)" : "var(--bg-card)",
-                  transition: "border-color 0.25s, background 0.25s",
+                  transition: "border-color 0.25s, background 0.25s, box-shadow 0.25s",
+                  boxShadow: active === i ? "0 8px 32px rgba(196,64,10,0.06)" : "none",
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
                     <div>
@@ -155,8 +190,7 @@ export default function Experience() {
                           letterSpacing: "0.3em", textTransform: "uppercase",
                           color: ACCENT, padding: "3px 10px", borderRadius: 9999,
                           border: `1px solid rgba(196,64,10,0.22)`,
-                          background: "rgba(196,64,10,0.04)",
-                          marginBottom: 10,
+                          background: "rgba(196,64,10,0.04)", marginBottom: 10,
                         }}>
                           <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, animation: "pulse 2s infinite", display: "inline-block" }} />
                           Current
@@ -165,8 +199,7 @@ export default function Experience() {
                       <h3 style={{
                         fontFamily: "'Cormorant Garamond',Georgia,serif",
                         fontSize: "clamp(1.05rem,2vw,1.35rem)",
-                        fontWeight: 600, color: INK,
-                        lineHeight: 1.2, margin: 0,
+                        fontWeight: 600, color: INK, lineHeight: 1.2, margin: 0,
                       }}>{e.role}</h3>
                       <p style={{
                         fontFamily: "var(--font-mono)", fontSize: 10,
@@ -178,13 +211,11 @@ export default function Experience() {
                       <span style={{
                         fontFamily: "var(--font-mono)", fontSize: 8,
                         padding: "2px 8px", borderRadius: 9999,
-                        background: "rgba(14,10,4,0.05)",
-                        color: "rgba(14,10,4,0.38)",
+                        background: "rgba(14,10,4,0.05)", color: "rgba(14,10,4,0.38)",
                         letterSpacing: "0.15em", textTransform: "uppercase",
                       }}>{e.type}</span>
                     </div>
                   </div>
-
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
                     {e.points.map((pt, j) => (
                       <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>

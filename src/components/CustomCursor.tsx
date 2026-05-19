@@ -2,32 +2,35 @@
 
 import { useEffect, useRef } from "react";
 
-type CursorState = "default" | "hover" | "drag" | "view" | "text";
+type CursorState = "default" | "hover" | "drag" | "view" | "text" | "preview";
 
 const RUST  = "#C4400A";
-const CREAM = "#F5F2EB";
 const INK   = "rgba(14,10,4,0.55)";
 
 export default function CustomCursor() {
-  const dotRef   = useRef<HTMLDivElement>(null);
-  const ringRef  = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
+  const dotRef     = useRef<HTMLDivElement>(null);
+  const ringRef    = useRef<HTMLDivElement>(null);
+  const labelRef   = useRef<HTMLSpanElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const imgRef     = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(hover: none)").matches) return;
 
-    const dot   = dotRef.current;
-    const ring  = ringRef.current;
-    const label = labelRef.current;
-    if (!dot || !ring || !label) return;
+    const dot     = dotRef.current;
+    const ring    = ringRef.current;
+    const label   = labelRef.current;
+    const preview = previewRef.current;
+    const img     = imgRef.current;
+    if (!dot || !ring || !label || !preview || !img) return;
 
     dot.style.opacity  = "1";
     ring.style.opacity = "1";
 
     let mouseX = window.innerWidth  / 2;
     let mouseY = window.innerHeight / 2;
-    let ringX  = mouseX;
-    let ringY  = mouseY;
+    let ringX  = mouseX, ringY = mouseY;
+    let prevX  = mouseX, prevY = mouseY;
     let rafId: number;
     let state: CursorState = "default";
 
@@ -37,17 +40,24 @@ export default function CustomCursor() {
       ringY += (mouseY - ringY) * lag;
       dot.style.transform  = `translate(${mouseX}px,${mouseY}px) translate(-50%,-50%)`;
       ring.style.transform = `translate(${ringX}px,${ringY}px) translate(-50%,-50%)`;
+
+      if (state === "preview") {
+        const dx = mouseX - prevX;
+        // Floating preview card follows cursor with gentle lag
+        preview.style.transform = `translate(${mouseX + 20}px,${mouseY - 60}px) rotate(${dx * 0.2}deg)`;
+      }
+      prevX = mouseX; prevY = mouseY;
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
 
     const onMove = (e: MouseEvent) => { mouseX = e.clientX; mouseY = e.clientY; };
 
-    const applyState = (next: CursorState) => {
-      if (state === next) return;
+    const applyState = (next: CursorState, imageUrl?: string) => {
+      if (state === next && next !== "preview") return;
       state = next;
 
-      // ── Reset to default ──
+      // Reset
       ring.style.width        = "32px";
       ring.style.height       = "32px";
       ring.style.borderColor  = INK;
@@ -60,24 +70,23 @@ export default function CustomCursor() {
       dot.style.height        = "5px";
       label.style.opacity     = "0";
       label.textContent       = "";
+      preview.style.opacity   = "0";
+      preview.style.pointerEvents = "none";
 
       if (next === "hover") {
         ring.style.width       = "52px";
         ring.style.height      = "52px";
         ring.style.borderColor = `rgba(196,64,10,0.55)`;
         ring.style.background  = `rgba(196,64,10,0.06)`;
-        dot.style.background   = RUST;
-        dot.style.width        = "5px";
-        dot.style.height       = "5px";
       }
 
       if (next === "text") {
-        ring.style.width       = "3px";
-        ring.style.height      = "28px";
+        ring.style.width        = "3px";
+        ring.style.height       = "28px";
         ring.style.borderRadius = "2px";
-        ring.style.borderColor = RUST;
-        ring.style.background  = RUST;
-        dot.style.opacity      = "0";
+        ring.style.borderColor  = RUST;
+        ring.style.background   = RUST;
+        dot.style.opacity       = "0";
       }
 
       if (next === "drag") {
@@ -89,7 +98,6 @@ export default function CustomCursor() {
         dot.style.opacity       = "0";
         label.textContent       = "DRAG";
         label.style.opacity     = "1";
-        label.style.color       = RUST;
       }
 
       if (next === "view") {
@@ -100,23 +108,37 @@ export default function CustomCursor() {
         dot.style.opacity       = "0";
         label.textContent       = "VIEW";
         label.style.opacity     = "1";
-        label.style.color       = RUST;
+      }
+
+      if (next === "preview" && imageUrl && img) {
+        ring.style.width        = "10px";
+        ring.style.height       = "10px";
+        ring.style.borderColor  = RUST;
+        ring.style.background   = RUST;
+        dot.style.opacity       = "0";
+        img.src                 = imageUrl;
+        preview.style.opacity   = "1";
       }
     };
 
     const handleOver = (e: MouseEvent) => {
       const target = e.target as Element;
-      if (target.closest(".proj-drag-zone"))                                               { applyState("drag");    return; }
-      if (target.closest("img,[data-cursor='view']"))                                     { applyState("view");    return; }
-      if (target.closest("p,h1,h2,h3,h4,h5,span:not(button span)"))                      { applyState("text");    return; }
-      if (target.closest("a,button,[role='button'],[role='link'],input,textarea,select")) { applyState("hover");   return; }
+      const previewEl = target.closest("[data-preview]");
+      if (previewEl) {
+        const url = previewEl.getAttribute("data-preview") ?? "";
+        applyState("preview", url); return;
+      }
+      if (target.closest(".proj-drag-zone"))                                               { applyState("drag");  return; }
+      if (target.closest("img,[data-cursor='view']"))                                     { applyState("view");  return; }
+      if (target.closest("p,h1,h2,h3,h4,h5,span:not(button span)"))                      { applyState("text");  return; }
+      if (target.closest("a,button,[role='button'],[role='link'],input,textarea,select")) { applyState("hover"); return; }
       applyState("default");
     };
 
     const onLeaveWindow = () => { dot.style.opacity = "0"; ring.style.opacity = "0"; };
     const onEnterWindow = () => { dot.style.opacity = "1"; ring.style.opacity = "1"; };
 
-    document.addEventListener("mousemove",  onMove,       { passive: true });
+    document.addEventListener("mousemove",  onMove,        { passive: true });
     document.addEventListener("mouseover",  handleOver);
     document.addEventListener("mouseleave", onLeaveWindow);
     document.addEventListener("mouseenter", onEnterWindow);
@@ -185,6 +207,45 @@ export default function CustomCursor() {
             color: RUST,
           }}
         />
+      </div>
+
+      {/* Project image preview — floats near cursor on [data-preview] hover */}
+      <div
+        ref={previewRef}
+        aria-hidden
+        style={{
+          position: "fixed", top: 0, left: 0,
+          width: 220, height: 140,
+          borderRadius: 10,
+          overflow: "hidden",
+          boxShadow: "0 16px 48px rgba(14,10,4,0.18)",
+          border: "1px solid rgba(196,64,10,0.15)",
+          pointerEvents: "none",
+          zIndex: 99997,
+          opacity: 0,
+          transition: "opacity 0.25s cubic-bezier(0.16,1,0.3,1)",
+          willChange: "transform",
+          transformOrigin: "left top",
+        }}
+      >
+        <img
+          ref={imgRef}
+          alt="Project preview"
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        />
+        {/* Fallback gradient when no image */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(135deg,rgba(196,64,10,0.12),rgba(14,10,4,0.08))",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <span style={{
+            fontFamily: "'Cormorant Garamond',serif",
+            fontSize: 11, letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: "rgba(196,64,10,0.55)",
+          }}>View Project</span>
+        </div>
       </div>
     </>
   );

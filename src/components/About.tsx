@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import MagneticButton from "./MagneticButton";
 import AnimatedHeading from "./AnimatedHeading";
+import HorizontalParallax from "./HorizontalParallax";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,13 +63,11 @@ function BentoCell({ children, style, delay = 0, className = "" }: {
     });
   });
 
-  // Single combined ref callback
   const setRef = (node: HTMLDivElement | null) => {
     (cellRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
     (tilt.ref  as React.MutableRefObject<HTMLDivElement | null>).current = node;
   };
 
-  // Single combined onMouseLeave — no duplicate handlers
   const handleLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget as HTMLDivElement;
     el.style.boxShadow   = "none";
@@ -151,14 +150,13 @@ export default function About() {
         position: "relative", overflow: "hidden",
       }}
     >
-      <span aria-hidden style={{
-        position: "absolute", right: "-2%", top: "50%", transform: "translateY(-50%)",
-        fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: "clamp(10rem,24vw,26rem)",
-        lineHeight: 1, color: "transparent",
-        WebkitTextStroke: "1px rgba(14,10,4,0.04)",
-        pointerEvents: "none", userSelect: "none",
-      }}>01</span>
+      {/* Horizontal parallax ghost text */}
+      <HorizontalParallax
+        text="ABOUT"
+        speed={0.32}
+        color="rgba(14,10,4,0.035)"
+        fontSize="clamp(10rem,24vw,26rem)"
+      />
 
       <div style={{ maxWidth: 1140, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
