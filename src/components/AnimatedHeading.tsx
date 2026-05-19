@@ -41,11 +41,13 @@ export default function AnimatedHeading({
     const label  = labelRef.current;
     if (!inners?.length) return;
 
+    // Set initial state for line via GSAP (not inline style)
+    if (line) gsap.set(line, { scaleX: 0, opacity: 0, transformOrigin: "left" });
+
     const tl = gsap.timeline({
       scrollTrigger: { trigger: ref.current, start: "top 82%", once: true },
     });
 
-    // Section label — simple fade up
     if (label) {
       tl.fromTo(label,
         { y: 10, opacity: 0 },
@@ -54,31 +56,18 @@ export default function AnimatedHeading({
       );
     }
 
-    // Words — clip-path mask + skew snap
     inners.forEach((inner, i) => {
       const isItalic = italic && i === allWords.length - 1;
       const delay    = 0.08 + i * 0.09 + (isItalic ? 0.06 : 0);
       tl.fromTo(
         inner,
-        {
-          clipPath: "inset(0 0 100% 0)",
-          y: "40%",
-          skewY: 3,
-          opacity: 0,
-        },
-        {
-          clipPath: "inset(0 0 0% 0)",
-          y: "0%",
-          skewY: 0,
-          opacity: 1,
-          duration: 0.72,
-          ease: "power4.out",
-        },
+        { clipPath: "inset(0 0 100% 0)", y: "40%", skewY: 3, opacity: 0 },
+        { clipPath: "inset(0 0 0% 0)",   y: "0%",  skewY: 0, opacity: 1,
+          duration: 0.72, ease: "power4.out" },
         delay
       );
     });
 
-    // Accent line draws left → right
     if (line) {
       tl.fromTo(
         line,
@@ -101,7 +90,7 @@ export default function AnimatedHeading({
             textTransform: "uppercase",
             color: accentColor,
             marginBottom: 28,
-            opacity: 0,          /* GSAP animates in */
+            opacity: 0,
           }}
         >{section} / {text.trim().split(" ")[0]}</p>
       )}
@@ -120,7 +109,6 @@ export default function AnimatedHeading({
               style={{
                 overflow: "hidden",
                 display: "inline-block",
-                /* Extra padding so descenders aren’t clipped */
                 paddingBottom: "0.08em",
                 marginBottom: "-0.08em",
               }}
@@ -136,7 +124,6 @@ export default function AnimatedHeading({
                   color:      isItalic ? accentColor : color,
                   lineHeight: 1.1,
                   willChange: "clip-path, transform",
-                  /* Start hidden so no flash before GSAP kicks in */
                   clipPath: "inset(0 0 100% 0)",
                   opacity: 0,
                 }}
@@ -146,7 +133,7 @@ export default function AnimatedHeading({
         })}
       </div>
 
-      {/* Accent underline */}
+      {/* Accent underline — initial state set by gsap.set above */}
       <div
         ref={lineRef}
         style={{
@@ -154,9 +141,6 @@ export default function AnimatedHeading({
           width: "clamp(48px,8vw,80px)",
           background: accentColor,
           marginBottom: "clamp(32px,4vw,52px)",
-          opacity: 0,
-          scaleX: 0,
-          transformOrigin: "left",
         }}
       />
     </div>
