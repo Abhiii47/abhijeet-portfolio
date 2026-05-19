@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import MagneticButton from "./MagneticButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,7 +44,6 @@ export default function Entry() {
   const metaRef    = useRef<HTMLDivElement>(null);
   const role       = useRoleCycler();
 
-  /* Scramble + reveal */
   useGSAP(() => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const el    = nameRef.current;
@@ -68,7 +68,6 @@ export default function Entry() {
     gsap.from(".h-reveal", { y: 40, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out", delay: 0.3 });
   }, { scope: sectionRef });
 
-  /* Scroll parallax */
   useGSAP(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -97,17 +96,13 @@ export default function Entry() {
         id="hero"
         ref={sectionRef}
         style={{
-          minHeight: "100svh",
-          background: CREAM,
-          display: "flex",
-          flexDirection: "column",
+          minHeight: "100svh", background: CREAM,
+          display: "flex", flexDirection: "column",
           justifyContent: "flex-end",
           padding: "100px clamp(20px,5vw,72px) clamp(44px,6vw,72px)",
-          position: "relative",
-          overflow: "hidden",
+          position: "relative", overflow: "hidden",
         }}
       >
-        {/* Subtle rust texture — top right */}
         <div aria-hidden style={{
           position: "absolute", top: "-10%", right: "-5%",
           width: "45vw", height: "45vh",
@@ -133,8 +128,7 @@ export default function Entry() {
             display: "flex", alignItems: "center", gap: 8,
             padding: "6px 14px",
             border: "1px solid rgba(74,222,128,0.30)",
-            borderRadius: 9999,
-            background: "rgba(74,222,128,0.07)",
+            borderRadius: 9999, background: "rgba(74,222,128,0.07)",
           }}>
             <span className="avail-dot" style={{ width: 7, height: 7, background: "#4ade80", display: "inline-block" }} />
             <span style={{
@@ -145,56 +139,36 @@ export default function Entry() {
           </div>
         </div>
 
-        {/* Main content */}
         <div style={{ maxWidth: 1100, position: "relative", zIndex: 2 }}>
-
           <p className="h-reveal" style={{
             fontFamily: "'Inter',monospace", fontSize: 10,
             letterSpacing: "0.42em", color: ACCENT,
             textTransform: "uppercase",
             marginBottom: "clamp(16px,2.5vw,28px)",
-          }}>Mumbai, India  ·  CE Student · 2026</p>
+          }}>Mumbai, India  ·  CE Student · 2026</p>
 
-          {/* Giant name */}
           <h1
             ref={nameRef}
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(5rem,16vw,14rem)",
               fontWeight: 700, lineHeight: 0.88,
-              letterSpacing: "-0.02em",
-              margin: 0,
+              letterSpacing: "-0.02em", margin: 0,
               willChange: "transform",
             }}
           >
             <span className="name-line" data-text="ABHIJEET" style={{ display: "block", color: INK }}>ABHIJEET</span>
-            <span
-              className="name-line"
-              data-text="KADU"
-              style={{
-                display: "block",
-                color: "transparent",
-                WebkitTextStroke: `2px ${ACCENT}`,
-              }}
-            >KADU</span>
+            <span className="name-line" data-text="KADU" style={{ display: "block", color: "transparent", WebkitTextStroke: `2px ${ACCENT}` }}>KADU</span>
           </h1>
 
-          {/* Divider */}
           <div className="h-reveal" style={{
             width: "100%", height: 1,
-            background: `linear-gradient(90deg, rgba(14,10,4,0.10) 0%, rgba(196,64,10,0.25) 40%, rgba(14,10,4,0.10) 100%)`,
+            background: `linear-gradient(90deg,rgba(14,10,4,0.10) 0%,rgba(196,64,10,0.25) 40%,rgba(14,10,4,0.10) 100%)`,
             margin: "clamp(20px,3vw,32px) 0",
           }} />
 
-          {/* Role row */}
-          <div className="h-reveal" style={{
-            display: "flex", alignItems: "center", gap: 14, minHeight: 24,
-          }}>
-            <div style={{
-              width: 32, height: 1,
-              background: `linear-gradient(90deg,${ACCENT},transparent)`,
-              flexShrink: 0,
-            }} />
+          <div className="h-reveal" style={{ display: "flex", alignItems: "center", gap: 14, minHeight: 24 }}>
+            <div style={{ width: 32, height: 1, background: `linear-gradient(90deg,${ACCENT},transparent)`, flexShrink: 0 }} />
             <span style={{
               fontFamily: "'Inter',monospace",
               fontSize: "clamp(0.7rem,1.3vw,0.92rem)",
@@ -204,84 +178,76 @@ export default function Entry() {
               {role}
               <span style={{
                 display: "inline-block", width: 1.5, height: "1em",
-                background: ACCENT, marginLeft: 3,
-                verticalAlign: "middle",
+                background: ACCENT, marginLeft: 3, verticalAlign: "middle",
                 animation: "blink 1s step-end infinite",
               }} />
             </span>
           </div>
 
-          {/* Tagline */}
-          <p
-            ref={taglineRef}
-            className="h-reveal"
-            style={{
-              marginTop: "clamp(16px,2vw,24px)",
-              fontFamily: "'Inter',sans-serif",
-              fontSize: "clamp(0.9rem,1.2vw,1.05rem)",
-              color: "rgba(14,10,4,0.38)",
-              maxWidth: "50ch", lineHeight: 1.65, fontWeight: 300,
-              willChange: "transform, opacity",
-            }}
-          >
-            I make things work. Then I make them fast.
-          </p>
+          <p ref={taglineRef} className="h-reveal" style={{
+            marginTop: "clamp(16px,2vw,24px)",
+            fontFamily: "'Inter',sans-serif",
+            fontSize: "clamp(0.9rem,1.2vw,1.05rem)",
+            color: "rgba(14,10,4,0.38)",
+            maxWidth: "50ch", lineHeight: 1.65, fontWeight: 300,
+            willChange: "transform, opacity",
+          }}>I make things work. Then I make them fast.</p>
 
-          {/* CTAs */}
+          {/* ── Magnetic CTAs ── */}
           <div className="h-reveal" style={{
             marginTop: "clamp(32px,4vw,48px)",
             display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
           }}>
-            <a
-              href="#work"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 9,
-                padding: "13px 30px",
-                background: ACCENT, color: "#FFFCF6",
-                borderRadius: 9999,
-                fontFamily: "'Inter',monospace",
-                fontSize: 10, letterSpacing: "0.24em",
-                textTransform: "uppercase", fontWeight: 600,
-                textDecoration: "none",
-                transition: "background 0.18s, transform 0.18s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = ACCENT2; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = ACCENT;  e.currentTarget.style.transform = "translateY(0)"; }}
-            >
-              View Work
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                <path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
-            <a
-              href="#contact"
-              style={{
-                display: "inline-flex", alignItems: "center",
-                padding: "13px 30px",
-                border: `1px solid rgba(14,10,4,0.14)`,
-                color: "rgba(14,10,4,0.50)",
-                borderRadius: 9999,
-                fontFamily: "'Inter',monospace",
-                fontSize: 10, letterSpacing: "0.24em",
-                textTransform: "uppercase",
-                textDecoration: "none",
-                transition: "border-color 0.18s, color 0.18s, transform 0.18s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.color = ACCENT; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(14,10,4,0.14)"; e.currentTarget.style.color = "rgba(14,10,4,0.50)"; e.currentTarget.style.transform = "translateY(0)"; }}
-            >Get in Touch</a>
+            <MagneticButton strength={0.30}>
+              <a
+                href="#work"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 9,
+                  padding: "13px 30px",
+                  background: ACCENT, color: "#FFFCF6",
+                  borderRadius: 9999,
+                  fontFamily: "'Inter',monospace",
+                  fontSize: 10, letterSpacing: "0.24em",
+                  textTransform: "uppercase", fontWeight: 600,
+                  textDecoration: "none",
+                  transition: "background 0.18s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = ACCENT2)}
+                onMouseLeave={e => (e.currentTarget.style.background = ACCENT)}
+              >
+                View Work
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+                  <path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
+            </MagneticButton>
+
+            <MagneticButton strength={0.25}>
+              <a
+                href="#contact"
+                style={{
+                  display: "inline-flex", alignItems: "center",
+                  padding: "13px 30px",
+                  border: "1px solid rgba(14,10,4,0.14)",
+                  color: "rgba(14,10,4,0.50)",
+                  borderRadius: 9999,
+                  fontFamily: "'Inter',monospace",
+                  fontSize: 10, letterSpacing: "0.24em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  transition: "border-color 0.18s, color 0.18s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.color = ACCENT; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(14,10,4,0.14)"; e.currentTarget.style.color = "rgba(14,10,4,0.50)"; }}
+              >Get in Touch</a>
+            </MagneticButton>
           </div>
 
-          {/* Meta row */}
-          <div
-            ref={metaRef}
-            className="h-reveal"
-            style={{
-              marginTop: "clamp(40px,5vw,64px)",
-              display: "flex", gap: 40, flexWrap: "wrap",
-              willChange: "transform, opacity",
-            }}
-          >
+          <div ref={metaRef} className="h-reveal" style={{
+            marginTop: "clamp(40px,5vw,64px)",
+            display: "flex", gap: 40, flexWrap: "wrap",
+            willChange: "transform, opacity",
+          }}>
             {[
               ["Role",    "SDE & Product Manager"],
               ["Company", "Ecovis RKCA"],
@@ -316,16 +282,11 @@ export default function Entry() {
             letterSpacing: "0.32em", color: INK,
             textTransform: "uppercase", writingMode: "vertical-rl",
           }}>Scroll</span>
-          <div style={{
-            width: 1, height: 44,
-            background: `linear-gradient(to bottom,${ACCENT},transparent)`,
-          }} />
+          <div style={{ width: 1, height: 44, background: `linear-gradient(to bottom,${ACCENT},transparent)` }} />
         </div>
 
-        {/* Bottom rust divider */}
         <div aria-hidden style={{
-          position: "absolute", bottom: 0, left: 0, right: 0,
-          height: 1,
+          position: "absolute", bottom: 0, left: 0, right: 0, height: 1,
           background: `linear-gradient(90deg,transparent 0%,rgba(196,64,10,0.30) 30%,rgba(196,64,10,0.30) 70%,transparent 100%)`,
         }} />
       </section>

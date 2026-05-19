@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
+import { useProjectPreview, ProjectPreviewCard } from "./ProjectPreview";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -63,23 +64,17 @@ const PROJECTS: Project[] = [
 ];
 
 function AnimatedStat({ num, label }: Stat) {
-  const wrapRef   = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const [display, setDisplay] = useState("");
   const [ready,   setReady]   = useState(false);
 
-  // Show raw value immediately so it’s never blank
   useEffect(() => { setDisplay(num); }, [num]);
 
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setReady(true);
-          obs.disconnect();
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting) { setReady(true); obs.disconnect(); } },
       { threshold: 0.1 }
     );
     obs.observe(el);
@@ -108,22 +103,24 @@ function AnimatedStat({ num, label }: Stat) {
     <div ref={wrapRef} style={{ textAlign: "right" }}>
       <p style={{
         fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontStyle: "italic",
-        fontSize: 26, fontWeight: 700,
-        color: ACCENT, lineHeight: 1, marginBottom: 4,
-        minWidth: 60,
+        fontStyle: "italic", fontSize: 26, fontWeight: 700,
+        color: ACCENT, lineHeight: 1, marginBottom: 4, minWidth: 60,
       }}>{display || num}</p>
       <p style={{
-        fontFamily: "var(--font-mono)",
-        fontSize: 9, letterSpacing: "0.26em",
-        textTransform: "uppercase",
+        fontFamily: "var(--font-mono)", fontSize: 9,
+        letterSpacing: "0.26em", textTransform: "uppercase",
         color: "rgba(14,10,4,0.32)",
       }}>{label}</p>
     </div>
   );
 }
 
-function ProjectCard({ p }: { p: Project }) {
+function ProjectCard({ p, onEnter, onLeave, onMouseMove }: {
+  p: Project;
+  onEnter: (id: string) => void;
+  onLeave: () => void;
+  onMouseMove: (e: React.MouseEvent) => void;
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
   const numRef  = useRef<HTMLSpanElement>(null);
   const hookRef = useRef<HTMLParagraphElement>(null);
@@ -143,24 +140,27 @@ function ProjectCard({ p }: { p: Project }) {
     if (tags?.length) tl.from(Array.from(tags), { y: 8, opacity: 0, duration: 0.3, stagger: 0.03, ease: "power2.out" }, 0.42);
   }, { scope: cardRef });
 
-  const onEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: -5, duration: 0.28, ease: "power2.out" });
     gsap.to(edgeRef.current, { opacity: 1, duration: 0.25 });
     const el = e.currentTarget as HTMLDivElement;
     el.style.borderColor = "rgba(196,64,10,0.22)";
-    el.style.boxShadow   = "0 12px 40px rgba(196,64,10,0.07), 0 0 0 1px rgba(196,64,10,0.08)";
+    el.style.boxShadow   = "0 12px 40px rgba(196,64,10,0.07)";
+    onEnter(p.number);
   };
-  const onLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: 0, duration: 0.28, ease: "power2.out" });
     gsap.to(edgeRef.current, { opacity: 0, duration: 0.25 });
     const el = e.currentTarget as HTMLDivElement;
     el.style.borderColor = "rgba(14,10,4,0.07)";
     el.style.boxShadow   = "none";
+    onLeave();
   };
 
   return (
     <div
       ref={cardRef}
+      data-cursor="view"
       style={{
         background: "var(--bg-card)",
         border: "1px solid rgba(14,10,4,0.07)",
@@ -170,15 +170,15 @@ function ProjectCard({ p }: { p: Project }) {
         gridTemplateColumns: "52px 1fr",
         gap: "0 clamp(16px,2.5vw,28px)",
         transition: "border-color 0.25s, box-shadow 0.25s",
-        position: "relative",
-        overflow: "hidden",
+        position: "relative", overflow: "hidden",
       }}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      onMouseMove={onMouseMove}
     >
       <div ref={edgeRef} aria-hidden style={{
         position: "absolute", left: 0, top: 0, bottom: 0, width: 2,
-        background: `linear-gradient(to bottom, transparent, ${ACCENT}80, transparent)`,
+        background: `linear-gradient(to bottom,transparent,${ACCENT}80,transparent)`,
         opacity: 0, pointerEvents: "none",
       }} />
 
@@ -212,7 +212,7 @@ function ProjectCard({ p }: { p: Project }) {
             <div style={{ display: "flex", gap: 18 }}>
               {p.links.github && (
                 <a href={p.links.github} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, transition: "opacity 0.18s" }}
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: ACCENT, textDecoration: "none", transition: "opacity 0.18s" }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = "0.65")}
                   onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
                 >GitHub ↗</a>
@@ -237,9 +237,12 @@ function ProjectCard({ p }: { p: Project }) {
 }
 
 export default function Projects() {
+  const { previewRef, active, onMouseMove, onEnter, onLeave } = useProjectPreview();
+
   return (
     <>
       <style>{`@media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }`}</style>
+      <ProjectPreviewCard previewRef={previewRef} active={active} />
       <section id="work" style={{
         background: "var(--bg-section)",
         padding: "clamp(72px,9vw,120px) clamp(20px,5vw,72px)",
@@ -254,7 +257,15 @@ export default function Projects() {
             fontFamily="'Cormorant Garamond',Georgia,serif"
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {PROJECTS.map((p) => <ProjectCard key={p.number} p={p} />)}
+            {PROJECTS.map(p => (
+              <ProjectCard
+                key={p.number}
+                p={p}
+                onEnter={onEnter}
+                onLeave={onLeave}
+                onMouseMove={onMouseMove}
+              />
+            ))}
           </div>
         </div>
       </section>
