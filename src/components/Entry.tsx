@@ -35,7 +35,7 @@ const PAIN_POINTS = [
 
 export default function Entry() {
   const sectionRef   = useRef<HTMLElement>(null);
-  const nameRef      = useRef<HTMLSpanElement>(null);
+  const nameRef      = useRef<HTMLDivElement>(null);
   const headRef      = useRef<HTMLHeadingElement>(null);
   const subRef       = useRef<HTMLParagraphElement>(null);
   const badgeRef     = useRef<HTMLDivElement>(null);
@@ -44,12 +44,12 @@ export default function Entry() {
 
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(nameRef.current,   { y: -20, opacity: 0, duration: 0.55 }, 0)
-      .from(badgeRef.current,  { y: -16, opacity: 0, duration: 0.5  }, 0.25)
-      .from(headRef.current,   { y: 40,  opacity: 0, duration: 0.85 }, 0.45)
-      .from(subRef.current,    { y: 24,  opacity: 0, duration: 0.65 }, 0.72)
-      .from(arrowAreaRef.current, { x: -20, opacity: 0, duration: 0.5 }, 0.90)
-      .from(ctaRef.current,    { y: 20,  opacity: 0, duration: 0.55 }, 1.0);
+    tl.from(nameRef.current,      { y: -20, opacity: 0, duration: 0.55 }, 0)
+      .from(badgeRef.current,     { y: -16, opacity: 0, duration: 0.5  }, 0.25)
+      .from(headRef.current,      { y: 40,  opacity: 0, duration: 0.85 }, 0.45)
+      .from(subRef.current,       { y: 24,  opacity: 0, duration: 0.65 }, 0.72)
+      .from(arrowAreaRef.current, { x: -20, opacity: 0, duration: 0.5  }, 0.90)
+      .from(ctaRef.current,       { y: 20,  opacity: 0, duration: 0.55 }, 1.0);
   }, { scope: sectionRef });
 
   return (
@@ -67,7 +67,6 @@ export default function Entry() {
         overflow: "hidden",
       }}
     >
-      {/* grid background */}
       <div aria-hidden style={{
         position: "absolute", inset: 0,
         backgroundImage:
@@ -79,7 +78,7 @@ export default function Entry() {
 
       <div style={{ maxWidth: 1140, margin: "0 auto", width: "100%", position: "relative" }}>
 
-        {/* ─ Name ─ */}
+        {/* Name label */}
         <div ref={nameRef} style={{ marginBottom: "clamp(16px,2.5vw,24px)" }}>
           <span style={{
             fontFamily: "var(--font-mono)",
@@ -91,7 +90,7 @@ export default function Entry() {
           }}>Abhijeet Kadu</span>
         </div>
 
-        {/* ─ Badges + stickers ─ */}
+        {/* Badges + stickers */}
         <div ref={badgeRef} style={{
           display: "flex", alignItems: "center", flexWrap: "wrap",
           gap: 10, marginBottom: "clamp(28px,4vw,48px)",
@@ -110,7 +109,7 @@ export default function Entry() {
           <RMSticker text="SDE + PM" rotate={-2.5} />
         </div>
 
-        {/* ─ Main heading ─ */}
+        {/* Main heading */}
         <h1 ref={headRef} style={{
           fontFamily: "var(--font-display)",
           fontWeight: 800,
@@ -124,7 +123,7 @@ export default function Entry() {
           <span style={{ fontStyle: "italic", color: ACCENT }}>builds things.</span>
         </h1>
 
-        {/* ─ Subtitle + curly arrow ─ */}
+        {/* Subtitle + curly arrow */}
         <div ref={arrowAreaRef} style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: "clamp(20px,3vw,36px)" }}>
           <RMArrow size={34} float />
           <p ref={subRef} style={{
@@ -141,12 +140,12 @@ export default function Entry() {
           </p>
         </div>
 
-        {/* ─ Pullquote ─ */}
+        {/* Pullquote */}
         <RMPullquote style={{ maxWidth: 520, marginBottom: "clamp(24px,3.5vw,40px)" }}>
           &ldquo;Stop guessing what good engineers look like. Here&rsquo;s one.&rdquo;
         </RMPullquote>
 
-        {/* ─ CTAs ─ */}
+        {/* CTAs */}
         <div ref={ctaRef} style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "clamp(48px,7vw,96px)" }}>
           <a href="#work"
             style={{
@@ -174,12 +173,12 @@ export default function Entry() {
           >Let&rsquo;s Talk</a>
         </div>
 
-        {/* ─ 01/02/03 pain-point grid ─ */}
+        {/* 01/02/03 pain-point grid */}
         <RMHr label="why me though" />
         <RMPainPoints items={PAIN_POINTS} />
       </div>
 
-      {/* ─ Zigzag bottom ─ */}
+      {/* Zigzag bottom */}
       <div style={{ marginTop: "clamp(48px,7vw,80px)" }}>
         <RMZigzag />
       </div>
