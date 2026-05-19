@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <Preloader />
       <ScrollProgress />
-      <main>
+      <main style={{ position: "relative" }}>
         <Entry />
         <Marquee />
         <SectionWipe id="about-wipe" />
@@ -33,8 +33,25 @@ export default function Home() {
         <SkillMatcher />
         <SectionWipe id="certs-wipe" />
         <Certifications />
-        <SectionWipe id="contact-wipe" />
-        <Contact />
+
+        {/* ── Sticky footer reveal ──
+            Contact sits sticky at the bottom of the stacking context.
+            As Certifications scrolls away, Contact is revealed beneath it.
+        */}
+        <div style={{
+          position: "relative",
+          zIndex: 0,
+        }}>
+          {/* Spacer so sticky contact has room to reveal */}
+          <div style={{ height: "60vh", pointerEvents: "none" }} />
+          <div style={{
+            position: "sticky",
+            bottom: 0,
+            zIndex: 0,
+          }}>
+            <Contact />
+          </div>
+        </div>
       </main>
     </>
   );
