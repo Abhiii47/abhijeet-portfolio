@@ -54,77 +54,59 @@ function CyclingHeading() {
 
   const word = CYCLE_WORDS[idx];
   return (
-    <div style={{ marginBottom: "clamp(24px,4vw,48px)" }}>
-      <h2 style={{
-        fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: "clamp(3.2rem,9vw,9rem)",
-        fontWeight: 700, lineHeight: 1.0,
-        letterSpacing: "-0.02em", margin: 0,
+    <h2 style={{
+      fontFamily: "'Cormorant Garamond',Georgia,serif",
+      fontSize: "clamp(3.2rem,9vw,9rem)",
+      fontWeight: 700, lineHeight: 1.0,
+      letterSpacing: "-0.02em", margin: 0,
+      marginBottom: "clamp(24px,4vw,48px)",
+    }}>
+      <span style={{ display: "block", color: INK }}>Don&rsquo;t be</span>
+      <span style={{
+        display: "block",
+        color: word.strike ? "rgba(14,10,4,0.35)" : ACCENT,
+        position: "relative",
+        transition: "opacity 0.25s,color 0.25s",
+        opacity: visible ? 1 : 0,
       }}>
-        <span style={{ display: "block", color: INK }}>Don&rsquo;t be</span>
-        <span style={{
-          display: "block",
-          color: word.strike ? "rgba(14,10,4,0.35)" : ACCENT,
-          position: "relative",
-          transition: "opacity 0.25s,color 0.25s",
-          opacity: visible ? 1 : 0,
-        }}>
-          {word.text}
-          <span aria-hidden style={{
-            position: "absolute", left: 0, top: "52%",
-            height: "2px", background: ACCENT, borderRadius: 99,
-            width: striking ? "100%" : "0%",
-            transition: striking ? "width 0.45s cubic-bezier(0.16,1,0.3,1)" : "width 0s",
-            pointerEvents: "none",
-          }} />
-        </span>
-        <span style={{
-          display: "block", color: "transparent",
-          WebkitTextStroke: `1.5px ${INK}`,
-          fontSize: "clamp(3rem,8vw,8rem)",
-        }}>Let&rsquo;s talk.</span>
-      </h2>
-    </div>
+        {word.text}
+        <span aria-hidden style={{
+          position: "absolute", left: 0, top: "52%",
+          height: "2px", background: ACCENT, borderRadius: 99,
+          width: striking ? "100%" : "0%",
+          transition: striking ? "width 0.45s cubic-bezier(0.16,1,0.3,1)" : "width 0s",
+          pointerEvents: "none",
+        }} />
+      </span>
+      <span style={{
+        display: "block", color: "transparent",
+        WebkitTextStroke: `1.5px ${INK}`,
+        fontSize: "clamp(3rem,8vw,8rem)",
+      }}>Let&rsquo;s talk.</span>
+    </h2>
   );
 }
 
 export default function Contact() {
-  const ref = useRef<HTMLElement>(null);
+  const ref         = useRef<HTMLElement>(null);
+  const labelRef    = useRef<HTMLParagraphElement>(null);
+  const headingRef  = useRef<HTMLDivElement>(null);
+  const marqueeRef  = useRef<HTMLDivElement>(null);
+  const socialsRef  = useRef<HTMLDivElement>(null);
+  const rightRef    = useRef<HTMLDivElement>(null);
+  const monogramRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    // Section label + divider
-    gsap.from(".ct-label", {
-      scrollTrigger: { trigger: ref.current, start: "top 85%", once: true },
-      y: 20, opacity: 0, duration: 0.6, ease: "power3.out",
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: ref.current, start: "top 80%", once: true },
+      defaults: { ease: "power3.out" },
     });
-    // Heading block
-    gsap.from(".ct-heading", {
-      scrollTrigger: { trigger: ref.current, start: "top 78%", once: true },
-      y: 60, opacity: 0, duration: 1.0, ease: "power3.out", delay: 0.1,
-    });
-    // Marquee email strip
-    gsap.from(".ct-marquee", {
-      scrollTrigger: { trigger: ref.current, start: "top 70%", once: true },
-      y: 30, opacity: 0, duration: 0.7, ease: "power2.out", delay: 0.35,
-    });
-    // Social links stagger
-    gsap.from(".ct-social", {
-      scrollTrigger: { trigger: ".ct-social", start: "top 90%", once: true },
-      x: -24, opacity: 0, duration: 0.55,
-      stagger: 0.1,
-      ease: "power2.out",
-      delay: 0.1,
-    });
-    // Right column fade up
-    gsap.from(".ct-right", {
-      scrollTrigger: { trigger: ".ct-right", start: "top 90%", once: true },
-      y: 28, opacity: 0, duration: 0.65, ease: "power2.out",
-    });
-    // AK monogram
-    gsap.from(".ct-monogram", {
-      scrollTrigger: { trigger: ref.current, start: "top 60%", once: true },
-      opacity: 0, scale: 1.08, duration: 1.4, ease: "power2.out", delay: 0.5,
-    });
+    tl.from(labelRef.current,   { y: 20, opacity: 0, duration: 0.55 }, 0)
+      .from(headingRef.current,  { y: 60, opacity: 0, duration: 1.0  }, 0.15)
+      .from(marqueeRef.current,  { y: 30, opacity: 0, duration: 0.7  }, 0.40)
+      .from(socialsRef.current,  { x: -28, opacity: 0, duration: 0.65 }, 0.55)
+      .from(rightRef.current,    { y: 28, opacity: 0, duration: 0.65 }, 0.65)
+      .from(monogramRef.current, { opacity: 0, scale: 1.08, duration: 1.4, ease: "power2.out" }, 0.7);
   }, { scope: ref });
 
   return (
@@ -156,23 +138,24 @@ export default function Contact() {
         position: "relative", overflow: "hidden",
       }}>
         {/* Divider line */}
-        <div className="ct-label" style={{
+        <div style={{
           height: 1,
           background: `linear-gradient(90deg,transparent,rgba(196,64,10,0.25),transparent)`,
           marginBottom: "clamp(56px,8vw,96px)",
         }} />
 
-        <p className="ct-label" style={{
+        <p ref={labelRef} style={{
           fontFamily: "var(--font-mono)", fontSize: 10,
           letterSpacing: "0.38em", color: ACCENT,
           textTransform: "uppercase", marginBottom: 40,
         }}>07 / Contact</p>
 
-        <div className="ct-heading">
+        <div ref={headingRef}>
           <CyclingHeading />
         </div>
 
-        <div className="ct-marquee marquee-wrap" style={{ overflow: "hidden", marginBottom: "clamp(48px,7vw,88px)" }}>
+        {/* Marquee email */}
+        <div ref={marqueeRef} className="marquee-wrap" style={{ overflow: "hidden", marginBottom: "clamp(48px,7vw,88px)" }}>
           <div className="marquee-track">
             {[...Array(6)].map((_, i) => (
               <span key={i} className="marquee-item">
@@ -183,11 +166,12 @@ export default function Contact() {
           </div>
         </div>
 
+        {/* Bottom grid */}
         <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(32px,5vw,64px)", alignItems: "end" }}>
-          <div>
+          <div ref={socialsRef}>
             <p style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(14,10,4,0.20)", marginBottom: 16 }}>Find me</p>
             {SOCIALS.map(s => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="social-item ct-social">
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="social-item">
                 <span style={{ color: "rgba(14,10,4,0.22)" }}>{s.icon}</span>
                 <span className="social-label">{s.label}</span>
                 <span className="social-handle">{s.handle}</span>
@@ -196,7 +180,7 @@ export default function Contact() {
             ))}
           </div>
 
-          <div className="ct-right" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 24 }}>
+          <div ref={rightRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 24 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 18px", border: "1px solid rgba(74,222,128,0.25)", borderRadius: 9999, background: "rgba(74,222,128,0.05)" }}>
               <span className="avail-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
               <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.28em", color: "rgba(34,197,94,0.85)", textTransform: "uppercase" }}>Open to opportunities</span>
@@ -206,8 +190,8 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* AK monogram watermark */}
-        <div aria-hidden className="ct-monogram" style={{
+        {/* AK watermark */}
+        <div ref={monogramRef} aria-hidden style={{
           position: "absolute", bottom: 0, right: 0,
           fontFamily: "'Cormorant Garamond',Georgia,serif",
           fontSize: "clamp(6rem,18vw,20rem)", lineHeight: 0.85,

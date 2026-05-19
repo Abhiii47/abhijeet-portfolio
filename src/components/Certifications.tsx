@@ -18,65 +18,53 @@ type Cert = {
 };
 
 const CERTS: Cert[] = [
-  { id: "c1", issuer: "Amazon",   name: "ML Summer School",              year: "2024", accent: true,  skills: ["Supervised Learning","XGBoost","Feature Engineering","Model Evaluation"], badge: "🏆", link: "https://github.com/Abhiii47/AmazonML_challange" },
-  { id: "c2", issuer: "Microsoft",name: "Fabric DP-600",                  year: "2024", accent: true,  skills: ["MS Fabric","Spark","Lakehouse","Power BI","ETL"] },
-  { id: "c3", issuer: "Google",   name: "Data Analytics Professional",    year: "2023",               skills: ["SQL","Tableau","R","Data Cleaning","Visualization"] },
-  { id: "c4", issuer: "IBM",      name: "Data Science Professional",      year: "2023",               skills: ["Python","Machine Learning","Databases","Data Visualization"] },
-  { id: "c5", issuer: "Coursera", name: "Deep Learning Specialization",   year: "2024",               skills: ["Neural Nets","CNNs","RNNs","TensorFlow"] },
-  { id: "c6", issuer: "Meta",     name: "Frontend Developer Professional",year: "2023",               skills: ["React","JavaScript","CSS","UX"] },
-  { id: "c7", issuer: "AWS",      name: "Cloud Practitioner Essentials",  year: "2024",               skills: ["EC2","S3","Lambda","IAM","VPC"] },
+  { id: "c1", issuer: "Amazon",    name: "ML Summer School",               year: "2024", accent: true,  badge: "🏆", skills: ["Supervised Learning","XGBoost","Feature Engineering","Model Evaluation"], link: "https://github.com/Abhiii47/AmazonML_challange" },
+  { id: "c2", issuer: "Microsoft", name: "Fabric Analytics Engineer DP-600",year: "2024", accent: true,  skills: ["MS Fabric","Spark","Lakehouse","Power BI","ETL"] },
+  { id: "c3", issuer: "Google",    name: "Data Analytics Professional",     year: "2023",               skills: ["SQL","Tableau","R","Data Cleaning","Visualization"] },
+  { id: "c4", issuer: "IBM",       name: "Data Science Professional",       year: "2023",               skills: ["Python","Machine Learning","Databases","Data Visualization"] },
+  { id: "c5", issuer: "Coursera",  name: "Deep Learning Specialization",    year: "2024",               skills: ["Neural Nets","CNNs","RNNs","TensorFlow"] },
+  { id: "c6", issuer: "Meta",      name: "Frontend Developer Professional", year: "2023",               skills: ["React","JavaScript","CSS","UX"] },
+  { id: "c7", issuer: "AWS",       name: "Cloud Practitioner Essentials",   year: "2024",               skills: ["EC2","S3","Lambda","IAM","VPC"] },
 ];
 
 function CertCard({ cert, index }: { cert: Cert; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 
-  // Individual scroll-triggered reveal with alternating Y offset for visual rhythm
   useGSAP(() => {
-    gsap.from(cardRef.current, {
-      scrollTrigger: {
-        trigger: cardRef.current,
-        start: "top 92%",
-        once: true,
-      },
-      y: index % 2 === 0 ? 50 : 38,
-      x: index % 3 === 1 ? 12 : 0,
-      opacity: 0,
-      scale: 0.97,
-      duration: 0.65,
-      delay: (index % 3) * 0.09,
-      ease: "power3.out",
-    });
-  });
+    const el = cardRef.current;
+    if (!el) return;
+    gsap.fromTo(el,
+      { y: index % 2 === 0 ? 48 : 36, opacity: 0, scale: 0.97 },
+      {
+        y: 0, opacity: 1, scale: 1,
+        duration: 0.65,
+        delay: (index % 3) * 0.09,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 92%", once: true },
+      }
+    );
+  }, { dependencies: [index] });
 
   return (
     <div
       ref={cardRef}
       onClick={() => setOpen(o => !o)}
       onMouseEnter={() => gsap.to(cardRef.current, { y: -4, duration: 0.2, ease: "power2.out" })}
-      onMouseLeave={() => gsap.to(cardRef.current, { y: 0, duration: 0.2, ease: "power2.out" })}
+      onMouseLeave={() => gsap.to(cardRef.current, { y: 0,  duration: 0.2, ease: "power2.out" })}
       style={{
         background: cert.accent ? "rgba(196,64,10,0.04)" : "var(--bg-card)",
-        border: cert.accent ? `1.5px solid rgba(196,64,10,0.22)` : "1px solid rgba(14,10,4,0.07)",
+        border: cert.accent ? `1.5px solid rgba(196,64,10,0.25)` : "1px solid rgba(14,10,4,0.08)",
         borderRadius: 10,
         padding: "clamp(16px,2.2vw,24px)",
         cursor: "pointer",
-        transition: "border-color 0.2s,box-shadow 0.2s",
+        transition: "border-color 0.2s,box-shadow 0.2s,transform 0.2s",
         position: "relative",
         overflow: "hidden",
         boxShadow: cert.accent ? "3px 3px 0 rgba(196,64,10,0.15)" : "none",
-        opacity: 0, // starts hidden; GSAP reveals
       }}
     >
-      {/* Ghost index */}
-      <span aria-hidden style={{
-        position: "absolute", right: 10, top: 4,
-        fontFamily: "var(--font-display)", fontWeight: 800,
-        fontSize: "3.5rem", color: "rgba(14,10,4,0.04)",
-        lineHeight: 1, userSelect: "none", pointerEvents: "none",
-      }}>{String(index + 1).padStart(2, "0")}</span>
-
-      {/* Left accent bar for highlighted certs */}
+      {/* Left accent bar */}
       {cert.accent && (
         <div aria-hidden style={{
           position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
@@ -84,6 +72,14 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
           borderRadius: "10px 0 0 10px",
         }} />
       )}
+
+      {/* Ghost index */}
+      <span aria-hidden style={{
+        position: "absolute", right: 10, top: 4,
+        fontFamily: "var(--font-display)", fontWeight: 800,
+        fontSize: "3.5rem", color: "rgba(14,10,4,0.04)",
+        lineHeight: 1, userSelect: "none", pointerEvents: "none",
+      }}>{String(index + 1).padStart(2, "0")}</span>
 
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
         <div>
@@ -117,7 +113,7 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
       )}
 
       <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 8, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(14,10,4,0.22)" }}>
-        {open ? "▲ collapse" : "▼ expand"}
+        {open ? "▲ collapse" : "▼ details"}
       </div>
     </div>
   );
@@ -125,13 +121,6 @@ function CertCard({ cert, index }: { cert: Cert; index: number }) {
 
 export default function Certifications() {
   const sectionRef = useRef<HTMLElement>(null);
-
-  useGSAP(() => {
-    gsap.from(".cert-heading", {
-      scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
-      y: 28, opacity: 0, duration: 0.75, stagger: 0.1, ease: "power3.out",
-    });
-  }, { scope: sectionRef });
 
   return (
     <section id="certifications" ref={sectionRef} style={{
@@ -149,7 +138,7 @@ export default function Certifications() {
       }}>CERTS</span>
 
       <div style={{ maxWidth: 1140, margin: "0 auto" }}>
-        <div className="cert-heading" style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(28px,4vw,48px)" }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(28px,4vw,48px)" }}>
           <AnimatedHeading
             text="Certifications"
             italic="& credentials"

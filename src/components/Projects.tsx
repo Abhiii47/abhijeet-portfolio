@@ -59,7 +59,7 @@ const PROJECTS: Project[] = [
     number: "04", org: "Amazon ML Summer School · 2024",
     name: "Amazon ML — Product Price Prediction",
     hook: "End-to-end regression on 150,000+ records. Top 0.1% nationally.",
-    description: "EDA → feature engineering → XGBoost → hyperparameter optimization. Ensemble approach with bias-variance analysis. Optimized on MAE and SMAPE.",
+    description: "EDA → feature engineering → XGBoost → hyperparameter optimization. Ensemble approach with bias-variance analysis.",
     stats: [{ num: "150K+", label: "Records" }, { num: "Top 0.1%", label: "National" }],
     hotTags: ["XGBoost", "Python", "Feature Eng."],
     normalTags: ["Pandas", "Scikit-learn", "EDA"],
@@ -111,7 +111,7 @@ function AnimatedStat({ num, label }: Stat) {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setReady(true); obs.disconnect(); } },
-      { threshold: 0.2, rootMargin: "0px 0px -60px 0px" }
+      { threshold: 0.2, rootMargin: "0px 0px -40px 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -152,19 +152,20 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
   const edgeRef = useRef<HTMLDivElement>(null);
   const imgRef  = useRef<HTMLDivElement>(null);
 
-  // Scroll-aware reveal — fires when card enters viewport
+  // Use CSS class-based reveal — no inline opacity:0 that blocks visibility
   useGSAP(() => {
-    gsap.from(cardRef.current, {
-      scrollTrigger: {
-        trigger: cardRef.current,
-        start: "top 90%",
-        once: true,
-      },
-      y: 40, opacity: 0, duration: 0.65,
-      delay: (index % 4) * 0.07,
-      ease: "power3.out",
-    });
-  });
+    const el = cardRef.current;
+    if (!el) return;
+    gsap.fromTo(el,
+      { y: 40, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.65,
+        delay: (index % 4) * 0.07,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 92%", once: true },
+      }
+    );
+  }, { dependencies: [index] });
 
   const handleEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(cardRef.current, { y: -4, duration: 0.22, ease: "power2.out" });
@@ -199,7 +200,7 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
         gap: "0 clamp(14px,2vw,24px)",
         transition: "border-color 0.22s,box-shadow 0.22s",
         position: "relative", overflow: "hidden",
-        opacity: 0, // starts hidden; GSAP reveals it
+        // NO inline opacity:0 here — GSAP sets fromTo so initial is handled by GSAP
       }}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
@@ -243,8 +244,8 @@ function ProjectCard({ p, index, onEnter, onLeave, onMouseMove }: {
             <p style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontStyle: "italic", fontSize: 15, color: ACCENT, lineHeight: 1.55, marginBottom: 9 }}>{p.hook}</p>
             <p style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "rgba(14,10,4,0.50)", lineHeight: 1.65, marginBottom: 12 }}>{p.description}</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 14 }}>
-              {p.hotTags.map(t    => <span key={t} className="proj-tag tag-hot">{t}</span>)}
-              {p.normalTags.map(t => <span key={t} className="proj-tag tag-normal">{t}</span>)}
+              {p.hotTags.map(t    => <span key={t} className="tag-hot">{t}</span>)}
+              {p.normalTags.map(t => <span key={t} className="tag-normal">{t}</span>)}
             </div>
             <div style={{ display: "flex", gap: 16 }}>
               {p.links.github && (
@@ -276,17 +277,9 @@ export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
   const { previewRef, active, onMouseMove, onEnter, onLeave } = useProjectPreview();
 
-  useGSAP(() => {
-    gsap.from(".proj-heading", {
-      scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
-      y: 30, opacity: 0, duration: 0.7, stagger: 0.08, ease: "power3.out",
-    });
-  }, { scope: sectionRef });
-
   return (
     <>
       <style>{`@media(max-width:640px){ .card-body{ grid-template-columns:1fr!important; } }`}</style>
-
       <ProjectPreviewCard previewRef={previewRef} active={active} />
 
       <section id="work" ref={sectionRef} style={{
@@ -303,7 +296,7 @@ export default function Projects() {
         }}>WORK</span>
 
         <div style={{ maxWidth: 1140, margin: "0 auto" }}>
-          <div className="proj-heading" style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(32px,5vw,56px)" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: "clamp(32px,5vw,56px)" }}>
             <AnimatedHeading
               text="Selected"
               italic="projects"
