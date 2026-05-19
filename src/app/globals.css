@@ -1,44 +1,33 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   RUST + CREAM EDITORIAL SYSTEM
-   Accent          = #C4400A  warm rust
-   Accent bright   = #E8572A  lighter rust for hover
-   Dark bg         = #0E0C0A  warm near-black (not cold blue)
-   Cream sections  = #F5F0E8  off-white
-   Cream mid       = #EDE8DF  slightly darker cream
+   RESUMEMATCHER-STYLE LIGHT EDITORIAL SYSTEM
+   BG base    = #F5F2EB  warm cream
+   Accent     = #C4400A  rust
+   Ink        = #0E0A04  warm near-black
+   Cards      = #FFFCF6  off-white
 ═══════════════════════════════════════════ */
 
 :root {
-  /* ── Core accent ── */
+  /* ── Accent ── */
   --accent:        #C4400A;
   --accent-bright: #E8572A;
-  --accent-dim:    rgba(196,64,10,0.28);
-  --accent-glow:   rgba(196,64,10,0.10);
+  --accent-dim:    rgba(196,64,10,0.18);
+  --accent-glow:   rgba(196,64,10,0.08);
 
-  /* ── Dark surface stack (warm near-black, not cold blue) ── */
-  --bg-base:       #0E0C0A;
-  --bg-section:    #131008;
-  --bg-surface:    #1A1610;
-  --bg-card:       #201C15;
-  --bg-card-hover: #262118;
-  --bg-line:       rgba(196,64,10,0.08);
+  /* ── Light surface stack ── */
+  --bg-base:       #F5F2EB;
+  --bg-section:    #F0EDE6;
+  --bg-surface:    #EDE9E1;
+  --bg-card:       #FFFCF6;
+  --bg-card-hover: #FFF8F0;
+  --bg-line:       rgba(196,64,10,0.06);
 
-  /* ── Cream surface stack ── */
-  --cream:         #F5F0E8;
-  --cream-mid:     #EDE8DF;
-  --cream-deep:    #E0D9CE;
-
-  /* ── Ink / text (on dark) ── */
-  --ink:           #F0EDE8;
-  --ink-muted:     rgba(240,237,232,0.55);
-  --ink-hint:      rgba(240,237,232,0.28);
-  --ink-border:    rgba(240,237,232,0.08);
-
-  /* ── Ink (on cream) ── */
-  --ink-dark:       #1A1208;
-  --ink-dark-muted: rgba(26,18,8,0.55);
-  --ink-dark-hint:  rgba(26,18,8,0.30);
+  /* ── Ink (on light) ── */
+  --ink:           #0E0A04;
+  --ink-muted:     rgba(14,10,4,0.55);
+  --ink-hint:      rgba(14,10,4,0.32);
+  --ink-border:    rgba(14,10,4,0.08);
 
   /* ── Typography ── */
   --font-display: 'Cormorant Garamond', Georgia, serif;
@@ -74,12 +63,12 @@ body {
 .border-accent { border-color: var(--accent); }
 
 /* ── Selection ── */
-::selection { background: rgba(196,64,10,0.22); color: var(--ink); }
+::selection { background: rgba(196,64,10,0.15); color: var(--ink); }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: rgba(196,64,10,0.35); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: rgba(196,64,10,0.28); border-radius: 99px; }
 
 /* ── Focus ── */
 :focus-visible {
@@ -118,20 +107,20 @@ body {
   --space-16: 4rem;    --space-20: 5rem;   --space-24: 6rem;
 }
 
-/* ── Section divider — rust tone ── */
+/* ── Section divider ── */
 .section-divider {
   width: 100%;
   height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(196,64,10,0.2) 20%,
-    rgba(196,64,10,0.45) 50%,
-    rgba(196,64,10,0.2) 80%,
+    rgba(196,64,10,0.18) 20%,
+    rgba(196,64,10,0.38) 50%,
+    rgba(196,64,10,0.18) 80%,
     transparent 100%
   );
 }
 
-/* ── Pulse badge (available dot) ── */
+/* ── Pulse badge ── */
 @keyframes badgePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
   50%       { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
@@ -144,14 +133,14 @@ body {
 /* ── Cursor blink ── */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-/* ── Scroll indicator bounce ── */
+/* ── Scroll bounce ── */
 @keyframes scrollBounce {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(8px); }
 }
 .scroll-bounce { animation: scrollBounce 1.6s ease-in-out infinite; }
 
-/* ── Shimmer sweep (on featured cert) — rust tone ── */
+/* ── Shimmer (rust tone) ── */
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
@@ -160,20 +149,20 @@ body {
   background: linear-gradient(
     90deg,
     rgba(196,64,10,0.0)  0%,
-    rgba(196,64,10,0.14) 50%,
+    rgba(196,64,10,0.10) 50%,
     rgba(196,64,10,0.0)  100%
   );
   background-size: 200% auto;
   animation: shimmer 3.2s linear infinite;
 }
 
-/* ── Tag pill ── */
+/* ── Tag pills ── */
 .tag-hot {
   padding: 4px 10px;
   border-radius: 4px;
-  background: rgba(196,64,10,0.12);
-  border: 1px solid rgba(196,64,10,0.30);
-  color: var(--accent-bright);
+  background: rgba(196,64,10,0.10);
+  border: 1px solid rgba(196,64,10,0.25);
+  color: var(--accent);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
@@ -183,9 +172,9 @@ body {
 .tag-normal {
   padding: 4px 10px;
   border-radius: 4px;
-  background: rgba(240,237,232,0.04);
-  border: 1px solid rgba(240,237,232,0.08);
-  color: rgba(240,237,232,0.42);
+  background: rgba(14,10,4,0.04);
+  border: 1px solid rgba(14,10,4,0.08);
+  color: rgba(14,10,4,0.42);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 400;
@@ -193,12 +182,4 @@ body {
   line-height: 1;
 }
 
-/* ── Cream section utility ── */
-.section-cream {
-  background: var(--cream);
-  color: var(--ink-dark);
-}
-.section-cream-mid {
-  background: var(--cream-mid);
-  color: var(--ink-dark);
-}
+/* ── section-grid removed (AI tell) ── */
