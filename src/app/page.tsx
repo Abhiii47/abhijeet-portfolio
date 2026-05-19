@@ -10,6 +10,7 @@ import Preloader      from "@/components/Preloader";
 import SectionWipe    from "@/components/SectionWipe";
 import ScrollProgress from "@/components/ScrollProgress";
 import ScrollSkew     from "@/components/ScrollSkew";
+import Marquee        from "@/components/Marquee";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <ScrollProgress />
       <main>
         <Entry />
+        <Marquee />
         <SectionWipe id="about-wipe" />
         <About />
         <SectionWipe id="exp-wipe" />
