@@ -6,16 +6,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = "#00d4ff";
+const ACCENT = "#C4400A";
+const INK    = "#0E0A04";
+
 const LINKS = [
   { label: "About",      href: "#about" },
   { label: "Experience", href: "#experience" },
-  { label: "Projects",   href: "#projects" },
+  { label: "Projects",   href: "#work" },
   { label: "Contact",    href: "#contact" },
 ];
 
 export default function Navbar() {
-  const ref   = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [active,   setActive]   = useState("");
   const [open,     setOpen]     = useState(false);
@@ -50,16 +52,16 @@ export default function Navbar() {
           display: "flex", alignItems: "center",
           justifyContent: "space-between",
           padding: "0 clamp(20px, 5vw, 64px)",
-          background: scrolled ? "rgba(8,12,20,0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px) saturate(140%)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.05)" : "1px solid transparent",
-          transition: "background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease",
+          background: scrolled ? "rgba(245,242,235,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(16px) saturate(120%)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(14,10,4,0.07)" : "1px solid transparent",
+          transition: "background 0.4s ease, border-color 0.4s ease",
         }}
       >
         {/* Logo */}
         <a href="#hero" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="AK">
-            <path d="M3 25L9 8l6 17M5 17h8" stroke="#f0ede8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 25L9 8l6 17M5 17h8" stroke={INK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M20 8v17M20 17l8-9M20 17l8 9" stroke={ACCENT} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </a>
@@ -76,12 +78,11 @@ export default function Navbar() {
                 letterSpacing: "0.28em",
                 textTransform: "uppercase",
                 textDecoration: "none",
-                color: active === href ? ACCENT : "rgba(255,255,255,0.4)",
+                color: active === href ? ACCENT : "rgba(14,10,4,0.38)",
                 transition: "color 0.2s ease",
-                position: "relative",
               }}
-              onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = "rgba(255,255,255,0.85)"; }}
-              onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+              onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = INK; }}
+              onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "rgba(14,10,4,0.38)"; }}
             >{label}</a>
           ))}
           <a
@@ -92,11 +93,11 @@ export default function Navbar() {
               fontFamily: "monospace", fontSize: 9, letterSpacing: "0.22em",
               textTransform: "uppercase", textDecoration: "none",
               padding: "7px 18px", borderRadius: 9999,
-              border: `1px solid rgba(0,212,255,0.25)`,
+              border: `1px solid rgba(196,64,10,0.30)`,
               color: ACCENT,
               transition: "background 0.2s, color 0.2s",
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = ACCENT; e.currentTarget.style.color = "#080c14"; }}
+            onMouseEnter={e => { e.currentTarget.style.background = ACCENT; e.currentTarget.style.color = "#F5F2EB"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = ACCENT; }}
           >Resume</a>
         </div>
@@ -114,7 +115,7 @@ export default function Navbar() {
           {[0,1,2].map(i => (
             <span key={i} style={{
               display: "block", width: 22, height: 1.5,
-              background: open && i === 1 ? "transparent" : "rgba(255,255,255,0.7)",
+              background: open && i === 1 ? "transparent" : INK,
               borderRadius: 1,
               transition: "transform 0.25s ease, opacity 0.25s ease",
               transform: open ? (i===0?"translateY(6.5px) rotate(45deg)": i===2?"translateY(-6.5px) rotate(-45deg)":"none") : "none",
@@ -127,7 +128,7 @@ export default function Navbar() {
       {open && (
         <div style={{
           position: "fixed", inset: 0, zIndex: 99,
-          background: "rgba(8,12,20,0.97)",
+          background: "rgba(245,242,235,0.98)",
           display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center",
           gap: 40,
@@ -140,11 +141,11 @@ export default function Navbar() {
               style={{
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontSize: "2.5rem", fontWeight: 700,
-                color: "#e8e5df", textDecoration: "none",
+                color: INK, textDecoration: "none",
                 transition: "color 0.2s",
               }}
               onMouseEnter={e => (e.currentTarget.style.color = ACCENT)}
-              onMouseLeave={e => (e.currentTarget.style.color = "#e8e5df")}
+              onMouseLeave={e => (e.currentTarget.style.color = INK)}
             >{label}</a>
           ))}
         </div>
