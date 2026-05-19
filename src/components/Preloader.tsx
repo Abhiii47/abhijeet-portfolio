@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
-const ACCENT = "#00d4ff";
+const ACCENT = "#C4400A";
+const INK    = "#0E0A04";
+const CREAM  = "#F5F2EB";
 
 export default function Preloader() {
   const [count, setCount]   = useState(0);
-  const [done, setDone]     = useState(false);
-  const [hidden, setHidden] = useState(false);
+  const [done,  setDone]    = useState(false);
+  const [hidden,setHidden]  = useState(false);
   const topRef    = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const wrapRef   = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ export default function Preloader() {
     return () => clearInterval(id);
   }, []);
 
-  /* SVG logo draw-on animation */
+  /* SVG logo draw-on */
   useEffect(() => {
     const paths = [logoRef.current, logoRef2.current];
     paths.forEach(p => {
@@ -45,10 +47,12 @@ export default function Preloader() {
     });
   }, []);
 
-  /* exit animation */
+  /* Exit animation */
   useEffect(() => {
     if (!done) return;
-    const tl = gsap.timeline({ onComplete: () => { document.body.style.overflow = ""; setHidden(true); } });
+    const tl = gsap.timeline({
+      onComplete: () => { document.body.style.overflow = ""; setHidden(true); },
+    });
     tl.to(lineRef.current,   { scaleX: 1, duration: 0.4, ease: "expo.inOut" })
       .to(topRef.current,    { yPercent: -100, duration: 0.85, ease: "expo.inOut" }, "+=0.05")
       .to(bottomRef.current, { yPercent:  100, duration: 0.85, ease: "expo.inOut" }, "<")
@@ -71,13 +75,14 @@ export default function Preloader() {
         ref={topRef}
         style={{
           position: "absolute", inset: "0 0 50% 0",
-          background: "#040810",
+          background: CREAM,
+          borderBottom: "1px solid rgba(14,10,4,0.07)",
           display: "flex", alignItems: "flex-end", justifyContent: "space-between",
           padding: "0 clamp(24px,6vw,64px) 24px",
         }}
       >
-        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" }}>Abhijeet Kadu</span>
-        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" }}>SDE &amp; Product Manager</span>
+        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(14,10,4,0.28)", textTransform: "uppercase" }}>Abhijeet Kadu</span>
+        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(14,10,4,0.28)", textTransform: "uppercase" }}>SDE &amp; Product Manager</span>
       </div>
 
       {/* Bottom panel */}
@@ -85,13 +90,14 @@ export default function Preloader() {
         ref={bottomRef}
         style={{
           position: "absolute", inset: "50% 0 0 0",
-          background: "#040810",
+          background: CREAM,
+          borderTop: "1px solid rgba(14,10,4,0.07)",
           display: "flex", alignItems: "flex-start", justifyContent: "space-between",
           padding: "24px clamp(24px,6vw,64px) 0",
         }}
       >
-        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" }}>Mumbai, India</span>
-        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" }}>Portfolio {new Date().getFullYear()}</span>
+        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(14,10,4,0.28)", textTransform: "uppercase" }}>Mumbai, India</span>
+        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(14,10,4,0.28)", textTransform: "uppercase" }}>Portfolio {new Date().getFullYear()}</span>
       </div>
 
       {/* Center */}
@@ -101,21 +107,14 @@ export default function Preloader() {
         alignItems: "center", justifyContent: "center",
         gap: 24, pointerEvents: "none",
       }}>
-
-        {/* AK SVG logo — draws on */}
-        <svg
-          width="72" height="72" viewBox="0 0 72 72" fill="none"
-          aria-label="AK"
-          style={{ marginBottom: 4 }}
-        >
-          <circle cx="36" cy="36" r="32" stroke={ACCENT} strokeWidth="0.8" strokeOpacity="0.18" />
-          {/* A */}
+        {/* AK logo draws on */}
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none" aria-label="AK" style={{ marginBottom: 4 }}>
+          <circle cx="36" cy="36" r="32" stroke={ACCENT} strokeWidth="0.8" strokeOpacity="0.20" />
           <path
             ref={logoRef}
             d="M12 54 L24 20 L36 54 M16 40 H32"
-            stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            stroke={INK} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           />
-          {/* K */}
           <path
             ref={logoRef2}
             d="M40 20 V54 M40 36 L60 20 M40 36 L60 54"
@@ -130,16 +129,15 @@ export default function Preloader() {
             fontSize: "clamp(5rem,16vw,12rem)",
             fontWeight: 900, lineHeight: 1,
             letterSpacing: "-0.04em",
-            color: count === 100 ? ACCENT : "#e8e5df",
+            color: count === 100 ? ACCENT : INK,
             transition: "color 0.4s ease",
             userSelect: "none",
-            tabularNums: true,
           } as React.CSSProperties}
         >
           {String(count).padStart(3, "0")}
         </div>
 
-        {/* Expanding line */}
+        {/* Progress line */}
         <div
           ref={lineRef}
           style={{
@@ -155,7 +153,7 @@ export default function Preloader() {
         <span style={{
           fontSize: 9, letterSpacing: "0.4em",
           textTransform: "uppercase",
-          color: count === 100 ? ACCENT : "rgba(255,255,255,0.25)",
+          color: count === 100 ? ACCENT : "rgba(14,10,4,0.32)",
           transition: "color 0.4s ease",
         }}>
           {count < 100 ? "Loading" : "Ready"}
