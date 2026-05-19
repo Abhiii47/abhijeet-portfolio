@@ -9,33 +9,25 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* ── Accent ── */
   --accent:        #C4400A;
   --accent-bright: #E8572A;
   --accent-dim:    rgba(196,64,10,0.18);
   --accent-glow:   rgba(196,64,10,0.08);
-
-  /* ── Light surface stack ── */
   --bg-base:       #F5F2EB;
   --bg-section:    #F0EDE6;
   --bg-surface:    #EDE9E1;
   --bg-card:       #FFFCF6;
   --bg-card-hover: #FFF8F0;
   --bg-line:       rgba(196,64,10,0.06);
-
-  /* ── Ink (on light) ── */
   --ink:           #0E0A04;
   --ink-muted:     rgba(14,10,4,0.55);
   --ink-hint:      rgba(14,10,4,0.32);
   --ink-border:    rgba(14,10,4,0.08);
-
-  /* ── Typography ── */
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body:    'Inter', system-ui, sans-serif;
-  --font-mono:    'Inter', monospace;
+  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-body:     'Inter', system-ui, sans-serif;
+  --font-mono:     'Inter', monospace;
 }
 
-/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
@@ -57,18 +49,32 @@ body {
   overflow-x: hidden;
 }
 
+/* ── Grain texture overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99997;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.90' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  background-repeat: repeat;
+  mix-blend-mode: multiply;
+}
+
 /* ── Tailwind aliases ── */
 .text-accent   { color: var(--accent); }
 .bg-accent     { background-color: var(--accent); }
 .border-accent { border-color: var(--accent); }
 
 /* ── Selection ── */
-::selection { background: rgba(196,64,10,0.15); color: var(--ink); }
+::selection { background: rgba(196,64,10,0.14); color: var(--ink); }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar       { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: rgba(196,64,10,0.28); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: rgba(196,64,10,0.30); border-radius: 99px; }
 
 /* ── Focus ── */
 :focus-visible {
@@ -120,27 +126,21 @@ body {
   );
 }
 
-/* ── Pulse badge ── */
+/* ── Animations ── */
 @keyframes badgePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
   50%       { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
 }
-.avail-dot {
-  animation: badgePulse 2s ease-in-out infinite;
-  border-radius: 50%;
-}
+.avail-dot { animation: badgePulse 2s ease-in-out infinite; border-radius: 50%; }
 
-/* ── Cursor blink ── */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-/* ── Scroll bounce ── */
 @keyframes scrollBounce {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(8px); }
 }
 .scroll-bounce { animation: scrollBounce 1.6s ease-in-out infinite; }
 
-/* ── Shimmer (rust tone) ── */
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
@@ -156,6 +156,13 @@ body {
   animation: shimmer 3.2s linear infinite;
 }
 
+/* ── Word reveal (clip-path) ── */
+.word-reveal-wrap { overflow: hidden; display: inline-block; }
+.word-reveal      { display: inline-block; will-change: transform; }
+
+/* ── Magnetic wrapper ── */
+.magnetic { display: inline-block; }
+
 /* ── Tag pills ── */
 .tag-hot {
   padding: 4px 10px;
@@ -168,7 +175,10 @@ body {
   font-weight: 500;
   letter-spacing: 0.04em;
   line-height: 1;
+  transition: background 0.18s, border-color 0.18s;
 }
+.tag-hot:hover   { background: rgba(196,64,10,0.16); border-color: rgba(196,64,10,0.40); }
+
 .tag-normal {
   padding: 4px 10px;
   border-radius: 4px;
@@ -180,6 +190,15 @@ body {
   font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1;
+  transition: background 0.18s, border-color 0.18s;
 }
+.tag-normal:hover { background: rgba(14,10,4,0.07); border-color: rgba(14,10,4,0.14); }
 
-/* ── section-grid removed (AI tell) ── */
+/* ── Hover lift ── */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(196,64,10,0.08);
+}
