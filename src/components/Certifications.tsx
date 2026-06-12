@@ -1,3 +1,5 @@
+"use client";
+
 const ACCENT = "#C4400A";
 
 const certs = [

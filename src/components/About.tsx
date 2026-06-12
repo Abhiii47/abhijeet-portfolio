@@ -1,7 +1,8 @@
+"use client";
+
 export default function About() {
   return (
     <section id="about" style={{ padding: "clamp(48px,7vw,96px) 0" }}>
-      {/* Section label */}
       <p style={{
         fontFamily: "var(--font-mono)",
         fontSize: "0.62rem",

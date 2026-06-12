@@ -1,3 +1,5 @@
+"use client";
+
 const INK    = "#0E0A04";
 const ACCENT = "#C4400A";
 
@@ -26,25 +28,25 @@ export default function Experience() {
         borderRadius: 10,
         padding: "clamp(20px,3vw,36px)",
       }}>
-        <div style={{ marginBottom: 6 }}>
-          <h2 style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "clamp(1.1rem,0.9rem + 0.8vw,1.4rem)",
-            fontWeight: 600,
-            color: INK,
-            lineHeight: 1.3,
-            marginBottom: 6,
-          }}>Software Development Engineer — Ecovis RKCA</h2>
-          <p style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.6rem",
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
-            color: "rgba(14,10,4,0.40)",
-          }}>Feb 2026 – Present · Full-time</p>
-        </div>
+        <h2 style={{
+          fontFamily: "var(--font-body)",
+          fontSize: "clamp(1.1rem,0.9rem + 0.8vw,1.4rem)",
+          fontWeight: 600,
+          color: INK,
+          lineHeight: 1.3,
+          marginBottom: 6,
+        }}>Software Development Engineer — Ecovis RKCA</h2>
 
-        <ul style={{ marginTop: 20, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+        <p style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.6rem",
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          color: "rgba(14,10,4,0.40)",
+          marginBottom: 20,
+        }}>Feb 2026 – Present · Full-time</p>
+
+        <ul style={{ paddingLeft: 18, display: "flex", flexDirection: "column", gap: 12 }}>
           {bullets.map((b, i) => (
             <li key={i} style={{
               fontFamily: "var(--font-body)",
