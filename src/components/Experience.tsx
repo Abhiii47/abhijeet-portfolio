@@ -12,7 +12,7 @@ export default function Experience() {
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground">
             Feb 2026 – Present · Full-time
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-muted-foreground list-disc list-inside">
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground list-disc pl-5">
             <li>
               Built a RAG-based knowledge system using Pinecone and Gemini for internal document retrieval and AI-assisted querying, with streaming responses.
             </li>
