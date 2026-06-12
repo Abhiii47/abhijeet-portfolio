@@ -1,5 +1,3 @@
-"use client";
-
 const ACCENT = "#C4400A";
 
 const certs = [
@@ -38,7 +36,7 @@ export default function Certifications() {
         gap: "clamp(10px,1.5vw,16px)",
       }}>
         {certs.map((c) => (
-          <div key={c.title} style={{
+          <div key={c.title} className="cert-card" style={{
             background: "var(--bg-card)",
             border: "1.5px solid rgba(14,10,4,0.10)",
             borderRadius: 10,
@@ -46,11 +44,7 @@ export default function Certifications() {
             display: "flex",
             flexDirection: "column",
             gap: 8,
-            transition: "border-color 0.22s, box-shadow 0.22s",
-          }}
-            onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = "rgba(196,64,10,0.30)"; el.style.boxShadow = "0 8px 32px rgba(196,64,10,0.06)"; }}
-            onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = "rgba(14,10,4,0.10)"; el.style.boxShadow = "none"; }}
-          >
+          }}>
             <p style={{
               fontFamily: "var(--font-mono)",
               fontSize: "0.58rem",

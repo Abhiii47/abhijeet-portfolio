@@ -1,5 +1,3 @@
-"use client";
-
 export default function About() {
   return (
     <section id="about" style={{ padding: "clamp(48px,7vw,96px) 0" }}>
@@ -79,6 +77,7 @@ export default function About() {
 
           <a
             href="/resume.pdf"
+            className="about-cv-btn"
             style={{
               display: "flex",
               alignItems: "center",
@@ -94,11 +93,7 @@ export default function About() {
               border: "1.5px solid rgba(14,10,4,0.18)",
               borderRadius: 4,
               padding: "11px 20px",
-              background: "transparent",
-              transition: "border-color 0.18s, background 0.18s",
             }}
-            onMouseEnter={e => { const a = e.currentTarget; a.style.borderColor = "var(--accent)"; a.style.background = "rgba(196,64,10,0.04)"; }}
-            onMouseLeave={e => { const a = e.currentTarget; a.style.borderColor = "rgba(14,10,4,0.18)"; a.style.background = "transparent"; }}
           >Download CV ↗</a>
         </div>
       </div>

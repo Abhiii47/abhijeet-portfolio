@@ -1,5 +1,3 @@
-"use client";
-
 const INK    = "#0E0A04";
 const ACCENT = "#C4400A";
 
