@@ -30,34 +30,33 @@ export default function Contact() {
         overflow: "hidden",
       }}
     >
-      {/* Ghost text */}
+      {/* Ghost text - raised opacity + radial fade mask */}
       <span aria-hidden style={{
         position: "absolute",
         fontFamily: "var(--font-display)",
         fontWeight: 800,
         fontSize: "22vw",
-        color: "rgba(14,10,4,0.025)",
+        color: "rgba(14,10,4,0.045)",
         userSelect: "none",
         pointerEvents: "none",
         lineHeight: 1,
         top: "50%",
         transform: "translateY(-50%)",
         whiteSpace: "nowrap",
+        WebkitMaskImage: "radial-gradient(ellipse 80% 60% at center, black 40%, transparent 100%)",
+        maskImage: "radial-gradient(ellipse 80% 60% at center, black 40%, transparent 100%)",
       }}>Hi.</span>
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: 600, width: "100%" }}>
 
-        {/* Section label & Heading */}
         <AnimatedHeading section="07" text="Let's build something" italic="great." />
 
-        {/* Subtext */}
         <p style={{
           fontFamily: "var(--font-body)",
           fontSize: "clamp(0.9rem,0.85rem + 0.3vw,1.05rem)",
           fontWeight: 300,
           color: "var(--ink-muted)",
           lineHeight: 1.7,
-          marginBottom: 40,
           maxWidth: 420,
           margin: "0 auto 40px",
         }}>
@@ -106,7 +105,7 @@ export default function Contact() {
           {[
             { href: "https://github.com/Abhiii47",          icon: <Github size={13} />,   label: "GitHub" },
             { href: "https://linkedin.com/in/abhijeet-kadu", icon: <Linkedin size={13} />, label: "LinkedIn" },
-            { href: "/resume.pdf",                          icon: <FileText size={13} />,     label: "Resume", accent: true },
+            { href: "/resume.pdf",                          icon: <FileText size={13} />,  label: "Resume", accent: true },
           ].map(({ href, icon, label, accent }) => (
             <a
               key={label}
@@ -152,7 +151,7 @@ export default function Contact() {
           letterSpacing: "0.28em",
           textTransform: "uppercase",
           color: "var(--ink-hint)",
-        }}>Designed &amp; built by Abhijeet Kadu &nbsp;·&nbsp; 2026</p>
+        }}>Designed &amp; built by Abhijeet Kadu &nbsp;&middot;&nbsp; 2026</p>
       </div>
     </section>
   );
