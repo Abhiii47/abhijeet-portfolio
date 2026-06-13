@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { gsap } from "gsap";
 import AnimatedHeading from "./AnimatedHeading";
 
@@ -96,17 +96,14 @@ const projects = [
   },
 ];
 
+const CATEGORY_COLORS: Record<string, { bg: string; border: string; color: string }> = {
+  "AI/ML":      { bg: "rgba(196,64,10,0.08)",  border: "rgba(196,64,10,0.28)",  color: "var(--accent)" },
+  "Full-Stack": { bg: "rgba(59,130,246,0.08)",  border: "rgba(59,130,246,0.28)",  color: "#3B82F6" },
+  "Analytics":  { bg: "rgba(16,185,129,0.08)",  border: "rgba(16,185,129,0.28)",  color: "#10B981" },
+};
+
 function screenshotUrl(url: string) {
   return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
-}
-
-function getPreviewUrl(repoUrl?: string, liveUrl?: string) {
-  if (liveUrl) return screenshotUrl(liveUrl);
-  if (repoUrl) {
-    const path = repoUrl.replace("https://github.com/", "");
-    return `https://opengraph.githubassets.com/1/${path}`;
-  }
-  return "";
 }
 
 export default function Projects() {
@@ -116,21 +113,15 @@ export default function Projects() {
 
   const handleFilterChange = (cat: string) => {
     if (cat === activeCategory) return;
-
     const cards = gridRef.current?.querySelectorAll(".proj-card");
     if (cards && cards.length > 0) {
       gsap.to(cards, {
-        opacity: 0,
-        y: 12,
-        scale: 0.98,
-        duration: 0.22,
-        stagger: 0.03,
-        ease: "power2.in",
+        opacity: 0, y: 12, scale: 0.98,
+        duration: 0.22, stagger: 0.03, ease: "power2.in",
         onComplete: () => {
           setActiveCategory(cat);
           const filtered = cat === "All" ? projects : projects.filter(p => p.category === cat);
           setDisplayProjects(filtered);
-          
           setTimeout(() => {
             const newCards = gridRef.current?.querySelectorAll(".proj-card");
             if (newCards) {
@@ -140,12 +131,11 @@ export default function Projects() {
               );
             }
           }, 20);
-        }
+        },
       });
     } else {
       setActiveCategory(cat);
-      const filtered = cat === "All" ? projects : projects.filter(p => p.category === cat);
-      setDisplayProjects(filtered);
+      setDisplayProjects(cat === "All" ? projects : projects.filter(p => p.category === cat));
     }
   };
 
@@ -156,8 +146,8 @@ export default function Projects() {
           transition: border-color 0.22s, box-shadow 0.22s, transform 0.22s;
         }
         .proj-card:hover {
-          border-color: rgba(196,64,10,0.30) !important;
-          box-shadow: 0 8px 32px rgba(196,64,10,0.06), 4px 4px 0 rgba(196,64,10,0.08);
+          border-color: rgba(196,64,10,0.35) !important;
+          box-shadow: 4px 4px 0 rgba(196,64,10,0.12), 0 12px 40px rgba(196,64,10,0.08);
           transform: translateY(-2px);
         }
         .proj-live-btn {
@@ -198,6 +188,9 @@ export default function Projects() {
           border-color: var(--accent) !important;
           background: rgba(196,64,10,0.04) !important;
         }
+        .proj-cat-btn {
+          transition: all 0.18s;
+        }
         .proj-cat-btn:hover {
           color: var(--ink) !important;
           border-color: var(--ink) !important;
@@ -207,6 +200,25 @@ export default function Projects() {
         }
         html[data-theme='dark'] .proj-cat-btn.active {
           background: rgba(249,115,22,0.12) !important;
+        }
+        .proj-screenshot {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 0.5s ease;
+        }
+        .proj-card:hover .proj-screenshot {
+          transform: scale(1.03);
+        }
+        @media (max-width: 700px) {
+          .proj-featured-inner {
+            grid-template-columns: 1fr !important;
+          }
+          .proj-featured-img {
+            aspect-ratio: 16/9 !important;
+            max-height: 200px !important;
+          }
         }
       `}</style>
 
@@ -223,7 +235,7 @@ export default function Projects() {
               style={{
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.58rem",
-                fontWeight: 750,
+                fontWeight: 700,
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 padding: "8px 16px",
@@ -232,7 +244,6 @@ export default function Projects() {
                 background: "var(--bg-card)",
                 color: activeCategory === cat ? "var(--accent)" : "var(--ink-muted)",
                 cursor: "pointer",
-                transition: "all 0.18s",
                 borderColor: activeCategory === cat ? "var(--accent)" : "var(--ink-border)",
               }}
             >
@@ -249,96 +260,138 @@ export default function Projects() {
             gap: "clamp(16px,2.5vw,24px)",
           }}
         >
-          {displayProjects.map((project) => {
-            const previewUrl = getPreviewUrl(project.repoUrl, project.liveUrl);
+          {displayProjects.map((project, index) => {
+            const isFeatured = index === 0;
+            const catStyle = CATEGORY_COLORS[project.category] ?? CATEGORY_COLORS["AI/ML"];
+
             return (
               <article
                 key={project.title}
-                data-preview={previewUrl || undefined}
                 className="proj-card"
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
+                  gridColumn: isFeatured ? "1 / -1" : "auto",
+                  display: isFeatured ? "grid" : "flex",
+                  gridTemplateColumns: isFeatured ? "1fr 1fr" : undefined,
+                  flexDirection: isFeatured ? undefined : "column",
+                  justifyContent: isFeatured ? undefined : "space-between",
+                  gap: isFeatured ? "clamp(20px,3vw,40px)" : 0,
                   background: "var(--bg-card)",
                   border: "1.5px solid rgba(14,10,4,0.10)",
                   borderRadius: 12,
-                  padding: "clamp(16px,2.5vw,24px)",
+                  padding: "clamp(20px,2.5vw,32px)",
+                  overflow: "hidden",
+                  position: "relative",
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <p style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.58rem",
-                    letterSpacing: "0.25em",
-                    textTransform: "uppercase",
-                    color: "rgba(14,10,4,0.38)",
-                  }}>
-                    {project.meta}
-                  </p>
-                  <h3 style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "clamp(0.95rem,0.9rem + 0.2vw,1.1rem)",
-                    fontWeight: 600,
-                    color: "var(--ink)",
-                    lineHeight: 1.3,
-                  }}>
-                    {project.title}
-                  </h3>
-                  <p style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "0.82rem",
-                    fontWeight: 300,
-                    color: "var(--ink-muted)",
-                    lineHeight: 1.6,
-                  }}>
-                    {project.description}
-                  </p>
-                </div>
-                <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-                  {project.stats && (
-                    <p style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "0.56rem",
-                      letterSpacing: "0.18em",
-                      textTransform: "uppercase",
-                      color: "var(--accent)",
+                {/* Text content */}
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 12 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {/* Category pill + meta */}
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                      <span style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.55rem",
+                        fontWeight: 700,
+                        letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        padding: "3px 9px",
+                        borderRadius: 3,
+                        background: catStyle.bg,
+                        border: `1px solid ${catStyle.border}`,
+                        color: catStyle.color,
+                        lineHeight: 1.6,
+                      }}>{project.category}</span>
+                      <span style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.55rem",
+                        color: "rgba(14,10,4,0.42)",
+                        letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                      }}>{project.meta}</span>
+                      {isFeatured && (
+                        <span style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.55rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.18em",
+                          textTransform: "uppercase",
+                          padding: "3px 9px",
+                          borderRadius: 3,
+                          background: "rgba(196,64,10,0.06)",
+                          border: "1px solid rgba(196,64,10,0.20)",
+                          color: "var(--accent)",
+                        }}>★ Featured</span>
+                      )}
+                    </div>
+
+                    <h3 style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: isFeatured ? "clamp(1.1rem,1rem + 0.5vw,1.35rem)" : "clamp(0.95rem,0.9rem + 0.2vw,1.1rem)",
                       fontWeight: 700,
-                    }}>
-                      {project.stats}
-                    </p>
-                  )}
-                  {project.privateNote && (
+                      color: "var(--ink)",
+                      lineHeight: 1.3,
+                    }}>{project.title}</h3>
+
                     <p style={{
                       fontFamily: "var(--font-body)",
-                      fontSize: "0.78rem",
-                      fontStyle: "italic",
-                      color: "rgba(14,10,4,0.45)",
-                    }}>
-                      {project.privateNote}
-                    </p>
-                  )}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
-                    {project.liveUrl && (
-                      <Link
-                        href={project.liveUrl}
-                        target="_blank"
-                        className="proj-live-btn"
-                      >
-                        Live ↗
-                      </Link>
+                      fontSize: "0.82rem",
+                      fontWeight: 300,
+                      color: "var(--ink-muted)",
+                      lineHeight: 1.65,
+                    }}>{project.description}</p>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+                    {project.stats && (
+                      <p style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.56rem",
+                        letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        color: "var(--accent)",
+                        fontWeight: 700,
+                      }}>{project.stats}</p>
                     )}
-                    {project.repoUrl && (
-                      <Link
-                        href={project.repoUrl}
-                        target="_blank"
-                        className="proj-git-btn"
-                      >
-                        GitHub
-                      </Link>
+                    {project.privateNote && (
+                      <p style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "0.78rem",
+                        fontStyle: "italic",
+                        color: "rgba(14,10,4,0.45)",
+                      }}>{project.privateNote}</p>
                     )}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+                      {project.liveUrl && (
+                        <Link href={project.liveUrl} target="_blank" className="proj-live-btn">Live ↗</Link>
+                      )}
+                      {project.repoUrl && (
+                        <Link href={project.repoUrl} target="_blank" className="proj-git-btn">GitHub</Link>
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                {/* Featured card only: live screenshot preview */}
+                {isFeatured && project.liveUrl && (
+                  <div
+                    className="proj-featured-img"
+                    style={{
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      border: "1.5px solid rgba(14,10,4,0.08)",
+                      aspectRatio: "16/10",
+                      background: "var(--bg-surface)",
+                      alignSelf: "center",
+                    }}
+                  >
+                    <img
+                      src={screenshotUrl(project.liveUrl)}
+                      alt={`${project.title} live preview`}
+                      className="proj-screenshot"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
               </article>
             );
           })}
