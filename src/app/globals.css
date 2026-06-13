@@ -2,6 +2,14 @@
 @import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --color-background: var(--bg-base);
+  --color-foreground: var(--ink);
+  --color-muted-foreground: var(--ink-muted);
+  --color-border: var(--ink-border);
+}
+
+
 /* ============================================================
    MAGAZINE PAGE BORDER — resumematcher.fyi style
    Fixed frame sitting on top of everything, 10px on all sides
@@ -76,6 +84,9 @@ body { padding: 10px; }
     transparent 360deg
   );
   -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -159,6 +170,7 @@ body { padding: 10px; }
   --bg-card:       #FFFCF6;
   --bg-card-hover: #FFF8F0;
   --bg-line:       rgba(196,64,10,0.06);
+  --bg-navbar:     rgba(245,242,235,0.92);
   --ink:           #0E0A04;
   --ink-muted:     rgba(14,10,4,0.55);
   --ink-hint:      rgba(14,10,4,0.32);
@@ -167,6 +179,24 @@ body { padding: 10px; }
   --font-serif:    'Instrument Serif', Georgia, serif;
   --font-body:     'Space Grotesk', system-ui, sans-serif;
   --font-mono:     'Space Mono', 'Courier New', monospace;
+}
+
+html[data-theme='dark'] {
+  --bg-base:       #0A0806;
+  --bg-section:    #110E0B;
+  --bg-surface:    #181410;
+  --bg-card:       #13100D;
+  --bg-card-hover: #191410;
+  --bg-line:       rgba(249,115,22,0.08);
+  --bg-navbar:     rgba(10,8,6,0.92);
+  --ink:           #F5F2EB;
+  --ink-muted:     rgba(245,242,235,0.60);
+  --ink-hint:      rgba(245,242,235,0.40);
+  --ink-border:    rgba(245,242,235,0.12);
+  --accent:        #F97316;
+  --accent-bright: #FB923C;
+  --accent-dim:    rgba(249,115,22,0.22);
+  --accent-glow:   rgba(249,115,22,0.10);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -366,4 +396,78 @@ body::after {
 .about-cv-btn:hover {
   border-color: var(--accent) !important;
   background: rgba(196,64,10,0.04) !important;
+}
+
+/* ============================================================
+   BACKGROUND MESH GRADIENTS (Option 2)
+   ============================================================ */
+
+.mesh-gradients {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -10;
+  overflow: hidden;
+  opacity: 0.55;
+  transition: opacity 0.5s ease;
+}
+
+html[data-theme='dark'] .mesh-gradients {
+  opacity: 0.22;
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  animation: floatMesh 20s infinite ease-in-out alternate;
+  will-change: transform;
+}
+
+html[data-theme='dark'] .mesh-blob {
+  mix-blend-mode: screen;
+  opacity: 0.35;
+}
+
+.mesh-blob--1 {
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(253,186,116,0.3) 0%, rgba(253,186,116,0) 70%);
+  top: -10%;
+  left: -10%;
+  animation-duration: 25s;
+}
+
+.mesh-blob--2 {
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(251,164,175,0.25) 0%, rgba(251,164,175,0) 70%);
+  bottom: -20%;
+  right: -10%;
+  animation-duration: 35s;
+  animation-delay: -5s;
+}
+
+.mesh-blob--3 {
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, rgba(196,64,10,0.12) 0%, rgba(196,64,10,0) 70%);
+  top: 40%;
+  left: 30%;
+  animation-duration: 30s;
+  animation-delay: -12s;
+}
+
+@keyframes floatMesh {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(6%, 8%) scale(1.1) rotate(180deg);
+  }
+  100% {
+    transform: translate(-3%, -5%) scale(0.9) rotate(360deg);
+  }
 }

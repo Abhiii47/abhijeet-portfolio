@@ -25,7 +25,7 @@ export default function AnimatedHeading({
   size = "clamp(2.2rem,4.5vw,3.8rem)",
   color      = "var(--ink, #0E0A04)",
   accentColor = "var(--accent, #C4400A)",
-  fontFamily = "'Cormorant Garamond',Georgia,serif",
+  fontFamily = "var(--font-serif)",
   labelFontFamily = "var(--font-mono,'Inter',monospace)",
 }: AnimatedHeadingProps) {
   const ref      = useRef<HTMLDivElement>(null);

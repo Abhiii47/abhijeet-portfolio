@@ -18,7 +18,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{__html: `
+          (function() {
+            try {
+              const saved = localStorage.getItem('theme') || 'light';
+              document.documentElement.setAttribute('data-theme', saved);
+            } catch (e) {}
+          })();
+        `}} />
+      </head>
+      <body>
+        <div className="mesh-gradients" aria-hidden="true">
+          <div className="mesh-blob mesh-blob--1" />
+          <div className="mesh-blob mesh-blob--2" />
+          <div className="mesh-blob mesh-blob--3" />
+        </div>
+        {children}
+      </body>
     </html>
   );
 }

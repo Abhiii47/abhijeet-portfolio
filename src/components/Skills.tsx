@@ -2,9 +2,10 @@
 
 import { useRef, useState } from "react";
 import { RMSticker, RMHr, RMSectionLabel } from "./RMDecorations";
+import AnimatedHeading from "./AnimatedHeading";
 
-const ACCENT = "#C4400A";
-const INK    = "#0E0A04";
+const ACCENT = "var(--accent)";
+const INK    = "var(--ink)";
 
 type Level = "expert" | "strong" | "working";
 
@@ -157,7 +158,7 @@ function CompactCard({ skill, index }: { skill: Skill; index: number }) {
         animationDelay: `${index * 0.045}s`,
         background: "var(--bg-card)",
         border: hovered ? `1.5px solid ${skill.color}35` : "1px solid rgba(14,10,4,0.07)",
-        borderRadius: 10,
+        borderRadius: 12,
         padding: "clamp(14px,1.8vw,18px)",
         position: "relative", overflow: "hidden",
         transition: "border-color 0.22s, box-shadow 0.22s, transform 0.22s",
@@ -167,7 +168,7 @@ function CompactCard({ skill, index }: { skill: Skill; index: number }) {
       }}
     >
       <div aria-hidden style={{
-        position: "absolute", inset: 0, borderRadius: 10, pointerEvents: "none",
+        position: "absolute", inset: 0, borderRadius: 12, pointerEvents: "none",
         background: `radial-gradient(ellipse 70% 50% at 100% 0%, ${skill.color}08 0%, transparent 70%)`,
         opacity: hovered ? 1 : 0, transition: "opacity 0.22s",
       }} />
@@ -283,12 +284,7 @@ export default function Skills() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: "clamp(28px,4vw,44px)" }}>
           <div>
-            <RMSectionLabel number="03" text="Skills" />
-            <h2 style={{
-              fontFamily: "var(--font-display)", fontWeight: 800,
-              fontSize: "clamp(2rem,4.5vw,3.4rem)",
-              color: INK, letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: 8,
-            }}>Technical Arsenal</h2>
+            <AnimatedHeading section="04" text="Technical" italic="Arsenal" />
             <p style={{
               fontFamily: "var(--font-body)", fontWeight: 300,
               fontSize: "clamp(0.85rem,1vw,1rem)",
@@ -315,7 +311,7 @@ export default function Skills() {
           ].map(({ label, value, color }) => (
             <div key={label} style={{
               background: "var(--bg-card)", border: "1px solid rgba(14,10,4,0.07)",
-              borderRadius: 10, padding: "clamp(12px,1.6vw,18px) clamp(14px,2vw,22px)",
+              borderRadius: 12, padding: "clamp(12px,1.6vw,18px) clamp(14px,2vw,22px)",
               display: "flex", alignItems: "center", gap: 14,
             }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color, letterSpacing: "-0.04em", lineHeight: 1 }}>{value}</span>

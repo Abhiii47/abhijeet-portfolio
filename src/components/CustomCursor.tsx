@@ -38,7 +38,7 @@ export default function CustomCursor() {
       const lag = state === "drag" ? 0.07 : 0.12;
       ringX += (mouseX - ringX) * lag;
       ringY += (mouseY - ringY) * lag;
-      dot.style.transform  = `translate(${mouseX}px,${mouseY}px) translate(-50%,-50%)`;
+      dot.style.transform  = `translate(${mouseX}px,${mouseY}px)`;
       ring.style.transform = `translate(${ringX}px,${ringY}px) translate(-50%,-50%)`;
 
       if (state === "preview") {
@@ -65,9 +65,6 @@ export default function CustomCursor() {
       ring.style.borderRadius = "50%";
       ring.style.borderWidth  = "1px";
       dot.style.opacity       = "1";
-      dot.style.background    = RUST;
-      dot.style.width         = "5px";
-      dot.style.height        = "5px";
       label.style.opacity     = "0";
       label.textContent       = "";
       preview.style.opacity   = "0";
@@ -128,10 +125,10 @@ export default function CustomCursor() {
         const url = previewEl.getAttribute("data-preview") ?? "";
         applyState("preview", url); return;
       }
+      if (target.closest("a,button,[role='button'],[role='link'],input,textarea,select")) { applyState("hover"); return; }
       if (target.closest(".proj-drag-zone"))                                               { applyState("drag");  return; }
       if (target.closest("img,[data-cursor='view']"))                                     { applyState("view");  return; }
-      if (target.closest("p,h1,h2,h3,h4,h5,span:not(button span)"))                      { applyState("text");  return; }
-      if (target.closest("a,button,[role='button'],[role='link'],input,textarea,select")) { applyState("hover"); return; }
+      if (target.closest("p,h1,h2,h3,h4,h5,span,li,dt,dd"))                               { applyState("text");  return; }
       applyState("default");
     };
 
@@ -160,19 +157,28 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Dot */}
+      {/* Big White Arrow SVG */}
       <div
         ref={dotRef}
         aria-hidden
         style={{
           position: "fixed", top: 0, left: 0,
-          width: 5, height: 5, borderRadius: "50%",
-          background: RUST,
+          width: 24, height: 24,
           pointerEvents: "none", zIndex: 99999, opacity: 0,
-          transition: "background 0.15s, opacity 0.15s, width 0.22s, height 0.22s",
+          transition: "opacity 0.15s",
           willChange: "transform",
         }}
-      />
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M0 0 V16.2 L5 11.2 L11.4 17.5 L13.7 15.2 L7.3 8.9 L12.3 3.9 H0 Z"
+            fill="white"
+            stroke="#0E0A04"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
       {/* Ring */}
       <div
         ref={ringRef}
@@ -240,7 +246,7 @@ export default function CustomCursor() {
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           <span style={{
-            fontFamily: "'Cormorant Garamond',serif",
+            fontFamily: "var(--font-serif)",
             fontSize: 11, letterSpacing: "0.3em",
             textTransform: "uppercase",
             color: "rgba(196,64,10,0.55)",

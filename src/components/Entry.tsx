@@ -10,8 +10,8 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = "#C4400A";
-const INK    = "#0E0A04";
+const ACCENT = "var(--accent)";
+const INK    = "var(--ink)";
 
 const PAIN_POINTS = [
   { number: "01", title: "The Generalist Trap",  body: "Recruiters see \"SDE & Product Manager\" and assume you\u2019re a diluted version of both. You\u2019re actually just rare." },
@@ -135,7 +135,7 @@ export default function Entry() {
 
         {/* CTAs */}
         <div ref={ctaRef} style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "clamp(48px,7vw,96px)" }}>
-          <a href="#work"
+          <a href="#projects"
             style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", padding: "12px 28px", background: ACCENT, color: "#fff", borderRadius: 4, textDecoration: "none", boxShadow: "3px 3px 0 rgba(14,10,4,0.28)", transition: "transform 0.16s,box-shadow 0.16s" }}
             onMouseEnter={e => { const a = e.currentTarget; a.style.transform = "translate(-2px,-2px)"; a.style.boxShadow = "5px 5px 0 rgba(14,10,4,0.28)"; }}
             onMouseLeave={e => { const a = e.currentTarget; a.style.transform = ""; a.style.boxShadow = "3px 3px 0 rgba(14,10,4,0.28)"; }}
@@ -155,7 +155,7 @@ export default function Entry() {
               <div key={pp.number} className="pain-card" style={{
                 background: "var(--bg-card)",
                 border: "1px solid rgba(14,10,4,0.07)",
-                borderRadius: 10,
+                borderRadius: 12,
                 padding: "clamp(16px,2vw,24px)",
                 position: "relative",
                 overflow: "hidden",

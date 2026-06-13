@@ -75,7 +75,7 @@ export default function HorizontalParallax({
         position: "absolute",
         left: "50%",
         transform: "translateX(-50%)",
-        fontFamily: "'Cormorant Garamond', 'Bebas Neue', Georgia, serif",
+        fontFamily: "var(--font-serif), 'Bebas Neue', Georgia, serif",
         fontSize,
         fontWeight: 700,
         lineHeight: 1,

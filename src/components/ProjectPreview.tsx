@@ -173,7 +173,7 @@ export function ProjectPreviewCard({
           <div style={{ padding: "14px 16px 16px" }}>
             <p
               style={{
-                fontFamily: "'Cormorant Garamond',Georgia,serif",
+                fontFamily: "var(--font-serif)",
                 fontStyle: "italic",
                 fontSize: 17,
                 fontWeight: 700,

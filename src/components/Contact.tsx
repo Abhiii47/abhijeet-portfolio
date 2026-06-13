@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Github, Linkedin, Mail, Copy, Check, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Mail, Copy, Check, ArrowUpRight, FileText } from "lucide-react";
+import AnimatedHeading from "./AnimatedHeading";
 
-const ACCENT = "#C4400A";
-const INK    = "#0E0A04";
-const EMAIL  = "abhijeetkadu471@gmail.com";
+const ACCENT = "var(--accent)";
+const INK    = "var(--ink)";
+const EMAIL  = "abhijeetkadu85@gmail.com";
 
 export default function Contact() {
   const [copied, setCopied] = useState(false);
@@ -20,7 +21,7 @@ export default function Contact() {
     <section
       id="contact"
       style={{
-        padding: "clamp(80px,12vw,140px) 0",
+        padding: "clamp(80px,12vw,140px) clamp(20px,5vw,72px)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -46,29 +47,8 @@ export default function Contact() {
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: 600, width: "100%" }}>
 
-        {/* Section label */}
-        <p style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.62rem",
-          letterSpacing: "0.38em",
-          textTransform: "uppercase",
-          color: ACCENT,
-          marginBottom: 32,
-        }}>07 / Get In Touch</p>
-
-        {/* Heading */}
-        <h2 style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 800,
-          fontSize: "clamp(2.8rem,6vw,5.5rem)",
-          letterSpacing: "-0.03em",
-          lineHeight: 1.02,
-          color: INK,
-          marginBottom: 20,
-        }}>
-          Let&rsquo;s build<br />
-          <span style={{ color: ACCENT }}>something</span> great.
-        </h2>
+        {/* Section label & Heading */}
+        <AnimatedHeading section="07" text="Let's build something" italic="great." />
 
         {/* Subtext */}
         <p style={{
@@ -126,7 +106,7 @@ export default function Contact() {
           {[
             { href: "https://github.com/Abhiii47",          icon: <Github size={13} />,   label: "GitHub" },
             { href: "https://linkedin.com/in/abhijeet-kadu", icon: <Linkedin size={13} />, label: "LinkedIn" },
-            { href: "/resume.pdf",                          icon: <Mail size={13} />,     label: "Resume", accent: true },
+            { href: "/resume.pdf",                          icon: <FileText size={13} />,     label: "Resume", accent: true },
           ].map(({ href, icon, label, accent }) => (
             <a
               key={label}

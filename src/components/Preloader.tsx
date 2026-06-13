@@ -131,7 +131,7 @@ export default function Preloader() {
         <div
           className="pl-counter"
           style={{
-            fontFamily: "'Cormorant Garamond',Georgia,serif",
+            fontFamily: "var(--font-serif)",
             fontSize: "clamp(5rem,16vw,12rem)",
             fontWeight: 900, lineHeight: 1,
             letterSpacing: "-0.04em",
