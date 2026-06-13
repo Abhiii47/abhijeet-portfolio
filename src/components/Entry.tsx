@@ -31,7 +31,6 @@ export default function Entry() {
   const pullRef      = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    // Hero entrance — fromTo so end state is always guaranteed
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
     tl.fromTo(nameRef.current,      { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, 0)
       .fromTo(badgeRef.current,     { y: -16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5  }, 0.25)
@@ -41,7 +40,6 @@ export default function Entry() {
       .fromTo(pullRef.current,      { y: 18,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, 0.95)
       .fromTo(ctaRef.current,       { y: 20,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, 1.0);
 
-    // Pain-point cards
     const cards = gsap.utils.toArray<HTMLElement>(".pain-card");
     cards.forEach((card, i) => {
       gsap.fromTo(card,
@@ -65,7 +63,7 @@ export default function Entry() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: "clamp(80px,10vw,140px) clamp(20px,5vw,72px) 0",
+        padding: "calc(56px + clamp(24px,5vw,72px)) clamp(20px,5vw,72px) 0",
         position: "relative",
         overflow: "hidden",
       }}
@@ -80,7 +78,23 @@ export default function Entry() {
         pointerEvents: "none",
       }} />
 
-      <div style={{ maxWidth: 1140, margin: "0 auto", width: "100%", position: "relative" }}>
+      {/* Large faint AK watermark - editorial visual anchor */}
+      <span aria-hidden style={{
+        position: "absolute",
+        right: "-2%",
+        top: "8%",
+        fontFamily: "var(--font-display)",
+        fontWeight: 900,
+        fontSize: "clamp(6rem, 18vw, 18rem)",
+        color: "rgba(196,64,10,0.045)",
+        lineHeight: 1,
+        userSelect: "none",
+        pointerEvents: "none",
+        letterSpacing: "-0.05em",
+        zIndex: 0,
+      }}>AK</span>
+
+      <div style={{ maxWidth: 1140, margin: "0 auto", width: "100%", position: "relative", zIndex: 1 }}>
 
         {/* Name label */}
         <div ref={nameRef}>
@@ -92,10 +106,39 @@ export default function Entry() {
 
         {/* Badges */}
         <div ref={badgeRef} style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, margin: "clamp(16px,2.5vw,24px) 0 clamp(28px,4vw,48px)" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "var(--bg-card)", border: "1.5px dashed rgba(74,222,128,0.5)", borderRadius: 4, padding: "6px 14px" }}>
-            <span className="avail-dot" style={{ width: 7, height: 7, background: "#4ADE80", display: "inline-block", borderRadius: "50%" }} />
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: INK }}>Open to Work</span>
+
+          {/* Open to Work - prominent green pill */}
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            background: "rgba(74,222,128,0.08)",
+            border: "1.5px solid rgba(74,222,128,0.45)",
+            borderRadius: 99,
+            padding: "8px 18px",
+            boxShadow: "0 0 20px rgba(74,222,128,0.12)",
+          }}>
+            <span
+              className="avail-dot"
+              style={{
+                width: 9,
+                height: 9,
+                background: "#4ADE80",
+                display: "inline-block",
+                borderRadius: "50%",
+                flexShrink: 0,
+              }}
+            />
+            <span style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.65rem",
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "#22C55E",
+            }}>Open to Work</span>
           </div>
+
           <RMSticker text="Mumbai, IN" rotate={-1.8} />
           <RMSticker text="2026" accent rotate={2.2} wiggle />
           <RMSticker text="SDE + PM" rotate={-2.5} />
@@ -118,7 +161,7 @@ export default function Entry() {
           <p ref={subRef} style={{
             fontFamily: "var(--font-body)", fontWeight: 300,
             fontSize: "clamp(1rem,1.6vw,1.25rem)",
-            color: "rgba(14,10,4,0.55)", lineHeight: 1.65, maxWidth: "52ch",
+            color: "rgba(14,10,4,0.60)", lineHeight: 1.65, maxWidth: "52ch",
           }}>
             SDE &middot; Product Manager &middot; ML Engineer.<br />
             Full-stack from Jupyter notebooks to production deployments.<br />
@@ -135,40 +178,72 @@ export default function Entry() {
 
         {/* CTAs */}
         <div ref={ctaRef} style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "clamp(48px,7vw,96px)" }}>
-          <a href="#projects"
-            style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", padding: "12px 28px", background: ACCENT, color: "#fff", borderRadius: 4, textDecoration: "none", boxShadow: "3px 3px 0 rgba(14,10,4,0.28)", transition: "transform 0.16s,box-shadow 0.16s" }}
+          <a
+            href="#projects"
+            style={{
+              fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem",
+              letterSpacing: "0.22em", textTransform: "uppercase",
+              padding: "12px 28px", background: ACCENT, color: "#fff",
+              borderRadius: 4, textDecoration: "none",
+              boxShadow: "3px 3px 0 rgba(14,10,4,0.28)",
+              transition: "transform 0.16s, box-shadow 0.16s",
+            }}
             onMouseEnter={e => { const a = e.currentTarget; a.style.transform = "translate(-2px,-2px)"; a.style.boxShadow = "5px 5px 0 rgba(14,10,4,0.28)"; }}
             onMouseLeave={e => { const a = e.currentTarget; a.style.transform = ""; a.style.boxShadow = "3px 3px 0 rgba(14,10,4,0.28)"; }}
           >View Work ↗</a>
-          <a href="#contact"
-            style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", padding: "12px 28px", background: "transparent", color: INK, border: "1.5px solid rgba(14,10,4,0.22)", borderRadius: 4, textDecoration: "none", transition: "border-color 0.18s,background 0.18s" }}
+          <a
+            href="#contact"
+            style={{
+              fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.68rem",
+              letterSpacing: "0.22em", textTransform: "uppercase",
+              padding: "12px 28px", background: "transparent", color: INK,
+              border: "1.5px solid rgba(14,10,4,0.28)",
+              borderRadius: 4, textDecoration: "none",
+              transition: "border-color 0.18s, background 0.18s",
+            }}
             onMouseEnter={e => { const a = e.currentTarget; a.style.borderColor = ACCENT; a.style.background = "rgba(196,64,10,0.04)"; }}
-            onMouseLeave={e => { const a = e.currentTarget; a.style.borderColor = "rgba(14,10,4,0.22)"; a.style.background = "transparent"; }}
+            onMouseLeave={e => { const a = e.currentTarget; a.style.borderColor = "rgba(14,10,4,0.28)"; a.style.background = "transparent"; }}
           >Let&rsquo;s Talk</a>
         </div>
 
         {/* Pain-point grid */}
         <div ref={painRef}>
           <RMHr label="why me though" />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(280px,100%),1fr))", gap: "clamp(10px,1.5vw,16px)", marginTop: 8 }}>
+          <div
+            className="pain-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "clamp(10px,1.5vw,16px)",
+              marginTop: 8,
+            }}
+          >
             {PAIN_POINTS.map((pp) => (
-              <div key={pp.number} className="pain-card" style={{
-                background: "var(--bg-card)",
-                border: "1px solid rgba(14,10,4,0.07)",
-                borderRadius: 12,
-                padding: "clamp(16px,2vw,24px)",
-                position: "relative",
-                overflow: "hidden",
-              }}>
+              <div
+                key={pp.number}
+                className="pain-card"
+                style={{
+                  background: "var(--bg-card)",
+                  border: "1px solid rgba(14,10,4,0.09)",
+                  borderRadius: 12,
+                  padding: "clamp(16px,2vw,24px)",
+                  position: "relative",
+                  overflow: "hidden",
+                  transition: "border-color 0.22s, box-shadow 0.22s",
+                }}
+              >
+                {/* Ghost number - boosted opacity & size */}
                 <span aria-hidden style={{
                   position: "absolute", right: 12, top: 4,
                   fontFamily: "var(--font-display)", fontWeight: 800,
-                  fontSize: "3rem", color: "rgba(196,64,10,0.06)",
+                  fontSize: "4rem",
+                  color: "rgba(196,64,10,0.10)",
                   lineHeight: 1, userSelect: "none",
                 }}>{pp.number}</span>
+
                 <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.28em", textTransform: "uppercase", color: ACCENT, marginBottom: 8 }}>{pp.number}</p>
                 <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: INK, marginBottom: 8, lineHeight: 1.3 }}>{pp.title}</h3>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "rgba(14,10,4,0.52)", lineHeight: 1.65 }}>{pp.body}</p>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "rgba(14,10,4,0.56)", lineHeight: 1.65 }}>{pp.body}</p>
               </div>
             ))}
           </div>
