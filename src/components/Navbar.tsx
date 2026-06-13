@@ -106,11 +106,11 @@ export default function Navbar() {
                   letterSpacing: "0.28em",
                   textTransform: "uppercase",
                   textDecoration: "none",
-                  color: active === href ? ACCENT : "rgba(14,10,4,0.38)",
+                  color: active === href ? ACCENT : "rgba(14,10,4,0.62)",
                   transition: "color 0.2s ease",
                 }}
-                onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = INK; }}
-                onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "rgba(14,10,4,0.38)"; }}
+                onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = "rgba(14,10,4,0.88)"; }}
+                onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "rgba(14,10,4,0.62)"; }}
               >{label}</a>
             ))}
             <a
@@ -121,7 +121,7 @@ export default function Navbar() {
                 fontFamily: "monospace", fontSize: 9, letterSpacing: "0.22em",
                 textTransform: "uppercase", textDecoration: "none",
                 padding: "7px 18px", borderRadius: 9999,
-                border: `1px solid rgba(196,64,10,0.30)`,
+                border: `1.5px solid rgba(196,64,10,0.35)`,
                 color: ACCENT,
                 transition: "background 0.2s, color 0.2s",
               }}
@@ -166,10 +166,6 @@ export default function Navbar() {
             onClick={() => setOpen(o => !o)}
             aria-label="Toggle menu"
             className="nav-burger"
-            style={{
-              display: "none", flexDirection: "column", gap: 5,
-              background: "none", border: "none", cursor: "pointer", padding: 4,
-            }}
           >
             {[0,1,2].map(i => (
               <span key={i} style={{
@@ -214,7 +210,7 @@ export default function Navbar() {
               onMouseLeave={e => e.currentTarget.style.color = INK}
             >{label}</a>
           ))}
-          
+
           <button
             onClick={() => { toggleTheme(); setOpen(false); }}
             style={{
@@ -254,13 +250,6 @@ export default function Navbar() {
           </button>
         </div>
       )}
-
-      <style>{`
-        @media (max-width: 640px) {
-          .nav-links { display: none !important; }
-          .nav-burger { display: flex !important; }
-        }
-      `}</style>
     </>
   );
 }
