@@ -32,26 +32,44 @@ export default function About() {
 
           {/* Quick Facts card */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {/* Profile Picture */}
+
+            {/* Profile Picture - portrait ratio */}
             <div style={{
               width: "100%",
-              height: 240,
+              height: "auto",
+              aspectRatio: "3/4",
+              maxHeight: 380,
               borderRadius: 10,
               overflow: "hidden",
-              border: "1.5px solid rgba(14,10,4,0.10)",
-              marginBottom: 4,
-              boxShadow: "0 4px 20px rgba(14,10,4,0.04)",
+              border: "1.5px solid rgba(14,10,4,0.12)",
+              position: "relative",
+              boxShadow: "0 8px 32px rgba(14,10,4,0.06), 4px 4px 0 rgba(196,64,10,0.08)",
             }}>
               <img
                 src="/profile.jpg"
                 alt="Abhijeet Kadu"
-                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 20%" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center 20%",
+                  display: "block",
+                }}
               />
+              {/* Warm accent gradient overlay */}
+              <div style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(to bottom, transparent 55%, rgba(196,64,10,0.10))",
+                borderRadius: 10,
+                pointerEvents: "none",
+              }} />
             </div>
 
+            {/* Quick Facts */}
             <div style={{
               background: "var(--bg-card)",
-              border: "1.5px solid rgba(14,10,4,0.10)",
+              border: "1.5px solid rgba(14,10,4,0.12)",
               borderRadius: 10,
               padding: "clamp(16px,2vw,24px)",
             }}>
@@ -60,7 +78,7 @@ export default function About() {
                 fontSize: "0.58rem",
                 letterSpacing: "0.32em",
                 textTransform: "uppercase",
-                color: "var(--ink-hint)",
+                color: "var(--accent)",
                 marginBottom: 16,
               }}>Quick Facts</p>
 
@@ -104,7 +122,7 @@ export default function About() {
                 textTransform: "uppercase",
                 textDecoration: "none",
                 color: "var(--ink)",
-                border: "1.5px solid rgba(14,10,4,0.18)",
+                border: "1.5px solid rgba(14,10,4,0.20)",
                 borderRadius: 4,
                 padding: "11px 20px",
               }}
