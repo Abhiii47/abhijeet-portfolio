@@ -11,8 +11,7 @@
 
 
 /* ============================================================
-   MAGAZINE PAGE BORDER — resumematcher.fyi style
-   Fixed frame sitting on top of everything, 10px on all sides
+   MAGAZINE PAGE BORDER
    ============================================================ */
 
 #page-frame {
@@ -48,7 +47,7 @@
 body { padding: 10px; }
 
 /* ============================================================
-   SECTION BORDER — rotating conic-gradient
+   SECTION BORDER
    ============================================================ */
 
 @property --sb-angle {
@@ -247,7 +246,52 @@ body::after {
   }
 }
 
-/* RM utility classes */
+/* ============================================================
+   SHARED CONTAINER — aligns navbar + all sections on same grid
+   ============================================================ */
+
+.rm-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  width: 100%;
+  padding-left:  clamp(20px, 5vw, 72px);
+  padding-right: clamp(20px, 5vw, 72px);
+}
+
+/* ============================================================
+   NAV BURGER — moved from inline style to CSS
+   ============================================================ */
+
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+@media (max-width: 640px) {
+  .nav-links  { display: none !important; }
+  .nav-burger { display: flex !important; }
+}
+
+/* ============================================================
+   PAIN GRID — responsive breakpoints
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .pain-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 960px) and (min-width: 701px) {
+  .pain-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ============================================================
+   RM UTILITY CLASSES
+   ============================================================ */
+
 .rm-section-label {
   font-family: var(--font-mono);
   font-size: clamp(0.6rem, 0.55rem + 0.2vw, 0.7rem);
@@ -379,7 +423,7 @@ body::after {
 }
 
 /* ============================================================
-   ABOUT + CERTIFICATIONS hover states (CSS-only, no JS needed)
+   ABOUT + CERTIFICATIONS hover states
    ============================================================ */
 
 .cert-card {
@@ -399,7 +443,7 @@ body::after {
 }
 
 /* ============================================================
-   BACKGROUND MESH GRADIENTS (Option 2)
+   BACKGROUND MESH GRADIENTS
    ============================================================ */
 
 .mesh-gradients {
@@ -461,13 +505,7 @@ html[data-theme='dark'] .mesh-blob {
 }
 
 @keyframes floatMesh {
-  0% {
-    transform: translate(0, 0) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translate(6%, 8%) scale(1.1) rotate(180deg);
-  }
-  100% {
-    transform: translate(-3%, -5%) scale(0.9) rotate(360deg);
-  }
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50%  { transform: translate(6%, 8%) scale(1.1) rotate(180deg); }
+  100% { transform: translate(-3%, -5%) scale(0.9) rotate(360deg); }
 }
