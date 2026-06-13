@@ -12,10 +12,9 @@ export default function Preloader() {
   const [done,   setDone]   = useState(false);
   const [hidden, setHidden] = useState(false);
 
-  const wrapRef   = useRef<HTMLDivElement>(null);
-  const logoRef   = useRef<SVGPathElement>(null);
-  const logoRef2  = useRef<SVGPathElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const wrapRef  = useRef<HTMLDivElement>(null);
+  const logoRef  = useRef<SVGPathElement>(null);
+  const logoRef2 = useRef<SVGPathElement>(null);
 
   /* count 0 → 100 */
   useEffect(() => {
@@ -42,25 +41,25 @@ export default function Preloader() {
     });
   }, []);
 
-  /* Exit — iris aperture wipe */
+  /* Exit — iris aperture wipe → fire preloader:done */
   useEffect(() => {
     if (!done) return;
     const tl = gsap.timeline({
-      onComplete: () => { document.body.style.overflow = ""; setHidden(true); },
+      onComplete: () => {
+        document.body.style.overflow = "";
+        setHidden(true);
+        // Signal hero to start its entrance timeline
+        window.dispatchEvent(new CustomEvent("preloader:done"));
+      },
     });
 
-    // Step 1: fade counter out
     tl.to(".pl-counter", { opacity: 0, y: -20, duration: 0.35, ease: "power2.in" }, 0)
-      .to(".pl-logo",    { opacity: 0, scale: 0.85, duration: 0.3, ease: "power2.in" }, 0)
-      .to(".pl-label",   { opacity: 0, duration: 0.2 }, 0);
-
-    // Step 2: 4 iris panels fly outward
-    tl.to(".iris-top",    { yPercent: -100, duration: 0.75, ease: "expo.inOut" }, 0.25)
+      .to(".pl-logo",    { opacity: 0, scale: 0.85, duration: 0.3,  ease: "power2.in" }, 0)
+      .to(".pl-label",   { opacity: 0, duration: 0.2 }, 0)
+      .to(".iris-top",    { yPercent: -100, duration: 0.75, ease: "expo.inOut" }, 0.25)
       .to(".iris-bottom", { yPercent:  100, duration: 0.75, ease: "expo.inOut" }, 0.25)
       .to(".iris-left",   { xPercent: -100, duration: 0.75, ease: "expo.inOut" }, 0.28)
       .to(".iris-right",  { xPercent:  100, duration: 0.75, ease: "expo.inOut" }, 0.28)
-
-    // Step 3: fade wrapper
       .to(wrapRef.current, { opacity: 0, duration: 0.2 }, 0.85);
   }, [done]);
 
@@ -74,8 +73,7 @@ export default function Preloader() {
         pointerEvents: "all",
       }}
     >
-      {/* ── 4 IRIS PANELS ── */}
-      {/* Top */}
+      {/* 4 IRIS PANELS */}
       <div className="iris-top" style={{
         position: "absolute", inset: "0 0 50% 0",
         background: CREAM,
@@ -88,7 +86,6 @@ export default function Preloader() {
         <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(14,10,4,0.28)", textTransform: "uppercase" }}>SDE &amp; PM</span>
       </div>
 
-      {/* Bottom */}
       <div className="iris-bottom" style={{
         position: "absolute", inset: "50% 0 0 0",
         background: CREAM,
@@ -101,28 +98,23 @@ export default function Preloader() {
         <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(14,10,4,0.28)", textTransform: "uppercase" }}>Portfolio {new Date().getFullYear()}</span>
       </div>
 
-      {/* Left */}
       <div className="iris-left" style={{
         position: "absolute", inset: "25% 75% 25% 0",
-        background: CREAM,
-        zIndex: 2,
+        background: CREAM, zIndex: 2,
       }} />
-
-      {/* Right */}
       <div className="iris-right" style={{
         position: "absolute", inset: "25% 0 25% 75%",
-        background: CREAM,
-        zIndex: 2,
+        background: CREAM, zIndex: 2,
       }} />
 
-      {/* ── CENTER CONTENT ── */}
+      {/* CENTER CONTENT */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 3,
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
         gap: 24, pointerEvents: "none",
       }}>
-        <svg className="pl-logo" width="72" height="72" viewBox="0 0 72 72" fill="none" aria-label="AK">
+        <svg className="pl-logo" width="72" height="72" viewBox="0 0 72 72" fill="none">
           <circle cx="36" cy="36" r="32" stroke={ACCENT} strokeWidth="0.8" strokeOpacity="0.20" />
           <path ref={logoRef}  d="M12 54 L24 20 L36 54 M16 40 H32" stroke={INK}   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           <path ref={logoRef2} d="M40 20 V54 M40 36 L60 20 M40 36 L60 54" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -143,7 +135,6 @@ export default function Preloader() {
           {String(count).padStart(3, "0")}
         </div>
 
-        {/* Progress bar */}
         <div style={{
           width: "min(320px,60vw)", height: 1,
           background: "rgba(14,10,4,0.08)", borderRadius: 99, overflow: "hidden",
@@ -157,7 +148,7 @@ export default function Preloader() {
         </div>
 
         <span className="pl-label" style={{
-          fontFamily: "'Inter',monospace",
+          fontFamily: "var(--font-mono)",
           fontSize: 9, letterSpacing: "0.4em",
           textTransform: "uppercase",
           color: count === 100 ? ACCENT : "rgba(14,10,4,0.32)",
