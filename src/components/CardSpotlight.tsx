@@ -9,7 +9,7 @@ interface CardSpotlightProps {
   spotlightColor?: string;
 }
 
-export default function CardSpotlight({ children, className = "", style, spotlightColor = "rgba(132,204,22,0.08)" }: CardSpotlightProps) {
+export default function CardSpotlight({ children, className = "", style, spotlightColor = "var(--accent-glow)" }: CardSpotlightProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
 
@@ -28,16 +28,17 @@ export default function CardSpotlight({ children, className = "", style, spotlig
   return (
     <div
       ref={cardRef}
-      className={`relative rounded-xl overflow-hidden border border-white/[0.06] bg-white/[0.02] ${className}`}
-      style={style}
+      className={`relative rounded-[12px] overflow-hidden bg-[var(--bg-card)] ${className}`}
+      style={{ border: "1.5px solid var(--ink-border)", ...style }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       {/* Spotlight overlay */}
       <div ref={spotRef} className="absolute inset-0 pointer-events-none transition-none z-10" />
       {/* Top shimmer on hover */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       {children}
     </div>
   );
 }
+

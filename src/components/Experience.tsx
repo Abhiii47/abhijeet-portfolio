@@ -1,54 +1,59 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import AnimatedHeading from "./AnimatedHeading";
+import TracingBeam from "./TracingBeam";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const bullets = [
   { icon: "🤖", tag: "AI/ML",      text: "Built a RAG knowledge system using Pinecone + Gemini for internal document retrieval — streaming responses, cited answers in seconds." },
-  { icon: "📦", tag: "Product",   text: "Leading product execution for PIMS — a pharmacy management system covering inventory, ERP, billing and shipment tracking. Requirements, sprint planning, delivery." },
+  { icon: "📦", tag: "Product",   text: "Leading product execution for PIMS — a pharmacy management system covering inventory, ERP, billing and shipment tracking." },
   { icon: "☁️", tag: "Cloud",      text: "Deployed and manage two production projects on GCP — Vertex AI integrations, Google AI Studio, credential management, 99.9% uptime." },
-  { icon: "⚡", tag: "DevOps",    text: "Set up GitHub Actions CI/CD so every merge auto-deploys — eliminated manual deployment overhead and cut release time." },
+  { icon: "📈", tag: "Impact",     text: "60% drop in manual reporting at Ecovis via Next.js ISR automation." },
 ];
 
 const METRICS = [
-  { value: "2",   label: "Prod deployments" },
-  { value: "GCP", label: "Cloud platform" },
-  { value: "RAG", label: "AI system built" },
-  { value: "4+",  label: "Months full-time" },
+  { value: "2",   label: "Prod Deployments" },
+  { value: "GCP", label: "Cloud Platform" },
+  { value: "RAG", label: "AI System" },
+  { value: "4+",  label: "Months" },
 ];
 
 export default function Experience() {
   const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const items = gsap.utils.toArray<HTMLElement>(".exp-bullet");
-    items.forEach((el, i) => {
-      gsap.fromTo(el,
-        { x: -24, opacity: 0 },
-        {
-          x: 0, opacity: 1, duration: 0.55, delay: i * 0.10,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 90%", once: true },
-        }
-      );
-    });
+  useGSAP(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      gsap.set(".exp-bullet", { y: 0, opacity: 1 });
+      gsap.set(".exp-metric", { y: 0, opacity: 1 });
+      return;
+    }
 
-    const metrics = gsap.utils.toArray<HTMLElement>(".exp-metric");
-    metrics.forEach((el, i) => {
-      gsap.fromTo(el,
-        { y: 20, opacity: 0, scale: 0.92 },
-        {
-          y: 0, opacity: 1, scale: 1, duration: 0.5, delay: i * 0.08,
-          ease: "back.out(1.4)",
-          scrollTrigger: { trigger: el, start: "top 92%", once: true },
-        }
-      );
-    });
-  }, []);
+    // Enter animations: 200ms duration, 60ms stagger, trigger 80% viewport
+    gsap.fromTo(".exp-metric",
+      { y: 20, opacity: 0 },
+      {
+        y: 0, opacity: 1,
+        duration: 0.20, stagger: 0.06, ease: "power1.out",
+        scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
+      }
+    );
+
+    gsap.fromTo(".exp-bullet",
+      { y: 20, opacity: 0 },
+      {
+        y: 0, opacity: 1,
+        duration: 0.20, stagger: 0.06, ease: "power1.out",
+        scrollTrigger: { trigger: containerRef.current, start: "top 80%", once: true },
+      }
+    );
+  }, { scope: sectionRef });
 
   return (
     <section ref={sectionRef} id="experience" style={{ padding: "clamp(48px,7vw,96px) clamp(20px,5vw,72px)" }}>
@@ -57,120 +62,103 @@ export default function Experience() {
 
         {/* Company header */}
         <div style={{
-          display: "flex", alignItems: "flex-start", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 16,
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12,
           marginBottom: "clamp(24px,3vw,36px)",
+          borderBottom: "1px solid var(--border-subtle)",
+          paddingBottom: 16,
         }}>
           <div>
             <h2 style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(1.2rem,1rem+1vw,1.6rem)",
-              fontWeight: 700, color: "var(--ink)", lineHeight: 1.2,
-            }}>Software Development Engineer</h2>
-            <p style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "clamp(0.9rem,0.85rem+0.2vw,1rem)",
-              fontWeight: 400, color: "var(--accent)",
-              marginTop: 4,
-            }}>Ecovis RKCA</p>
+              fontSize: "clamp(1.2rem,1rem + 1.2vw,1.65rem)",
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              lineHeight: 1.2,
+            }}>
+              Software Development Engineer &middot; <span style={{ color: "var(--accent-primary)" }}>Ecovis RKCA</span>
+            </h2>
           </div>
           <span style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "0.6rem", letterSpacing: "0.28em",
+            fontSize: "0.62rem",
+            letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "rgba(14,10,4,0.38)",
-            paddingTop: 4,
-          }}>Feb 2026 – Present · Full-time</span>
+            color: "var(--text-muted)",
+          }}>
+            Feb 2026 – Present &bull; Full-time
+          </span>
         </div>
 
         {/* Metric chips */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: "clamp(28px,4vw,40px)" }}>
           {METRICS.map(m => (
-            <div key={m.label} className="exp-metric" style={{
-              background: "var(--bg-card)",
-              border: "1.5px solid rgba(196,64,10,0.18)",
-              borderRadius: 8,
+            <div key={m.label} className="exp-metric glass-pill" style={{
+              borderRadius: "8px",
               padding: "10px 18px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
             }}>
               <span style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(1.1rem,1vw+0.6rem,1.5rem)",
-                fontWeight: 800, color: "var(--accent)", lineHeight: 1,
+                fontSize: "clamp(1.1rem,1vw + 0.6rem,1.35rem)",
+                fontWeight: 800,
+                color: "var(--accent-primary)",
+                lineHeight: 1,
               }}>{m.value}</span>
               <span style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "0.52rem", letterSpacing: "0.2em",
-                textTransform: "uppercase", color: "var(--ink-hint)",
+                fontSize: "0.55rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
               }}>{m.label}</span>
             </div>
           ))}
         </div>
 
-        {/* Timeline bullets */}
-        <div style={{ position: "relative", paddingLeft: 28 }}>
-          {/* Vertical accent line */}
-          <div style={{
-            position: "absolute", left: 0, top: 8, bottom: 8,
-            width: 2,
-            background: "linear-gradient(180deg, var(--accent) 0%, rgba(196,64,10,0.10) 100%)",
-            borderRadius: 99,
-          }} />
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "clamp(16px,2.5vw,24px)" }}>
-            {bullets.map((b, i) => (
-              <div key={i} className="exp-bullet" style={{
-                display: "flex", gap: 16, alignItems: "flex-start",
-                position: "relative",
-              }}>
-                {/* Timeline dot */}
-                <div style={{
-                  position: "absolute", left: -33,
-                  top: 4, width: 8, height: 8,
-                  borderRadius: "50%",
-                  background: "var(--accent)",
-                  boxShadow: "0 0 0 3px rgba(196,64,10,0.15)",
-                  flexShrink: 0,
-                }} />
-
-                <div style={{
-                  background: "var(--bg-card)",
-                  border: "1.5px solid rgba(14,10,4,0.08)",
-                  borderRadius: 10,
-                  padding: "clamp(12px,1.5vw,18px) clamp(14px,2vw,22px)",
-                  flex: 1,
-                  transition: "border-color 0.22s, box-shadow 0.22s",
-                }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(196,64,10,0.28)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(196,64,10,0.07)";
+        {/* Tracing Beam timeline wrapping the bullets */}
+        <div ref={containerRef}>
+          <TracingBeam>
+            <div style={{ display: "flex", flexDirection: "column", gap: "clamp(16px,2.5vw,24px)" }}>
+              {bullets.map((b, i) => (
+                <div key={i} className="exp-bullet" style={{
+                  display: "flex", gap: 16, alignItems: "flex-start",
+                  position: "relative",
+                }}>
+                  <div className="glass-panel-light" style={{
+                    borderRadius: "12px",
+                    padding: "clamp(16px,1.8vw,22px) clamp(18px,2.2vw,26px)",
+                    flex: 1,
                   }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(14,10,4,0.08)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "none";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontSize: "1rem", lineHeight: 1 }}>{b.icon}</span>
-                    <span style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "0.55rem", letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      padding: "2px 8px", borderRadius: 3,
-                      background: "rgba(196,64,10,0.07)",
-                      border: "1px solid rgba(196,64,10,0.18)",
-                      color: "var(--accent)",
-                    }}>{b.tag}</span>
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <span style={{ fontSize: "1.1rem", lineHeight: 1 }}>{b.icon}</span>
+                      <span style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.55rem", letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        padding: "3px 8px", borderRadius: 4,
+                        background: "rgba(184,50,39,0.06)",
+                        border: "1px solid rgba(184,50,39,0.18)",
+                        color: "var(--accent-primary)",
+                        fontWeight: 700,
+                      }}>{b.tag}</span>
+                    </div>
+                    <p style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: "clamp(0.85rem,0.8rem + 0.2vw,0.95rem)",
+                      fontWeight: 400, color: "var(--text-secondary)", lineHeight: 1.65,
+                    }}>{b.text}</p>
                   </div>
-                  <p style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "clamp(0.85rem,0.8rem+0.2vw,0.95rem)",
-                    fontWeight: 300, color: "var(--ink-muted)", lineHeight: 1.7,
-                  }}>{b.text}</p>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </TracingBeam>
         </div>
       </div>
     </section>

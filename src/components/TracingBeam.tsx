@@ -45,8 +45,8 @@ export default function TracingBeam({ children }: { children: React.ReactNode })
           className="absolute top-0 left-0 w-full origin-top transition-none"
           style={{
             height: `${beamHeight}px`,
-            background: "linear-gradient(to bottom, transparent, #84cc16 10%, #84cc16 90%, transparent)",
-            boxShadow: "0 0 8px #84cc1680, 0 0 20px #84cc1630",
+            background: "linear-gradient(to bottom, transparent, var(--accent) 10%, var(--accent) 90%, transparent)",
+            boxShadow: "0 0 8px var(--accent), 0 0 20px var(--accent-dim)",
           }}
         />
 
@@ -55,8 +55,8 @@ export default function TracingBeam({ children }: { children: React.ReactNode })
           ref={dotRef}
           className="absolute -left-[3px] w-[7px] h-[7px] rounded-full"
           style={{
-            background: "#84cc16",
-            boxShadow: "0 0 10px #84cc16, 0 0 20px #84cc1660",
+            background: "var(--accent-bright, var(--accent))",
+            boxShadow: "0 0 10px var(--accent), 0 0 20px var(--accent-bright, var(--accent))",
             top: 0,
           }}
         />

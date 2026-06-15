@@ -26,7 +26,7 @@ export default function Home() {
         <PageReveal>
           <Navbar />
           <main>
-            <SectionBorder speed={1.6}>
+            <SectionBorder speed={1.6} showCorners={true}>
               <Entry />
             </SectionBorder>
 

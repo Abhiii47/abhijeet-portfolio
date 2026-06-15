@@ -1,11 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useEffect, useRef, useState } from "react";
 
 interface AnimatedHeadingProps {
   text: string;
@@ -23,124 +18,121 @@ export default function AnimatedHeading({
   italic,
   section,
   size = "clamp(2.2rem,4.5vw,3.8rem)",
-  color      = "var(--ink, #0E0A04)",
-  accentColor = "var(--accent, #C4400A)",
+  color      = "var(--text-primary)",
+  accentColor = "var(--accent-primary)",
   fontFamily = "var(--font-serif)",
   labelFontFamily = "var(--font-mono,'Inter',monospace)",
 }: AnimatedHeadingProps) {
-  const ref      = useRef<HTMLDivElement>(null);
-  const lineRef  = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLParagraphElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    // Check prefers-reduced-motion
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mediaQuery.matches);
+    const onChange = () => setReducedMotion(mediaQuery.matches);
+    mediaQuery.addEventListener("change", onChange);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0,
+        rootMargin: "0px 0px -20% 0px", // Trigger when 80% in viewport (20% from bottom)
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener("change", onChange);
+    };
+  }, []);
 
   const mainWords = text.trim().split(/\s+/);
   const allWords  = italic ? [...mainWords, italic] : mainWords;
 
-  useGSAP(() => {
-    const inners = ref.current?.querySelectorAll<HTMLElement>(".ah-inner");
-    const line   = lineRef.current;
-    const label  = labelRef.current;
-    if (!inners?.length) return;
-
-    // Set initial state for line via GSAP (not inline style)
-    if (line) gsap.set(line, { scaleX: 0, opacity: 0, transformOrigin: "left" });
-
-    const tl = gsap.timeline({
-      scrollTrigger: { trigger: ref.current, start: "top 82%", once: true },
-    });
-
-    if (label) {
-      tl.fromTo(label,
-        { y: 10, opacity: 0 },
-        { y: 0,  opacity: 1, duration: 0.5, ease: "power2.out" },
-        0
-      );
-    }
-
-    inners.forEach((inner, i) => {
-      const isItalic = italic && i === allWords.length - 1;
-      const delay    = 0.08 + i * 0.09 + (isItalic ? 0.06 : 0);
-      tl.fromTo(
-        inner,
-        { clipPath: "inset(0 0 100% 0)", y: "40%", skewY: 3, opacity: 0 },
-        { clipPath: "inset(0 0 0% 0)",   y: "0%",  skewY: 0, opacity: 1,
-          duration: 0.72, ease: "power4.out" },
-        delay
-      );
-    });
-
-    if (line) {
-      tl.fromTo(
-        line,
-        { scaleX: 0, opacity: 0 },
-        { scaleX: 1, opacity: 0.55, duration: 0.55, ease: "power2.inOut", transformOrigin: "left" },
-        0.1 + allWords.length * 0.09 + 0.12
-      );
-    }
-  }, { scope: ref });
-
   return (
-    <div ref={ref}>
+    <div
+      ref={ref}
+      style={{
+        opacity: reducedMotion ? 1 : (visible ? 1 : 0),
+        transform: reducedMotion ? "none" : (visible ? "translateY(0)" : "translateY(20px)"),
+        transition: "opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      }}
+    >
       {section && (
         <p
-          ref={labelRef}
           style={{
             fontFamily: labelFontFamily,
-            fontWeight: 400, fontSize: 10,
+            fontWeight: 400,
+            fontSize: 10,
             letterSpacing: "0.38em",
             textTransform: "uppercase",
             color: accentColor,
             marginBottom: 28,
-            opacity: 0,
+            opacity: reducedMotion ? 1 : (visible ? 1 : 0),
+            transform: reducedMotion ? "none" : (visible ? "translateY(0)" : "translateY(10px)"),
+            transition: "opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s, transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s",
           }}
-        >{section} / {text.trim().split(" ")[0]}</p>
+        >
+          {section} / {text.trim().split(" ")[0]}
+        </p>
       )}
 
-      <div style={{
-        display: "flex", flexWrap: "wrap",
-        alignItems: "baseline",
-        gap: "0 0.28em",
-        marginBottom: 6,
-      }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "baseline",
+          gap: "0 0.28em",
+          marginBottom: 6,
+        }}
+      >
         {allWords.map((word, i) => {
           const isItalic = italic && i === allWords.length - 1;
+          const delay = reducedMotion ? 0 : 0.06 * (i + 1);
           return (
-            <div
+            <span
               key={i}
               style={{
-                overflow: "hidden",
                 display: "inline-block",
-                paddingBottom: "0.08em",
-                marginBottom: "-0.08em",
+                fontFamily,
+                fontStyle: isItalic ? "italic" : "normal",
+                fontWeight: isItalic ? 400 : 700,
+                fontSize: size,
+                color: isItalic ? accentColor : color,
+                lineHeight: 1.1,
+                opacity: reducedMotion ? 1 : (visible ? 1 : 0),
+                transform: reducedMotion ? "none" : (visible ? "translateY(0)" : "translateY(15px)"),
+                transition: `opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s, transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s`,
               }}
             >
-              <span
-                className="ah-inner"
-                style={{
-                  display: "inline-block",
-                  fontFamily,
-                  fontStyle:  isItalic ? "italic"  : "normal",
-                  fontWeight: isItalic ? 400 : 700,
-                  fontSize:   size,
-                  color:      isItalic ? accentColor : color,
-                  lineHeight: 1.1,
-                  willChange: "clip-path, transform",
-                  clipPath: "inset(0 0 100% 0)",
-                  opacity: 0,
-                }}
-              >{word}</span>
-            </div>
+              {word}
+            </span>
           );
         })}
       </div>
 
-      {/* Accent underline — initial state set by gsap.set above */}
+      {/* Accent underline */}
       <div
-        ref={lineRef}
         style={{
           height: 1.5,
           width: "clamp(48px,8vw,80px)",
           background: accentColor,
           marginBottom: "clamp(32px,4vw,52px)",
+          opacity: reducedMotion ? 0.55 : (visible ? 0.55 : 0),
+          transform: reducedMotion ? "scaleX(1)" : (visible ? "scaleX(1)" : "scaleX(0)"),
+          transformOrigin: "left",
+          transition: `opacity 0.2s ease-out ${allWords.length * 0.06}s, transform 0.25s ease-out ${allWords.length * 0.06}s`,
         }}
       />
     </div>

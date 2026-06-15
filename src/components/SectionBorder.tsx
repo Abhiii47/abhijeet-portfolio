@@ -32,6 +32,8 @@ type Props = {
   glow?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  /** Show corner brackets */
+  showCorners?: boolean;
 };
 
 export default function SectionBorder({
@@ -41,6 +43,7 @@ export default function SectionBorder({
   glow = true,
   className = "",
   style,
+  showCorners = false,
 }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -78,14 +81,18 @@ export default function SectionBorder({
         ...style,
       }}
     >
-      {/* Corner registration marks — top-left */}
-      <span aria-hidden className="sb-corner sb-corner--tl" />
-      {/* top-right */}
-      <span aria-hidden className="sb-corner sb-corner--tr" />
-      {/* bottom-left */}
-      <span aria-hidden className="sb-corner sb-corner--bl" />
-      {/* bottom-right */}
-      <span aria-hidden className="sb-corner sb-corner--br" />
+      {showCorners && (
+        <>
+          {/* Corner registration marks — top-left */}
+          <span aria-hidden className="sb-corner sb-corner--tl" />
+          {/* top-right */}
+          <span aria-hidden className="sb-corner sb-corner--tr" />
+          {/* bottom-left */}
+          <span aria-hidden className="sb-corner sb-corner--bl" />
+          {/* bottom-right */}
+          <span aria-hidden className="sb-corner sb-corner--br" />
+        </>
+      )}
 
       {children}
     </div>

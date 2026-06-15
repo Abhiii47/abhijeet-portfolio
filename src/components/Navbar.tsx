@@ -61,6 +61,7 @@ export default function Navbar() {
     <>
       <nav
         ref={ref}
+        className={scrolled ? "glass-panel-medium" : ""}
         style={{
           position: "fixed",
           top: 10,
@@ -69,11 +70,14 @@ export default function Navbar() {
           width: "calc(100% - 20px)",
           zIndex: 100,
           height: 56,
-          background: scrolled ? "var(--bg-navbar)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px) saturate(120%)" : "none",
-          borderBottom: scrolled ? "1px solid var(--ink-border)" : "1px solid transparent",
           borderRadius: scrolled ? "0 0 8px 8px" : "0",
-          transition: "background 0.4s ease, border-color 0.4s ease, border-radius 0.4s ease",
+          transition: "background 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease, box-shadow 0.3s ease",
+          ...(!scrolled ? {
+            background: "transparent",
+            backdropFilter: "none",
+            border: "1px solid transparent",
+            boxShadow: "none",
+          } : {})
         }}
       >
         <div style={{
@@ -101,16 +105,18 @@ export default function Navbar() {
                 key={href}
                 href={href}
                 style={{
-                  fontFamily: "monospace",
+                  fontFamily: "var(--font-mono, monospace)",
                   fontSize: 9,
                   letterSpacing: "0.28em",
                   textTransform: "uppercase",
                   textDecoration: "none",
-                  color: active === href ? ACCENT : "rgba(14,10,4,0.62)",
-                  transition: "color 0.2s ease",
+                  color: active === href ? "var(--accent-primary)" : "var(--text-secondary)",
+                  borderBottom: active === href ? "2px solid var(--accent-primary)" : "2px solid transparent",
+                  paddingBottom: 4,
+                  transition: "color 0.15s ease, border-color 0.15s ease",
                 }}
-                onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = "rgba(14,10,4,0.88)"; }}
-                onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "rgba(14,10,4,0.62)"; }}
+                onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = "var(--text-primary)"; }}
+                onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "var(--text-secondary)"; }}
               >{label}</a>
             ))}
             <a
@@ -118,15 +124,15 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                fontFamily: "monospace", fontSize: 9, letterSpacing: "0.22em",
+                fontFamily: "var(--font-mono, monospace)", fontSize: 9, letterSpacing: "0.22em",
                 textTransform: "uppercase", textDecoration: "none",
                 padding: "7px 18px", borderRadius: 9999,
-                border: `1.5px solid rgba(196,64,10,0.35)`,
-                color: ACCENT,
-                transition: "background 0.2s, color 0.2s",
+                border: `1.5px solid var(--accent-primary)`,
+                color: "var(--accent-primary)",
+                transition: "background 0.15s, color 0.15s",
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = ACCENT; e.currentTarget.style.color = "var(--bg-base)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = ACCENT; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "var(--accent-primary)"; e.currentTarget.style.color = "var(--bg-primary)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--accent-primary)"; }}
             >Resume</a>
 
             {/* Theme switcher */}
@@ -182,18 +188,18 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       {open && (
-        <div style={{
-          position: "fixed",
-          inset: 10,
-          borderRadius: 4,
-          zIndex: 99,
-          background: "var(--bg-base)",
-          display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center",
-          gap: 32,
-          border: "1.5px solid var(--ink-border)",
-          boxShadow: "0 16px 48px rgba(14,10,4,0.1)",
-        }}>
+        <div 
+          className="glass-panel-medium"
+          style={{
+            position: "fixed",
+            inset: 10,
+            borderRadius: "4px",
+            zIndex: 99,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            gap: 32,
+          }}
+        >
           {LINKS.map(({ label, href }) => (
             <a
               key={href}

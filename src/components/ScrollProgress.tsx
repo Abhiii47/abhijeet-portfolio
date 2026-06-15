@@ -13,9 +13,6 @@ const SECTIONS = [
   { id: "contact",        label: "Contact" },
 ];
 
-const ACCENT = "var(--accent)";
-const INK    = "var(--ink-hint)";
-
 export default function ScrollProgress() {
   const [active, setActive]   = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -29,7 +26,7 @@ export default function ScrollProgress() {
       if (!el) return;
       const obs = new IntersectionObserver(
         ([entry]) => { if (entry.isIntersecting) setActive(i); },
-        { threshold: 0.35 }
+        { threshold: 0.25, rootMargin: "-25% 0px -25% 0px" }
       );
       obs.observe(el);
       observers.push(obs);
@@ -41,7 +38,7 @@ export default function ScrollProgress() {
   useEffect(() => {
     if (!lineRef.current) return;
     const pct = (active / (SECTIONS.length - 1)) * 100;
-    gsap.to(lineRef.current, { height: `${pct}%`, duration: 0.5, ease: "power2.out" });
+    gsap.to(lineRef.current, { height: `${pct}%`, duration: 0.35, ease: "power2.out" });
   }, [active]);
 
   return (
@@ -56,23 +53,22 @@ export default function ScrollProgress() {
         className="scroll-progress-nav"
         style={{
           position: "fixed",
-          right: "clamp(14px,2.5vw,28px)",
+          right: "clamp(24px,3vw,36px)",
           top: "50%",
           transform: "translateY(-50%)",
           zIndex: 9000,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          gap: 0,
+          alignItems: "flex-end",
+          paddingRight: 12,
         }}
       >
         {/* Track line */}
         <div style={{
           position: "absolute",
-          top: 6, bottom: 6, left: "50%",
-          transform: "translateX(-50%)",
-          width: 1,
-          background: "var(--ink-border)",
+          top: 8, bottom: 8, right: 0,
+          width: 2,
+          background: "var(--border-subtle)",
           borderRadius: 99,
           zIndex: 0,
         }}>
@@ -82,9 +78,9 @@ export default function ScrollProgress() {
             style={{
               width: "100%",
               height: "0%",
-              background: "linear-gradient(to bottom, var(--accent), var(--accent-bright, var(--accent)))",
+              background: "var(--accent-primary)",
               borderRadius: 99,
-              transition: "height 0.5s",
+              transition: "height 0.35s ease-out",
             }}
           />
         </div>
@@ -103,38 +99,29 @@ export default function ScrollProgress() {
                 zIndex: 1,
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
-                padding: "8px 0",
+                justifyContent: "flex-end",
+                padding: "12px 0",
                 textDecoration: "none",
-                cursor: "none",
+                minWidth: 120,
               }}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
             >
-              {/* Label — appears left of dot on hover/active */}
+              {/* Label — always visible if active, otherwise visible on hover */}
               <span style={{
-                fontFamily: "'Inter',monospace",
-                fontSize: 8, letterSpacing: "0.22em",
+                fontFamily: "var(--font-mono), monospace",
+                fontSize: 8,
+                letterSpacing: "0.22em",
                 textTransform: "uppercase",
-                color: isActive ? ACCENT : "var(--ink-muted)",
+                color: isActive ? "var(--accent-primary)" : "var(--text-secondary)",
                 opacity: isActive || isHovered ? 1 : 0,
-                transform: isActive || isHovered ? "translateX(0)" : "translateX(6px)",
+                transform: isActive || isHovered ? "translateX(-6px)" : "translateX(4px)",
                 transition: "opacity 0.22s, transform 0.22s, color 0.22s",
                 pointerEvents: "none",
                 whiteSpace: "nowrap",
                 userSelect: "none",
+                fontWeight: isActive ? 700 : 400,
               }}>{label}</span>
-
-              {/* Dot */}
-              <div style={{
-                width:  isActive ? 8 : 5,
-                height: isActive ? 8 : 5,
-                borderRadius: "50%",
-                background: isActive ? ACCENT : INK,
-                flexShrink: 0,
-                transition: "width 0.25s, height 0.25s, background 0.25s",
-                boxShadow: isActive ? "0 0 0 3px var(--accent-dim)" : "none",
-              }} />
             </a>
           );
         })}
