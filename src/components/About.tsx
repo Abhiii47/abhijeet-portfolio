@@ -13,6 +13,28 @@ export default function About() {
             gap: 32px !important;
           }
         }
+        .avatar-frame {
+          width: 100%;
+          height: auto;
+          aspect-ratio: 3/4;
+          max-height: 320px;
+          border-radius: 12px;
+          overflow: hidden;
+          position: relative;
+          border: 1.5px solid color-mix(in oklch, var(--accent-primary) 18%, var(--border-subtle));
+          box-shadow:
+            inset 0 0 0 1px rgba(26,23,20,0.07),
+            0 8px 24px rgba(26,23,20,0.07),
+            0 2px 8px rgba(26,23,20,0.04);
+          transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s cubic-bezier(0.16,1,0.3,1);
+        }
+        .avatar-frame:hover {
+          transform: scale(1.02);
+          box-shadow:
+            inset 0 0 0 1px rgba(26,23,20,0.07),
+            0 14px 36px rgba(26,23,20,0.13),
+            0 4px 12px rgba(26,23,20,0.08);
+        }
       `}</style>
       
       <div style={{ maxWidth: 1140, margin: "0 auto", width: "100%", position: "relative" }}>
@@ -44,28 +66,8 @@ export default function About() {
           {/* Quick Facts card */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-            {/* Profile Picture - portrait ratio */}
-            <div style={{
-              width: "100%",
-              height: "auto",
-              aspectRatio: "3/4",
-              maxHeight: 320,
-              borderRadius: 12,
-              overflow: "hidden",
-              border: "1.5px solid var(--border-subtle)",
-              position: "relative",
-              boxShadow: "0 8px 24px rgba(26,23,20,0.06), 0 2px 8px rgba(26,23,20,0.04)",
-              transition: "transform 0.15s ease, box-shadow 0.15s ease",
-            }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = "scale(1.02)";
-                e.currentTarget.style.boxShadow = "0 12px 32px rgba(26,23,20,0.12), 0 4px 12px rgba(26,23,20,0.08)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "0 8px 24px rgba(26,23,20,0.06), 0 2px 8px rgba(26,23,20,0.04)";
-              }}
-            >
+            {/* Profile Picture */}
+            <div className="avatar-frame">
               <img
                 src="/profile.jpg"
                 alt="Abhijeet Kadu"
@@ -77,7 +79,7 @@ export default function About() {
                   display: "block",
                 }}
               />
-              {/* Warm accent gradient overlay */}
+              {/* Warm gradient overlay */}
               <div style={{
                 position: "absolute",
                 inset: 0,
