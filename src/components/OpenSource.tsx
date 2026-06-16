@@ -47,13 +47,14 @@ export default function OpenSource() {
           padding: 14px 20px;
           border-radius: 10px;
           border: 1px solid var(--border-subtle);
-          background: var(--bg-card);
+          background: var(--bg-card, var(--color-surface));
           text-decoration: none;
-          transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+          transition: background 0.18s ease, border-color 0.18s ease,
+                      transform 0.18s ease, box-shadow 0.18s ease;
           cursor: pointer;
         }
         .os-row:hover {
-          background: var(--bg-card-hover);
+          background: var(--bg-card-hover, var(--color-surface-2));
           border-color: color-mix(in oklch, var(--accent-primary) 35%, var(--border-subtle));
           transform: translateX(5px);
           box-shadow: 0 4px 20px rgba(26,23,20,0.08);
@@ -75,15 +76,10 @@ export default function OpenSource() {
           white-space: nowrap;
           flex-shrink: 0;
         }
-        [data-theme="dark"] .os-merged-chip {
-          background: rgba(74,124,89,0.18);
-          border-color: rgba(74,124,89,0.4);
-          color: #7dba97;
-        }
         .os-diff {
           font-family: var(--font-mono);
           font-size: 0.68rem;
-          color: var(--text-secondary);
+          color: var(--text-secondary, var(--color-text-muted));
           white-space: nowrap;
           flex-shrink: 0;
         }
@@ -91,13 +87,13 @@ export default function OpenSource() {
           font-family: var(--font-body);
           font-weight: 700;
           font-size: 0.92rem;
-          color: var(--text-primary);
+          color: var(--text-primary, var(--color-text));
           line-height: 1.2;
         }
         .os-pr-title {
           font-family: var(--font-mono);
           font-size: 0.72rem;
-          color: var(--text-secondary);
+          color: var(--text-secondary, var(--color-text-muted));
           margin-top: 2px;
           display: flex;
           align-items: center;
@@ -110,7 +106,11 @@ export default function OpenSource() {
           flex-shrink: 0;
         }
         @media (max-width: 640px) {
-          .os-row { grid-template-columns: 10px 1fr; grid-template-rows: auto auto; row-gap: 8px; }
+          .os-row {
+            grid-template-columns: 10px 1fr;
+            grid-template-rows: auto auto;
+            row-gap: 8px;
+          }
           .os-diff { grid-column: 2; }
           .os-merged-chip { display: none; }
         }
@@ -122,7 +122,7 @@ export default function OpenSource() {
         <p style={{
           fontFamily: "var(--font-body)",
           fontSize: "clamp(0.9rem,0.85rem + 0.3vw,1.05rem)",
-          color: "var(--text-secondary)",
+          color: "var(--text-secondary, var(--color-text-muted))",
           maxWidth: "58ch",
           lineHeight: 1.7,
           marginBottom: "clamp(24px,3vw,36px)",
