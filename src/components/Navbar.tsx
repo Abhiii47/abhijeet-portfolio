@@ -71,7 +71,7 @@ export default function Navbar() {
           zIndex: 100,
           height: 56,
           borderRadius: scrolled ? "0 0 8px 8px" : "0",
-          transition: "background 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease, box-shadow 0.3s ease",
+          transition: "background 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s cubic-bezier(0.16,1,0.3,1), border-radius 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1)",
           ...(!scrolled ? {
             background: "transparent",
             backdropFilter: "none",
@@ -113,7 +113,7 @@ export default function Navbar() {
                   color: active === href ? "var(--accent-primary)" : "var(--text-secondary)",
                   borderBottom: active === href ? "2px solid var(--accent-primary)" : "2px solid transparent",
                   paddingBottom: 4,
-                  transition: "color 0.15s ease, border-color 0.15s ease",
+                  transition: "color 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s cubic-bezier(0.16,1,0.3,1), opacity 0.2s cubic-bezier(0.16,1,0.3,1)",
                 }}
                 onMouseEnter={e => { if (active !== href) e.currentTarget.style.color = "var(--text-primary)"; }}
                 onMouseLeave={e => { if (active !== href) e.currentTarget.style.color = "var(--text-secondary)"; }}
@@ -129,7 +129,7 @@ export default function Navbar() {
                 padding: "7px 18px", borderRadius: 9999,
                 border: `1.5px solid var(--accent-primary)`,
                 color: "var(--accent-primary)",
-                transition: "background 0.15s, color 0.15s",
+                transition: "background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s cubic-bezier(0.16,1,0.3,1)",
               }}
               onMouseEnter={e => { e.currentTarget.style.background = "var(--accent-primary)"; e.currentTarget.style.color = "var(--bg-primary)"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--accent-primary)"; }}
@@ -149,7 +149,7 @@ export default function Navbar() {
                 padding: 8,
                 borderRadius: "50%",
                 color: "var(--ink)",
-                transition: "background 0.2s, transform 0.2s",
+                transition: "background 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1)",
               }}
               onMouseEnter={e => { e.currentTarget.style.background = "var(--accent-glow)"; e.currentTarget.style.transform = "scale(1.1)"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.transform = "scale(1)"; }}
@@ -178,7 +178,7 @@ export default function Navbar() {
                 display: "block", width: 22, height: 1.5,
                 background: open && i === 1 ? "transparent" : INK,
                 borderRadius: 1,
-                transition: "transform 0.25s ease, opacity 0.25s ease",
+                transition: "transform 0.25s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease",
                 transform: open ? (i===0?"translateY(6.5px) rotate(45deg)": i===2?"translateY(-6.5px) rotate(-45deg)":"none") : "none",
               }} />
             ))}
@@ -209,7 +209,7 @@ export default function Navbar() {
                 fontFamily: "var(--font-display)",
                 fontSize: "2rem", fontWeight: 800,
                 color: INK, textDecoration: "none",
-                transition: "color 0.2s",
+                transition: "color 0.2s cubic-bezier(0.16,1,0.3,1)",
                 letterSpacing: "-0.02em",
               }}
               onMouseEnter={e => e.currentTarget.style.color = ACCENT}
