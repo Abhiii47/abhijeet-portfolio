@@ -131,7 +131,6 @@ const TINT_CLASSES: Record<string, string> = {
 
 function DomainCard({ domain }: { domain: DomainCluster }) {
   const [expanded, setExpanded] = useState(false);
-
   const visibleSupporting = expanded ? domain.supporting : domain.supporting.slice(0, 3);
   const tintClass = TINT_CLASSES[domain.id] || "";
 
@@ -195,7 +194,7 @@ function DomainCard({ domain }: { domain: DomainCluster }) {
         </div>
       </div>
 
-      {/* Supporting Tags */}
+      {/* Supporting Tags — improved spacing */}
       <div>
         <p style={{
           fontFamily: "var(--font-mono)",
@@ -203,12 +202,16 @@ function DomainCard({ domain }: { domain: DomainCluster }) {
           letterSpacing: "0.15em",
           textTransform: "uppercase",
           color: "var(--text-muted)",
-          marginBottom: 8,
+          marginBottom: 10,
         }}>Supporting Skills</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 8px" }}>
           {visibleSupporting.map(skill => {
-            const levelColor = skill.level === "Expert" ? "var(--accent-primary)" : skill.level === "Proficient" ? "var(--text-secondary)" : "var(--text-muted)";
-            const levelBg = skill.level === "Expert" ? "rgba(184, 50, 39, 0.06)" : "var(--border-subtle)";
+            const levelColor =
+              skill.level === "Expert" ? "var(--accent-primary)"
+              : skill.level === "Proficient" ? "var(--text-secondary)"
+              : "var(--text-muted)";
+            const levelBg =
+              skill.level === "Expert" ? "rgba(184, 50, 39, 0.06)" : "var(--border-subtle)";
             const borderStyle = skill.level === "Working" ? "dashed" : "solid";
 
             return (
@@ -216,14 +219,15 @@ function DomainCard({ domain }: { domain: DomainCluster }) {
                 key={skill.name}
                 style={{
                   fontFamily: "var(--font-mono)",
-                  fontSize: "0.55rem",
-                  letterSpacing: "0.05em",
+                  fontSize: "0.58rem",
+                  letterSpacing: "0.06em",
                   textTransform: "uppercase",
-                  padding: "4px 8px",
+                  padding: "3px 10px",
                   borderRadius: 4,
                   background: levelBg,
                   color: levelColor,
                   border: `1px ${borderStyle} var(--border-subtle)`,
+                  lineHeight: 1.8,
                 }}
               >
                 {skill.name}
@@ -328,7 +332,7 @@ export default function Skills() {
           ))}
         </div>
 
-        {/* Category filters */}
+        {/* Category filter buttons — spring easing */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: "clamp(24px,3.5vw,40px)" }}>
           {["All", "AI/ML", "Full-Stack", "Cloud", "Data"].map(cat => (
             <button
@@ -340,14 +344,14 @@ export default function Skills() {
                 fontWeight: 700,
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                padding: "8px 16px",
+                padding: "8px 18px",
                 borderRadius: "999px",
-                border: "1.5px solid var(--border-subtle)",
-                background: activeCategory === cat ? "var(--accent-primary)" : "var(--bg-card)",
+                border: "1.5px solid",
+                borderColor: activeCategory === cat ? "var(--accent-primary)" : "var(--border-subtle)",
+                background: activeCategory === cat ? "var(--accent-primary)" : "transparent",
                 color: activeCategory === cat ? "#fff" : "var(--text-secondary)",
                 cursor: "pointer",
-                borderColor: activeCategory === cat ? "var(--accent-primary)" : "var(--border-subtle)",
-                transition: "all 0.15s ease",
+                transition: "all 0.22s cubic-bezier(0.16,1,0.3,1)",
               }}
             >
               {cat}
@@ -372,9 +376,9 @@ export default function Skills() {
         {/* Legend */}
         <div style={{ display: "flex", gap: 20, marginTop: "clamp(28px,3.5vw,40px)", flexWrap: "wrap", alignItems: "center" }}>
           {[
-            { label: "Expert",     color: "var(--accent-primary)",               pct: 95 },
-            { label: "Proficient", color: "var(--text-secondary)",               pct: 72 },
-            { label: "Working",    color: "var(--text-muted)",                  pct: 40 },
+            { label: "Expert",     color: "var(--accent-primary)", pct: 95 },
+            { label: "Proficient", color: "var(--text-secondary)", pct: 72 },
+            { label: "Working",    color: "var(--text-muted)",     pct: 40 },
           ].map(({ label, color, pct }) => (
             <div key={label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 32, height: 2, background: "var(--border-subtle)", borderRadius: 99, overflow: "hidden" }}>
