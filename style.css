@@ -9,9 +9,6 @@
   --muted:   #5a5a5a;
   --soft:    #c8c4bc;
   --softer:  #e2dfd8;
-  --soft-shadow: var(--soft);
-  --red-pulse-start: rgba(192, 0, 31, 0.4);
-  --red-pulse-end: rgba(192, 0, 31, 0);
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'Satoshi', system-ui, -apple-system, sans-serif;
@@ -31,9 +28,6 @@
   --muted:   #9f9587;
   --soft:    #3e3a35;
   --softer:  #2b2825;
-  --soft-shadow: rgba(0, 0, 0, 0.4);
-  --red-pulse-start: rgba(255, 59, 92, 0.4);
-  --red-pulse-end: rgba(255, 59, 92, 0);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -230,9 +224,6 @@ em { font-style: italic; }
 #masthead {
   padding: clamp(32px, 5vw, 60px) 0 clamp(20px, 3vw, 32px);
   background: var(--paper);
-}
-.mast-inner {
-  /* container already applied in html */
 }
 
 /* Publication name */
@@ -1502,7 +1493,7 @@ button.proj-link:focus-visible {
 }
 
 /* ═══════════════════════════════════════════════════════
-   TACTILE INTERACTION (Emil Kowalski feedback)
+   TACTILE INTERACTION
    ═══════════════════════════════════════════════════════ */
 .nav-link:active,
 .footer-links a:active {
@@ -1531,9 +1522,7 @@ button.proj-link:active,
   .mast-subtitle,
   .mast-badge,
   .pull-quote .word,
-  .stack-row,
-  .project-card,
-  .bento-grid .project-card {
+  .project-card {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
