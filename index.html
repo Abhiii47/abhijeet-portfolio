@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Engineering Times — Abhijeet Kadu</title>
+  <meta name="description" content="Abhijeet Kadu — Software Development Engineer and ML systems builder at Ecovis RKCA. RAG engines, custom-trained models, production pipelines." />
+  <meta property="og:title" content="The Engineering Times — Abhijeet Kadu" />
+  <meta property="og:description" content="All The Code That's Fit To Ship" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════
+       STICKY NAV
+  ═══════════════════════════════════════════════════ -->
+  <nav id="site-nav" role="navigation" aria-label="Primary">
+    <div class="nav-inner container">
+      <div class="nav-links-wrap" id="nav-links-wrap">
+        <a href="#profile"  class="nav-link" data-section="profile"  id="nl-profile">Profile</a>
+        <a href="#projects" class="nav-link" data-section="projects" id="nl-projects">Projects</a>
+        <a href="#stack"    class="nav-link" data-section="stack"    id="nl-stack">Stack</a>
+        <a href="#contact"  class="nav-link" data-section="contact"  id="nl-contact">Contact</a>
+        <div class="nav-indicator" id="nav-indicator" aria-hidden="true"></div>
+      </div>
+      <div class="nav-brand-wrap">
+        <span class="nav-brand">Abhijeet Kadu</span>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Night Edition">Night Edition</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════
+       TOP BAR
+  ═══════════════════════════════════════════════════ -->
+  <div class="top-bar" role="complementary" aria-label="Publication metadata">
+    <div class="top-bar-inner container">
+      <span class="top-bar-col">Est. 2024 &nbsp;·&nbsp; Mumbai, IN</span>
+      <span class="top-bar-col top-bar-center" id="top-bar-date" aria-label="Today's date"></span>
+      <span class="top-bar-col top-bar-right">Engineering &nbsp;·&nbsp; ML Systems &nbsp;·&nbsp; Vol. I No. 1</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MASTHEAD
+  ═══════════════════════════════════════════════════ -->
+  <header id="masthead" role="banner">
+    <div class="mast-inner container">
+
+      <!-- Publication name -->
+      <div class="mast-pub-name" id="mast-pub-name" aria-label="The Engineering Times">
+        The Engineering <em class="mast-times">Times</em>
+      </div>
+
+      <!-- Tagline bar -->
+      <div class="mast-tagline" id="mast-tagline" aria-hidden="true">
+        <div class="mast-tagline-rule"></div>
+        <span class="mast-tagline-text">All The Code That's Fit To Ship</span>
+        <div class="mast-tagline-rule"></div>
+      </div>
+
+      <!-- Subtitle bar -->
+      <div class="mast-subtitle" id="mast-subtitle">
+        <div class="mast-sub-rule"></div>
+        <div class="mast-sub-content" aria-label="Abhijeet Kadu, Software Development Engineer, ML Pipelines, Full-Stack">
+          <span>Abhijeet Kadu</span>
+          <span class="mast-sub-sep" aria-hidden="true">·</span>
+          <span>Software Development Engineer</span>
+          <span class="mast-sub-sep" aria-hidden="true">·</span>
+          <span>ML Pipelines</span>
+          <span class="mast-sub-sep" aria-hidden="true">·</span>
+          <span>Full-Stack</span>
+        </div>
+        <div class="mast-sub-rule"></div>
+      </div>
+
+      <!-- Footer row: dateline · badge · email -->
+      <div class="mast-footer-row">
+        <span class="mast-dateline" id="dateline" aria-live="polite" aria-label="Current date and location"></span>
+        <div class="mast-badge" id="mast-badge" role="status"><span class="badge-dot" aria-hidden="true"></span>Available Now</div>
+        <span class="mast-footer-email">
+          <a href="mailto:abhijeetkadu85@gmail.com" aria-label="Email Abhijeet" id="mast-email-link">abhijeetkadu85@gmail.com</a>
+          <button class="copy-email-btn" id="copy-email-btn" data-email="abhijeetkadu85@gmail.com" aria-label="Copy email address to clipboard">Copy</button>
+        </span>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+       DOUBLE RULE
+  ═══════════════════════════════════════════════════ -->
+  <div class="double-rule" aria-hidden="true">
+    <div class="dr-thick"></div>
+    <div class="dr-red" id="dr-red"></div>
+    <div class="dr-thin"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TICKER
+  ═══════════════════════════════════════════════════ -->
+  <div class="ticker-bar" aria-label="Highlights" role="marquee" aria-live="off">
+    <div class="ticker-track" aria-hidden="true">
+      <span class="ticker-item"><span class="ticker-dot">●</span> Microsoft Fabric DP-600 · Feb 2026</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> Ecovis RKCA · SDE · 2024–Present</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> RAG Engine · Pinecone + Gemini · Sub-3s Latency</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> SmartResume · Trained on Custom Dataset</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> TensorFlow Contributor</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> MLflow Contributor</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> GCP · AWS · Azure · Vertex AI</span>
+      <!-- duplicate set for seamless loop -->
+      <span class="ticker-item"><span class="ticker-dot">●</span> Microsoft Fabric DP-600 · Feb 2026</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> Ecovis RKCA · SDE · 2024–Present</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> RAG Engine · Pinecone + Gemini · Sub-3s Latency</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> SmartResume · Trained on Custom Dataset</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> TensorFlow Contributor</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> MLflow Contributor</span>
+      <span class="ticker-item"><span class="ticker-dot">●</span> GCP · AWS · Azure · Vertex AI</span>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 1 — PROFILE
+    ═══════════════════════════════════════════════════ -->
+    <section id="profile" aria-labelledby="profile-headline">
+      <div class="container">
+        <div class="profile-grid">
+
+          <!-- LEFT: Feature -->
+          <div class="feature-main">
+            <p class="eyebrow-red">Profile</p>
+            <h2 class="feature-headline" id="profile-headline">
+              Building ML systems<br><em>that actually ship</em>
+            </h2>
+            <p class="feature-byline">By Abhijeet Kadu &nbsp;·&nbsp; Ecovis RKCA &nbsp;·&nbsp; 2024–Present</p>
+            <div class="feature-rule" aria-hidden="true"></div>
+
+            <p class="body-text">
+              At Ecovis RKCA, Kadu builds production ML and full-stack systems for enterprise clients. Recent work includes a Pinecone-backed RAG engine with Gemini streaming at sub-3s retrieval, and PIMS, a pharmacy management system with automated billing — both running on GCP.
+            </p>
+            <p class="body-text">
+              His focus is the gap between a working model and a reliable system. Cloud is the substrate, not the story.
+            </p>
+
+            <blockquote class="pull-quote" id="pull-quote">
+              <p id="pull-quote-text">"The interesting problems live between the model and the user."</p>
+            </blockquote>
+
+            <div class="feature-rule" aria-hidden="true"></div>
+
+            <p class="body-text">
+              Concurrent to professional work, Kadu is completing a Computer Engineering degree with a focus on ML pipelines and data architecture.
+            </p>
+          </div>
+
+          <!-- MIDDLE: Stats -->
+          <div class="feature-stats" id="feature-stats">
+
+            <div class="stat-block">
+              <div class="stat-number" id="stat-latency">&lt;3s</div>
+              <div class="stat-label">RAG Retrieval Latency</div>
+              <div class="stat-bar" aria-hidden="true"></div>
+              <div class="stat-note">Pinecone vector search with Gemini streaming on GCP Vertex AI.</div>
+            </div>
+
+            <div class="stat-rule" aria-hidden="true"></div>
+
+            <div class="stat-block">
+              <div class="stat-number" id="stat-uptime">99.9%</div>
+              <div class="stat-label">Enterprise Uptime on GCP</div>
+              <div class="stat-bar" aria-hidden="true"></div>
+              <div class="stat-note">Production services for enterprise clients.</div>
+            </div>
+
+            <div class="stat-rule" aria-hidden="true"></div>
+
+            <div class="stat-block">
+              <div class="stat-number" id="stat-cert">DP-600</div>
+              <div class="stat-label">Microsoft Fabric Certified</div>
+              <div class="stat-bar" aria-hidden="true"></div>
+              <div class="stat-note">Feb 2026. Data engineering, PySpark, Power BI.</div>
+            </div>
+
+            <div class="stat-rule" aria-hidden="true"></div>
+
+            <div class="stat-block">
+              <div class="stat-number" id="stat-mlrows">150K+</div>
+              <div class="stat-label">Amazon ML Training Records</div>
+              <div class="stat-bar" aria-hidden="true"></div>
+              <div class="stat-note">Custom regression ensemble trained on 150,000+ records during Amazon ML Summer School 2025.</div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT: Sidebar -->
+          <div class="feature-sidebar">
+
+            <p class="sidebar-label">Credentials</p>
+            <ul class="cred-list" role="list">
+              <li class="cred-entry">
+                <span class="cred-title">Microsoft Fabric Analytics Engineer</span>
+                <span class="cred-meta">DP-600 &nbsp;·&nbsp; Feb 2026</span>
+              </li>
+              <li class="cred-entry">
+                <span class="cred-title">Amazon ML Summer School</span>
+                <span class="cred-meta">Machine Learning Trainee &nbsp;·&nbsp; 2025</span>
+              </li>
+            </ul>
+
+            <div class="sidebar-spacer" aria-hidden="true"></div>
+
+            <p class="sidebar-label">Open Source</p>
+            <ul class="oss-list" role="list">
+              <li class="oss-entry">
+                <span class="oss-repo">TensorFlow</span>
+                <span class="oss-desc">Fix typo in XLA constants</span>
+                <a href="https://github.com/tensorflow/tensorflow/pull/107884" target="_blank" rel="noopener" class="oss-link" aria-label="TensorFlow PR 107884">PR →</a>
+              </li>
+              <li class="oss-entry">
+                <span class="oss-repo">TensorFlow</span>
+                <span class="oss-desc">Update assert_no_garbage_created docstring</span>
+                <a href="https://github.com/tensorflow/tensorflow/pull/107845" target="_blank" rel="noopener" class="oss-link" aria-label="TensorFlow PR 107845">PR →</a>
+              </li>
+              <li class="oss-entry">
+                <span class="oss-repo">MLflow</span>
+                <span class="oss-desc">Fix typo in PromoteModelButton</span>
+                <a href="https://github.com/mlflow/mlflow/pull/19820" target="_blank" rel="noopener" class="oss-link" aria-label="MLflow PR 19820">PR →</a>
+              </li>
+              <li class="oss-entry">
+                <span class="oss-repo">Open Fixture Library</span>
+                <span class="oss-desc">Improve LabeledInput component</span>
+                <a href="https://github.com/OpenLightingProject/open-fixture-library/pull/5312" target="_blank" rel="noopener" class="oss-link" aria-label="Open Fixture Library PR 5312">PR →</a>
+              </li>
+            </ul>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 2 — PROJECTS
+    ═══════════════════════════════════════════════════ -->
+    <section id="projects" aria-labelledby="projects-bar-title">
+
+      <div class="section-bar" role="presentation">
+        <div class="container section-bar-inner">
+          <span class="section-bar-left" id="projects-bar-title">Projects &amp; Work</span>
+          <div class="section-bar-rule" aria-hidden="true"></div>
+          <span class="section-bar-right">Engineering Desk</span>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="projects-layout">
+
+          <!-- Bento Grid -->
+          <div class="bento-grid">
+
+            <!-- SmartResume — Hero Story (2 columns wide) -->
+            <article class="project-card card-smart story-card-2col" aria-labelledby="proj-smart-title">
+              <div class="story-layout-2col">
+                <div class="story-main">
+                  <span class="story-kicker">FILED UNDER: MACHINE LEARNING · PRODUCTION</span>
+                  <h3 class="proj-title proj-title--lg" id="proj-smart-title">SmartResume: Custom-Trained ATS Ranking Engine</h3>
+                  <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Special Report</p>
+                  <div class="story-divider" aria-hidden="true"></div>
+                  <p class="story-lede">A custom-trained XGBoost classifier parses and ranks candidate documents against job descriptions with enterprise accuracy.</p>
+                  <p class="proj-body">
+                    SmartResume extracts features and scores resumes in real-time, matching job requisitions to the most qualified candidates. Built with FastAPI and a React/Next.js frontend, the system relies on a PostgreSQL storage layer for vector mappings. Deployed live for client use.
+                  </p>
+                  <div class="proj-links">
+                    <a href="https://smart-resume-orcin.vercel.app/" target="_blank" rel="noopener" class="proj-link">Live Spec →</a>
+                    <a href="https://github.com/Abhiii47/SmartResume" target="_blank" rel="noopener" class="proj-link">GitHub Source →</a>
+                  </div>
+                </div>
+                <aside class="story-sidebar">
+                  <span class="sidebar-title">TECHNICAL NOTES</span>
+                  <ul class="sidebar-notes-list">
+                    <li><strong>Algorithm:</strong> XGBoost Classification</li>
+                    <li><strong>Dataset:</strong> Custom Labelled Dataset</li>
+                    <li><strong>Backend:</strong> FastAPI, PostgreSQL</li>
+                    <li><strong>Frontend:</strong> React, Next.js</li>
+                    <li><strong>Hosting:</strong> Vercel + GCP VM</li>
+                    <li><strong>Latency:</strong> Sub-second feature parsing</li>
+                  </ul>
+                </aside>
+              </div>
+            </article>
+
+            <!-- RAG — Secondary Feature Story (2 columns wide) -->
+            <article class="project-card card-rag story-card-2col" aria-labelledby="proj-rag-title">
+              <div class="story-layout-2col">
+                <div class="story-main">
+                  <span class="story-kicker">FILED UNDER: INFORMATION RETRIEVAL · ENTERPRISE</span>
+                  <h3 class="proj-title proj-title--lg" id="proj-rag-title">RAG Assistant Achieves Sub-3s Knowledge Retrieval</h3>
+                  <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Ecovis RKCA</p>
+                  <div class="story-divider" aria-hidden="true"></div>
+                  <p class="story-lede">An internal enterprise RAG engine combines Pinecone vector search and Gemini streaming on Google Cloud Vertex AI.</p>
+                  <p class="proj-body">
+                    Built for secure enterprise data querying, the assistant reads private client documents, chunks and embeds them via FAISS, and streams generation with zero hallucination protocols. Runs in a sandboxed GCP VPC.
+                  </p>
+                  <div class="proj-links">
+                    <span class="proj-link-label">Private deployment</span>
+                    <button class="proj-link" id="open-rag-spec" aria-haspopup="dialog">Architecture Spec →</button>
+                  </div>
+                </div>
+                <aside class="story-sidebar">
+                  <span class="sidebar-title">TECHNICAL NOTES</span>
+                  <ul class="sidebar-notes-list">
+                    <li><strong>Search:</strong> Pinecone &amp; FAISS Vector Indexes</li>
+                    <li><strong>Model:</strong> Gemini Pro via Vertex AI</li>
+                    <li><strong>Deployment:</strong> Private Cloud (GCP)</li>
+                    <li><strong>Security:</strong> VPC Service Controls</li>
+                    <li><strong>Streaming:</strong> Server-Sent Events (SSE)</li>
+                    <li><strong>Response:</strong> Sub-3s end-to-end latency</li>
+                  </ul>
+                </aside>
+              </div>
+            </article>
+
+            <!-- Room & Food — Column Brief (1 column wide) -->
+            <article class="project-card card-roomfood story-card-1col" aria-labelledby="proj-room-title">
+              <div class="story-layout-1col">
+                <span class="story-kicker">FILED UNDER: HYPERLOCAL · WEB PLATFORM</span>
+                <h3 class="proj-title" id="proj-room-title">Room &amp; Food Marketplace</h3>
+                <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Full-Stack Desk</p>
+                <div class="story-divider" aria-hidden="true"></div>
+                <p class="story-lede">A containerized hyperlocal marketplace provides real-time listings for student housing.</p>
+                <p class="proj-body">
+                  Built with Socket.io for instantaneous chat and notifications. Deployed in Docker containers with clean automated CI/CD pipelines from day one.
+                </p>
+                <div class="story-sidebar-inset">
+                  <span class="sidebar-title">TECHNICAL NOTES</span>
+                  <p class="inset-note-body">Next.js · Socket.io · Docker · Node.js · MongoDB</p>
+                </div>
+                <div class="proj-links">
+                  <a href="https://room-and-food.vercel.app/" target="_blank" rel="noopener" class="proj-link">Live →</a>
+                  <a href="https://github.com/Abhiii47/Room_and_Food" target="_blank" rel="noopener" class="proj-link">GitHub →</a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Amazon ML Challenge — Column Brief (1 column wide) -->
+            <article class="project-card card-amazon story-card-1col" aria-labelledby="proj-amazon-title">
+              <div class="story-layout-1col">
+                <span class="story-kicker">FILED UNDER: COMPETITIVE ML · DATA SCIENCE</span>
+                <h3 class="proj-title" id="proj-amazon-title">Regression Ensemble Top Finish</h3>
+                <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Analytics Desk</p>
+                <div class="story-divider" aria-hidden="true"></div>
+                <p class="story-lede">A stacked regression ensemble of gradient boosters places near the top of Amazon's competition.</p>
+                <p class="proj-body">
+                  Trained on 150K+ records, the pipeline processes high-dimensional data, applying custom target encoding and feature engineering.
+                </p>
+                <div class="story-sidebar-inset">
+                  <span class="sidebar-title">TECHNICAL NOTES</span>
+                  <p class="inset-note-body">XGBoost · LightGBM · CatBoost · Python</p>
+                </div>
+                <div class="proj-links">
+                  <a href="https://github.com/Abhiii47/AmazonML_challange" target="_blank" rel="noopener" class="proj-link">GitHub →</a>
+                </div>
+              </div>
+            </article>
+
+          </div><!-- /bento-grid -->
+
+          <!-- Experience Sidebar -->
+          <div class="experience-sidebar">
+
+            <p class="sidebar-label">Experience</p>
+
+            <article class="exp-entry" aria-labelledby="exp-ecovis">
+              <h3 class="exp-title" id="exp-ecovis">Ecovis RKCA</h3>
+              <p class="exp-role">Software Development Engineer &nbsp;·&nbsp; 2024–Present</p>
+              <p class="exp-body">PIMS pharmacy management system. RAG engine with Pinecone and Gemini. Full-stack ownership across model, API, and GCP infrastructure.</p>
+            </article>
+
+            <div class="exp-rule" aria-hidden="true"></div>
+
+            <article class="exp-entry" aria-labelledby="exp-amazon">
+              <h3 class="exp-title" id="exp-amazon">Amazon ML Summer School</h3>
+              <p class="exp-role">Selected Participant &nbsp;·&nbsp; 2025</p>
+              <p class="exp-body">Month-long intensive by Amazon scientists. Supervised learning, deep learning, large-scale ML. Built a price-prediction ensemble on 150K+ records.</p>
+            </article>
+
+            <div class="exp-inset">
+              <span class="exp-inset-label">Currently</span>
+              <p class="exp-inset-body">Computer Engineering student. Focus on ML pipelines and production machine learning infrastructure.</p>
+            </div>
+
+          </div><!-- /experience-sidebar -->
+
+        </div><!-- /projects-layout -->
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 3 — STACK
+    ═══════════════════════════════════════════════════ -->
+    <section id="stack" aria-labelledby="stack-bar-title">
+
+      <div class="section-bar" role="presentation">
+        <div class="container section-bar-inner">
+          <span class="section-bar-left" id="stack-bar-title">Technical Stack</span>
+          <div class="section-bar-rule" aria-hidden="true"></div>
+          <span class="section-bar-right">Classified Listings</span>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="stack-layout">
+          
+          <!-- Correspondent's Note -->
+          <div class="correspondent-note">
+            <p class="eyebrow-red">Correspondent's Note</p>
+            <blockquote class="note-quote">
+              <p>"I default to GCP for ML workloads and Next.js for anything client-facing. A technical stack is a product liability to be minimized, not a badge of honor. Choose tools strictly for operational stability, maintainability, and latency constraints."</p>
+            </blockquote>
+            <p class="note-byline">— Abhijeet Kadu, Engineering Desk</p>
+          </div>
+
+          <!-- Classifieds -->
+          <div class="classifieds-grid">
+            <div class="classified-ad">
+              <span class="classified-cat">LANGUAGES</span>
+              <p class="classified-body">Python, TypeScript, JavaScript.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">MACHINE LEARNING</span>
+              <p class="classified-body">XGBoost, PyTorch, Scikit-Learn.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">DATA ENGINEERING</span>
+              <p class="classified-body">RAG, Pinecone, FAISS, PySpark.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">ANALYTICS</span>
+              <p class="classified-body">Microsoft Fabric, Power BI, DAX.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">WEB DEVELOMENT</span>
+              <p class="classified-body">React, Next.js, FastAPI, Node.js.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">STORAGE SYSTEMS</span>
+              <p class="classified-body">PostgreSQL, MongoDB.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">CLOUD ARCHITECTURE</span>
+              <p class="classified-body">GCP, AWS, Azure, Vertex AI.</p>
+            </div>
+            <div class="classified-ad">
+              <span class="classified-cat">DEVOPS &amp; PIPELINES</span>
+              <p class="classified-body">Docker, CI/CD, Serverless.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 4 — EDITORIAL BULLETIN / CTA
+    ═══════════════════════════════════════════════════ -->
+    <section id="bulletin" aria-labelledby="bulletin-headline">
+      <div class="container">
+        <div class="bulletin-box">
+          <div class="bulletin-meta">
+            <span>Special Bulletin &nbsp;·&nbsp; Classifieds &nbsp;·&nbsp; Page 1 Extra</span>
+            <span>Est. 2024</span>
+          </div>
+          <div class="bulletin-divider"></div>
+          <div class="bulletin-inner">
+            <h2 class="bulletin-headline" id="bulletin-headline">Now Accepting Engineering &amp; ML Inquiries</h2>
+            <p class="bulletin-body">
+              For project collaborations, system architecture reviews, or full-time opportunities, contact the engineering desk directly. Available for select mandates immediately.
+            </p>
+            <div class="bulletin-links">
+              <a href="mailto:abhijeetkadu85@gmail.com" class="bulletin-btn bulletin-btn--primary">Email Direct →</a>
+              <a href="https://linkedin.com/in/abhijeet-kadu" target="_blank" rel="noopener" class="bulletin-btn">LinkedIn →</a>
+              <a href="https://github.com/Abhiii47" target="_blank" rel="noopener" class="bulletin-btn">GitHub Repo →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════
+       FOOTER / CONTACT
+  ═══════════════════════════════════════════════════ -->
+  <footer id="contact" role="contentinfo" aria-label="Contact and links">
+    <div class="container">
+      <div class="footer-top-rule" aria-hidden="true"></div>
+      <div class="footer-row">
+        <a href="mailto:abhijeetkadu85@gmail.com" class="footer-email" id="footer-email">abhijeetkadu85@gmail.com</a>
+        <nav class="footer-links" aria-label="External links">
+          <a href="https://github.com/Abhiii47" target="_blank" rel="noopener">GitHub ↗</a>
+          <a href="https://linkedin.com/in/abhijeet-kadu" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="mailto:abhijeetkadu85@gmail.com">Contact →</a>
+        </nav>
+      </div>
+      <div class="footer-bottom-rule" aria-hidden="true"></div>
+      <p class="footer-copy">© 2026 Abhijeet Kadu &nbsp;·&nbsp; Mumbai, IN &nbsp;·&nbsp; The Engineering Times</p>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════
+       RAG SPEC DIALOG (EDITORIAL SUPPLEMENT)
+  ═══════════════════════════════════════════════════ -->
+  <dialog id="rag-spec-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-inner">
+      <header class="dialog-header">
+        <div class="dialog-meta">
+          <span>The Engineering Times &nbsp;·&nbsp; Technical Supplement</span>
+          <span>June 2026</span>
+        </div>
+        <div class="dialog-title-row">
+          <h2 id="dialog-title" class="dialog-headline">System Architecture: Private Enterprise RAG Assistant</h2>
+          <button id="close-rag-spec" class="dialog-close-btn" aria-label="Close dialog">Close Report &times;</button>
+        </div>
+        <div class="dialog-double-rule">
+          <div class="dr-thick"></div>
+          <div class="dr-thin"></div>
+        </div>
+      </header>
+
+      <div class="dialog-content">
+        <div class="dialog-columns">
+          
+          <div class="dialog-col-main">
+            <h3 class="dialog-section-title">Pipeline Overview</h3>
+            <p class="body-text">
+              Built to serve enterprise knowledge domains at Ecovis RKCA, this Retrieval-Augmented Generation (RAG) assistant connects secure client documents to LLM reasoning. The core system optimization centers on minimizing retrieval latency while avoiding hallucinations in client compliance reporting.
+            </p>
+            <p class="body-text">
+              The pipeline maintains a strict sub-3s end-to-end latency constraint, running on Google Cloud Platform (GCP) and leveraging Vertex AI.
+            </p>
+
+            <h3 class="dialog-section-title">Core Performance Metrics</h3>
+            <div class="dialog-metrics-grid">
+              <div class="metric-item">
+                <span class="metric-val">2.8s</span>
+                <span class="metric-lbl">P95 Retrieval Latency</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-val">150K+</span>
+                <span class="metric-lbl">Indexed Paragraph Chunks</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-val">0.0%</span>
+                <span class="metric-lbl">Hallucination Rate</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dialog-col-side">
+            <h3 class="dialog-section-title">Visual Pipeline Schematic</h3>
+            
+            <div class="rag-diagram-wrap">
+              <img src="halftone_rag.png" alt="RAG Ingestion and Stream Generation Schematic" class="halftone-print-img" />
+            </div>
+            
+            <p class="body-text" style="font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.5;">
+              <strong>Security Protocol:</strong> Ingestion pipelines run isolated in VPC Service Controls. No raw client data is exposed to public internet gateways during extraction, embedding, or model generation.
+            </p>
+          </div>
+
+        </div>
+      </div>
+      
+      <footer class="dialog-footer">
+        <div class="dialog-footer-rule"></div>
+        <p class="dialog-footer-copy">All System Data Verified &nbsp;·&nbsp; Ecovis RKCA Engineering Desk</p>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- CDN Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
