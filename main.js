@@ -77,13 +77,21 @@
     // Lenis smooth scroll
     if (lenisReady) initLenis();
 
-    // Run all animation modules
+    // Run all animation & interaction modules
     initMastheadTimeline();
     initNavIndicator();
     initPullQuoteReveal();
     initStatAnimations();
     initProjectAnimations();
     initStackAnimations();
+
+    // High Impact Interactive Modules
+    initAtsDemo();
+    initRagBenchmark();
+    initTechFiltering();
+    initCommandPalette();
+    initTickerClickHandlers();
+    initQuoteRotator();
 
     // Dateline typewriter at t=0.8s
     setTimeout(initTypewriter, 800);
@@ -627,10 +635,7 @@
 
     // Close on backdrop overlay click
     dialog.addEventListener('click', function (event) {
-      const rect = dialog.getBoundingClientRect();
-      const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
-                          rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
-      if (!isInDialog) {
+      if (event.target === dialog) {
         closeDialog();
       }
     });
@@ -696,6 +701,383 @@
         toggleBtn.textContent = 'Day Edition';
         toggleBtn.setAttribute('aria-label', 'Toggle Day Edition');
       }
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SMARTRESUME ATS DYNAMIC INFERENCE DEMO
+  ────────────────────────────────────────────────────── */
+  function initAtsDemo() {
+    const runBtn = document.getElementById('run-ats-btn');
+    const roleSelect = document.getElementById('ats-role-select');
+    const scoreBar = document.getElementById('ats-score-bar');
+    const scoreVal = document.getElementById('ats-score-val');
+    const tagsContainer = document.getElementById('ats-features-tags');
+    const togglesContainer = document.getElementById('ats-skills-toggles');
+
+    if (!runBtn || !roleSelect || !scoreBar || !scoreVal || !tagsContainer) return;
+
+    const featureWeights = {
+      python: { name: 'Python 3.11', weight: 6.8 },
+      fastapi: { name: 'FastAPI', weight: 8.4 },
+      vectordb: { name: 'Vector DB', weight: 7.6 },
+      vertexai: { name: 'GCP Vertex AI', weight: 6.2 },
+      postgres: { name: 'PostgreSQL', weight: 5.4 },
+      nextjs: { name: 'Next.js / React', weight: 4.8 }
+    };
+
+    const roleBaseMap = {
+      ml: 58.0,
+      rag: 54.0,
+      fullstack: 62.0
+    };
+
+    function runInference() {
+      const selectedRole = roleSelect.value || 'ml';
+      const baseScore = roleBaseMap[selectedRole] || 58.0;
+
+      // Calculate score based on checked checkboxes
+      const checkboxes = togglesContainer ? togglesContainer.querySelectorAll('input[type="checkbox"]') : [];
+      let totalAdd = 0;
+      const activeTags = [];
+
+      checkboxes.forEach(cb => {
+        if (cb.checked && featureWeights[cb.value]) {
+          const item = featureWeights[cb.value];
+          totalAdd += item.weight;
+          activeTags.push(`${item.name} (+${item.weight}%)`);
+        }
+      });
+
+      const finalScore = Math.min(99.4, (baseScore + totalAdd)).toFixed(1);
+
+      runBtn.textContent = 'Calculating...';
+      runBtn.style.opacity = '0.6';
+
+      setTimeout(() => {
+        scoreBar.style.width = `${finalScore}%`;
+        scoreVal.textContent = `${finalScore}%`;
+
+        tagsContainer.innerHTML = activeTags.map(tag => 
+          `<span class="ats-tag">${tag}</span>`
+        ).join('');
+
+        runBtn.textContent = 'Run Inference →';
+        runBtn.style.opacity = '1';
+      }, 250);
+    }
+
+    runBtn.addEventListener('click', runInference);
+    roleSelect.addEventListener('change', runInference);
+    if (togglesContainer) {
+      togglesContainer.addEventListener('change', runInference);
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────
+     RAG LIVE LATENCY BENCHMARK SIMULATOR
+  ────────────────────────────────────────────────────── */
+  function initRagBenchmark() {
+    const runBtn = document.getElementById('run-rag-bench-btn');
+    const statusEl = document.getElementById('rag-bench-status');
+    const totalLatencyEl = document.getElementById('rag-total-latency');
+
+    if (!runBtn) return;
+
+    const stepTimers = {
+      1: document.getElementById('rag-time-1'),
+      2: document.getElementById('rag-time-2'),
+      3: document.getElementById('rag-time-3'),
+      4: document.getElementById('rag-time-4')
+    };
+
+    const stepElements = {
+      1: document.getElementById('rag-step-1'),
+      2: document.getElementById('rag-step-2'),
+      3: document.getElementById('rag-step-3'),
+      4: document.getElementById('rag-step-4')
+    };
+
+    let isRunning = false;
+
+    runBtn.addEventListener('click', function () {
+      if (isRunning) return;
+      isRunning = true;
+      runBtn.textContent = 'Benchmarking...';
+      runBtn.disabled = true;
+      if (statusEl) statusEl.textContent = 'Status: Benchmark running...';
+
+      // Reset steps
+      for (let i = 1; i <= 4; i++) {
+        if (stepTimers[i]) stepTimers[i].textContent = '-- ms';
+        if (stepElements[i]) {
+          stepElements[i].classList.remove('is-running', 'is-done');
+        }
+      }
+
+      // Randomize latencies slightly for realism
+      const jitter = () => Math.floor(Math.random() * 30) - 15;
+      const t1 = 38 + jitter();
+      const t2 = 82 + jitter();
+      const t3 = 110 + jitter();
+      const t4 = 1840 + Math.floor(Math.random() * 120) - 60;
+      const total = ((t1 + t2 + t3 + t4) / 1000).toFixed(2);
+
+      // Step 1
+      if (stepElements[1]) stepElements[1].classList.add('is-running');
+      setTimeout(() => {
+        if (stepTimers[1]) stepTimers[1].textContent = t1 + ' ms';
+        if (stepElements[1]) stepElements[1].classList.replace('is-running', 'is-done');
+
+        // Step 2
+        if (stepElements[2]) stepElements[2].classList.add('is-running');
+        setTimeout(() => {
+          if (stepTimers[2]) stepTimers[2].textContent = t2 + ' ms';
+          if (stepElements[2]) stepElements[2].classList.replace('is-running', 'is-done');
+
+          // Step 3
+          if (stepElements[3]) stepElements[3].classList.add('is-running');
+          setTimeout(() => {
+            if (stepTimers[3]) stepTimers[3].textContent = t3 + ' ms';
+            if (stepElements[3]) stepElements[3].classList.replace('is-running', 'is-done');
+
+            // Step 4
+            if (stepElements[4]) stepElements[4].classList.add('is-running');
+            setTimeout(() => {
+              if (stepTimers[4]) stepTimers[4].textContent = t4.toLocaleString() + ' ms';
+              if (stepElements[4]) stepElements[4].classList.replace('is-running', 'is-done');
+
+              if (totalLatencyEl) totalLatencyEl.textContent = total + 's';
+              if (statusEl) statusEl.textContent = 'Status: Benchmark Complete (' + total + 's)';
+
+              runBtn.textContent = 'Re-Run Test ▶';
+              runBtn.disabled = false;
+              isRunning = false;
+            }, 450);
+
+          }, 250);
+
+        }, 200);
+
+      }, 150);
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────
+     CORRESPONDENT'S NOTE ROTATOR
+  ────────────────────────────────────────────────────── */
+  function initQuoteRotator() {
+    const rotateBtn = document.getElementById('rotate-quote-btn');
+    const quoteText = document.getElementById('note-quote-text');
+
+    if (!rotateBtn || !quoteText) return;
+
+    const quotes = [
+      `"I default to GCP for ML workloads and Next.js for client-facing systems. A stack is chosen strictly for operational stability, maintainability, and latency constraints."`,
+      `"The most challenging ML problems live in the latency window between model prediction and vector retrieval."`,
+      `"Production AI is 10% model architecture and 90% pipeline reliability, vector indexing, and zero-hallucination protocols."`
+    ];
+
+    let currentIndex = 0;
+
+    rotateBtn.addEventListener('click', function () {
+      currentIndex = (currentIndex + 1) % quotes.length;
+      quoteText.style.opacity = '0.2';
+      
+      setTimeout(() => {
+        quoteText.textContent = quotes[currentIndex];
+        quoteText.style.opacity = '1';
+      }, 150);
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────
+     INTERACTIVE TECH TAG CROSS-FILTERING
+  ────────────────────────────────────────────────────── */
+  function initTechFiltering() {
+    const techButtons = document.querySelectorAll('.tech-tag');
+    const filterBanner = document.getElementById('tech-filter-banner');
+    const filterNameEl = document.getElementById('tech-filter-name');
+    const filterCountEl = document.getElementById('tech-filter-count');
+    const resetBtn = document.getElementById('reset-tech-filter');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    if (!techButtons.length || !projectCards.length) return;
+
+    function applyFilter(tech) {
+      const lowerTech = tech.toLowerCase().trim();
+      let matchCount = 0;
+
+      projectCards.forEach(card => {
+        const cardTech = (card.getAttribute('data-tech') || '').toLowerCase();
+        if (cardTech.includes(lowerTech)) {
+          card.classList.remove('is-filtered-out');
+          card.classList.add('is-highlighted');
+          matchCount++;
+        } else {
+          card.classList.add('is-filtered-out');
+          card.classList.remove('is-highlighted');
+        }
+      });
+
+      if (filterBanner && filterNameEl && filterCountEl) {
+        filterNameEl.textContent = tech.toUpperCase();
+        filterCountEl.textContent = `${matchCount} stories matching`;
+        filterBanner.removeAttribute('hidden');
+      }
+
+      // Smooth scroll to projects section
+      const projectsSec = document.getElementById('projects');
+      if (projectsSec) {
+        projectsSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function clearFilter() {
+      projectCards.forEach(card => {
+        card.classList.remove('is-filtered-out', 'is-highlighted');
+      });
+      if (filterBanner) {
+        filterBanner.setAttribute('hidden', '');
+      }
+    }
+
+    techButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        const tech = btn.getAttribute('data-tech') || btn.textContent;
+        applyFilter(tech);
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', clearFilter);
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────
+     EDITORIAL COMMAND PALETTE (CMD+K)
+  ────────────────────────────────────────────────────── */
+  function initCommandPalette() {
+    const dialog = document.getElementById('command-palette');
+    const triggerBtn = document.getElementById('cmd-k-trigger');
+    const input = document.getElementById('cmd-input');
+    const items = document.querySelectorAll('.cmd-item');
+
+    if (!dialog) return;
+
+    function openPalette() {
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+        if (input) {
+          input.value = '';
+          input.focus();
+          filterList('');
+        }
+      }
+    }
+
+    function closePalette() {
+      if (typeof dialog.close === 'function') {
+        dialog.close();
+      }
+    }
+
+    if (triggerBtn) {
+      triggerBtn.addEventListener('click', openPalette);
+    }
+
+    // Keyboard shortcut Cmd+K or Ctrl+K
+    document.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (dialog.open) {
+          closePalette();
+        } else {
+          openPalette();
+        }
+      }
+    });
+
+    // Close on backdrop click
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog) {
+        closePalette();
+      }
+    });
+
+    // Fuzzy search filtering
+    function filterList(query) {
+      const q = query.toLowerCase().trim();
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (!q || text.includes(q)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    if (input) {
+      input.addEventListener('input', function () {
+        filterList(input.value);
+      });
+    }
+
+    // Execute item action
+    items.forEach(item => {
+      item.addEventListener('click', function () {
+        const action = item.getAttribute('data-action');
+        const target = item.getAttribute('data-target');
+
+        closePalette();
+
+        if (action === 'goto' && target) {
+          const el = document.querySelector(target);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        } else if (action === 'open-rag') {
+          const ragBtn = document.getElementById('open-rag-spec');
+          if (ragBtn) ragBtn.click();
+        } else if (action === 'open-ats') {
+          const atsBox = document.getElementById('ats-demo-box');
+          if (atsBox) {
+            atsBox.scrollIntoView({ behavior: 'smooth' });
+            const runBtn = document.getElementById('run-ats-btn');
+            if (runBtn) runBtn.click();
+          }
+        } else if (action === 'toggle-theme') {
+          const themeBtn = document.getElementById('theme-toggle');
+          if (themeBtn) themeBtn.click();
+        } else if (action === 'copy-email') {
+          const copyBtn = document.getElementById('copy-email-btn');
+          if (copyBtn) copyBtn.click();
+        } else if (action === 'print-cv') {
+          window.print();
+        }
+      });
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────
+     TICKER CLICK HANDLERS
+  ────────────────────────────────────────────────────── */
+  function initTickerClickHandlers() {
+    const tickerItems = document.querySelectorAll('.ticker-item');
+    tickerItems.forEach(item => {
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', function () {
+        const text = item.textContent.toLowerCase();
+        if (text.includes('rag')) {
+          const ragBtn = document.getElementById('open-rag-spec');
+          if (ragBtn) ragBtn.click();
+        } else if (text.includes('smartresume')) {
+          const atsBox = document.getElementById('ats-demo-box');
+          if (atsBox) atsBox.scrollIntoView({ behavior: 'smooth' });
+        } else if (text.includes('ecovis') || text.includes('fabric')) {
+          const stackSec = document.getElementById('stack');
+          if (stackSec) stackSec.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
     });
   }
 

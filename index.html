@@ -28,6 +28,7 @@
         <div class="nav-indicator" id="nav-indicator" aria-hidden="true"></div>
       </div>
       <div class="nav-brand-wrap">
+        <button id="cmd-k-trigger" class="cmd-k-btn" aria-label="Open Command Desk Search"><span class="cmd-k-key">⌘K</span> Search</button>
         <span class="nav-brand">Abhijeet Kadu</span>
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Night Edition">Night Edition</button>
       </div>
@@ -78,13 +79,16 @@
         <div class="mast-sub-rule"></div>
       </div>
 
-      <!-- Footer row: dateline · badge · email -->
+      <!-- Footer row: dateline · badge · email · print -->
       <div class="mast-footer-row">
         <span class="mast-dateline" id="dateline" aria-live="polite" aria-label="Current date and location"></span>
         <div class="mast-badge" id="mast-badge" role="status"><span class="badge-dot" aria-hidden="true"></span>Available Now</div>
-        <span class="mast-footer-email">
-          <a href="mailto:abhijeetkadu85@gmail.com" aria-label="Email Abhijeet" id="mast-email-link">abhijeetkadu85@gmail.com</a>
-          <button class="copy-email-btn" id="copy-email-btn" data-email="abhijeetkadu85@gmail.com" aria-label="Copy email address to clipboard">Copy</button>
+        <span class="mast-footer-actions">
+          <span class="mast-footer-email">
+            <a href="mailto:abhijeetkadu85@gmail.com" aria-label="Email Abhijeet" id="mast-email-link">abhijeetkadu85@gmail.com</a>
+            <button class="copy-email-btn" id="copy-email-btn" data-email="abhijeetkadu85@gmail.com" aria-label="Copy email address to clipboard">Copy</button>
+          </span>
+          <button class="print-cv-btn" id="print-cv-btn" onclick="window.print()" aria-label="Print or Export Resume PDF">Print Issue ⎙</button>
         </span>
       </div>
 
@@ -132,9 +136,9 @@
       <div class="container">
         <div class="profile-grid">
 
-          <!-- LEFT: Feature -->
+          <!-- 1: Lead Story -->
           <div class="feature-main">
-            <p class="eyebrow-red">Profile</p>
+            <p class="eyebrow-red">Profile &amp; Lead Report</p>
             <h2 class="feature-headline" id="profile-headline">
               Building ML systems<br><em>that actually ship</em>
             </h2>
@@ -142,7 +146,7 @@
             <div class="feature-rule" aria-hidden="true"></div>
 
             <p class="body-text">
-              At Ecovis RKCA, Kadu builds production ML and full-stack systems for enterprise clients. Recent work includes a Pinecone-backed RAG engine with Gemini streaming at sub-3s retrieval, and PIMS, a pharmacy management system with automated billing — both running on GCP.
+              <span class="drop-cap">A</span>t Ecovis RKCA, Kadu builds production ML and full-stack systems for enterprise clients. Recent work includes a Pinecone-backed RAG engine with Gemini streaming at sub-3s retrieval, and PIMS, a pharmacy management system with automated billing — both running on GCP.
             </p>
             <p class="body-text">
               His focus is the gap between a working model and a reliable system. Cloud is the substrate, not the story.
@@ -159,7 +163,7 @@
             </p>
           </div>
 
-          <!-- MIDDLE: Stats -->
+          <!-- 3: Stats -->
           <div class="feature-stats" id="feature-stats">
 
             <div class="stat-block">
@@ -198,7 +202,7 @@
 
           </div>
 
-          <!-- RIGHT: Sidebar -->
+          <!-- 4: Credentials & OSS -->
           <div class="feature-sidebar">
 
             <p class="sidebar-label">Credentials</p>
@@ -215,26 +219,21 @@
 
             <div class="sidebar-spacer" aria-hidden="true"></div>
 
-            <p class="sidebar-label">Open Source</p>
+            <p class="sidebar-label">Open Source Contributions</p>
             <ul class="oss-list" role="list">
               <li class="oss-entry">
                 <span class="oss-repo">TensorFlow</span>
-                <span class="oss-desc">Fix typo in XLA constants</span>
-                <a href="https://github.com/tensorflow/tensorflow/pull/107884" target="_blank" rel="noopener" class="oss-link" aria-label="TensorFlow PR 107884">PR →</a>
-              </li>
-              <li class="oss-entry">
-                <span class="oss-repo">TensorFlow</span>
-                <span class="oss-desc">Update assert_no_garbage_created docstring</span>
-                <a href="https://github.com/tensorflow/tensorflow/pull/107845" target="_blank" rel="noopener" class="oss-link" aria-label="TensorFlow PR 107845">PR →</a>
+                <span class="oss-desc">XLA Compiler &amp; Memory Collector Fixes</span>
+                <a href="https://github.com/tensorflow/tensorflow/pulls?q=author%3AAbhiii47" target="_blank" rel="noopener" class="oss-link" aria-label="TensorFlow PRs">PRs →</a>
               </li>
               <li class="oss-entry">
                 <span class="oss-repo">MLflow</span>
-                <span class="oss-desc">Fix typo in PromoteModelButton</span>
+                <span class="oss-desc">Model Registry UI Component Refactor</span>
                 <a href="https://github.com/mlflow/mlflow/pull/19820" target="_blank" rel="noopener" class="oss-link" aria-label="MLflow PR 19820">PR →</a>
               </li>
               <li class="oss-entry">
-                <span class="oss-repo">Open Fixture Library</span>
-                <span class="oss-desc">Improve LabeledInput component</span>
+                <span class="oss-repo">Open Fixture Lib</span>
+                <span class="oss-desc">LabeledInput Component &amp; Accessibility</span>
                 <a href="https://github.com/OpenLightingProject/open-fixture-library/pull/5312" target="_blank" rel="noopener" class="oss-link" aria-label="Open Fixture Library PR 5312">PR →</a>
               </li>
             </ul>
@@ -260,50 +259,103 @@
 
       <div class="container">
         <div class="projects-layout">
+          <div class="projects-broadsheet-grid">
 
-          <!-- Bento Grid -->
-          <div class="bento-grid">
-
-            <!-- SmartResume — Hero Story (2 columns wide) -->
-            <article class="project-card card-smart story-card-2col" aria-labelledby="proj-smart-title">
+            <!-- SmartResume — Flagship Lead Story (Spans FULL WIDTH — 4 columns across top) -->
+            <article class="project-card card-smart" data-tech="xgboost,fastapi,react,next.js,postgresql,python,ml,machine learning,ats" aria-labelledby="proj-smart-title">
               <div class="story-layout-2col">
                 <div class="story-main">
-                  <span class="story-kicker">FILED UNDER: MACHINE LEARNING · PRODUCTION</span>
-                  <h3 class="proj-title proj-title--lg" id="proj-smart-title">SmartResume: Custom-Trained ATS Ranking Engine</h3>
-                  <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Special Report</p>
+                  <div class="flagship-badge-row">
+                    <span class="flagship-star">★ FLAGSHIP REPORT</span>
+                    <span class="story-kicker">FILED UNDER: MACHINE LEARNING · HYBRID GENAI ARCHITECTURE</span>
+                  </div>
+                  <h3 class="proj-title proj-title--flagship" id="proj-smart-title">SmartResume: AI-Powered Hybrid ATS Resume Analyzer</h3>
+                  <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Lead Engineering Report</p>
                   <div class="story-divider" aria-hidden="true"></div>
-                  <p class="story-lede">A custom-trained XGBoost classifier parses and ranks candidate documents against job descriptions with enterprise accuracy.</p>
+                  <p class="story-lede"><span class="drop-cap">A</span> hybrid AI scoring engine combining a 70% quantitative XGBoost classifier (trained on 50k+ resumes) with a 30% qualitative Google Gemini Pro evaluation.</p>
+                  
+                  <figure class="news-graphic">
+                    <img src="halftone_ats_chart.png" alt="SmartResume Hybrid Scoring Architecture Diagram" class="halftone-img" />
+                    <figcaption class="graphic-caption">FIG 2. — SmartResume Architecture: PDF Parsing (PDFMiner.six) → 8 Signals → 70% XGBoost (Quantitative) + 30% Gemini Pro (Qualitative) Weighted Scoring.</figcaption>
+                  </figure>
+
                   <p class="proj-body">
-                    SmartResume extracts features and scores resumes in real-time, matching job requisitions to the most qualified candidates. Built with FastAPI and a React/Next.js frontend, the system relies on a PostgreSQL storage layer for vector mappings. Deployed live for client use.
+                    SmartResume extracts 8 high-dimensional feature signals (Keyword Overlap, Semantic Similarity, Experience Gap, Formatting) via PDFMiner.six. The backend (FastAPI, Python, SQLAlchemy) stores vector embeddings in Supabase (PostgreSQL), combining a 0–70 quantitative XGBoost score with a 0–30 qualitative Gemini Pro recruiter analysis. Features an adaptive learning engine that learns new trending skills dynamically from high-scoring resumes over time.
                   </p>
+
+                  <!-- ATS Interactive Inference Demo -->
+                  <div class="ats-demo-box" id="ats-demo-box">
+                    <div class="ats-demo-header">
+                      <span class="ats-demo-title">⚡ Hybrid ATS Feature Attribution Engine (70% XGBoost / 30% Gemini)</span>
+                      <span class="ats-demo-badge">Hybrid AI Demo</span>
+                    </div>
+                    <div class="ats-demo-controls">
+                      <label for="ats-role-select" class="ats-label">Target Role:</label>
+                      <select id="ats-role-select" class="ats-select">
+                        <option value="ml">Senior ML Systems Engineer</option>
+                        <option value="rag">Generative AI / RAG Engineer</option>
+                        <option value="fullstack">Full-Stack Cloud Engineer</option>
+                      </select>
+                      <button id="run-ats-btn" class="ats-run-btn">Run Hybrid Inference →</button>
+                    </div>
+
+                    <!-- Dynamic Skill Feature Toggles -->
+                    <div class="ats-skills-toggles" id="ats-skills-toggles">
+                      <span class="ats-toggle-label">Extracted Signals (PDFMiner):</span>
+                      <label class="ats-chip-cb"><input type="checkbox" value="python" checked /> Python 3.11</label>
+                      <label class="ats-chip-cb"><input type="checkbox" value="fastapi" checked /> FastAPI</label>
+                      <label class="ats-chip-cb"><input type="checkbox" value="vectordb" checked /> Vector DB</label>
+                      <label class="ats-chip-cb"><input type="checkbox" value="vertexai" checked /> GCP Vertex AI</label>
+                      <label class="ats-chip-cb"><input type="checkbox" value="postgres" checked /> Supabase PostgreSQL</label>
+                      <label class="ats-chip-cb"><input type="checkbox" value="nextjs" checked /> React 18 / Next.js</label>
+                    </div>
+
+                    <div class="ats-demo-results" id="ats-results" aria-live="polite">
+                      <div class="ats-score-row">
+                        <span class="ats-score-label">Weighted Hybrid Match Score:</span>
+                        <div class="ats-score-bar-wrap">
+                          <div class="ats-score-bar" id="ats-score-bar" style="width: 95.3%;"></div>
+                        </div>
+                        <span class="ats-score-val" id="ats-score-val">95.3%</span>
+                      </div>
+                      <div class="ats-features-tags" id="ats-features-tags">
+                        <span class="ats-tag">70% XGBoost Structural (66.8 / 70)</span>
+                        <span class="ats-tag">30% Gemini Qualitative (28.5 / 30)</span>
+                        <span class="ats-tag">FastAPI (+28%)</span>
+                        <span class="ats-tag">Supabase Vector DB (+24%)</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="proj-links">
-                    <a href="https://smart-resume-orcin.vercel.app/" target="_blank" rel="noopener" class="proj-link">Live Spec →</a>
-                    <a href="https://github.com/Abhiii47/SmartResume" target="_blank" rel="noopener" class="proj-link">GitHub Source →</a>
+                    <a href="https://smart-resume-orcin.vercel.app/" target="_blank" rel="noopener" class="proj-link proj-link--primary">Live Product Spec →</a>
+                    <a href="https://github.com/Abhiii47/SmartResume" target="_blank" rel="noopener" class="proj-link">GitHub Repository →</a>
                   </div>
                 </div>
                 <aside class="story-sidebar">
-                  <span class="sidebar-title">TECHNICAL NOTES</span>
+                  <span class="sidebar-title">SYSTEM ARCHITECTURE</span>
                   <ul class="sidebar-notes-list">
-                    <li><strong>Algorithm:</strong> XGBoost Classification</li>
-                    <li><strong>Dataset:</strong> Custom Labelled Dataset</li>
-                    <li><strong>Backend:</strong> FastAPI, PostgreSQL</li>
-                    <li><strong>Frontend:</strong> React, Next.js</li>
-                    <li><strong>Hosting:</strong> Vercel + GCP VM</li>
-                    <li><strong>Latency:</strong> Sub-second feature parsing</li>
+                    <li><strong>Scoring:</strong> 70% XGBoost + 30% Gemini Pro</li>
+                    <li><strong>Dataset:</strong> 50,000+ Labelled Resumes</li>
+                    <li><strong>Parsing:</strong> PDFMiner.six (8 Feature Signals)</li>
+                    <li><strong>Backend:</strong> FastAPI, Python, SQLAlchemy</li>
+                    <li><strong>Frontend:</strong> React 18, TailwindCSS v4, GSAP</li>
+                    <li><strong>Database:</strong> Supabase (PostgreSQL) + OAuth2</li>
+                    <li><strong>Learning:</strong> Adaptive Skill Auto-Discovery</li>
                   </ul>
                 </aside>
               </div>
             </article>
 
-            <!-- RAG — Secondary Feature Story (2 columns wide) -->
-            <article class="project-card card-rag story-card-2col" aria-labelledby="proj-rag-title">
+            <!-- RAG — Secondary Feature Story (Spans 2 columns) -->
+            <article class="project-card card-rag" data-tech="rag,pinecone,faiss,gcp,vertex ai,python,docker,serverless" aria-labelledby="proj-rag-title">
               <div class="story-layout-2col">
                 <div class="story-main">
                   <span class="story-kicker">FILED UNDER: INFORMATION RETRIEVAL · ENTERPRISE</span>
                   <h3 class="proj-title proj-title--lg" id="proj-rag-title">RAG Assistant Achieves Sub-3s Knowledge Retrieval</h3>
                   <p class="story-byline">By Abhijeet Kadu &nbsp;·&nbsp; Ecovis RKCA</p>
                   <div class="story-divider" aria-hidden="true"></div>
-                  <p class="story-lede">An internal enterprise RAG engine combines Pinecone vector search and Gemini streaming on Google Cloud Vertex AI.</p>
+                  <p class="story-lede"><span class="drop-cap">A</span>n internal enterprise RAG engine combines Pinecone vector search and Gemini streaming on Google Cloud Vertex AI.</p>
                   <p class="proj-body">
                     Built for secure enterprise data querying, the assistant reads private client documents, chunks and embeds them via FAISS, and streams generation with zero hallucination protocols. Runs in a sandboxed GCP VPC.
                   </p>
@@ -314,6 +366,10 @@
                 </div>
                 <aside class="story-sidebar">
                   <span class="sidebar-title">TECHNICAL NOTES</span>
+                  <figure class="news-graphic">
+                    <img src="halftone_rag.png" alt="RAG System Architecture Graphic" class="halftone-img" />
+                    <figcaption class="graphic-caption">FIG 3. — Pinecone &amp; Vertex AI SSE pipeline.</figcaption>
+                  </figure>
                   <ul class="sidebar-notes-list">
                     <li><strong>Search:</strong> Pinecone &amp; FAISS Vector Indexes</li>
                     <li><strong>Model:</strong> Gemini Pro via Vertex AI</li>
@@ -326,8 +382,8 @@
               </div>
             </article>
 
-            <!-- Room & Food — Column Brief (1 column wide) -->
-            <article class="project-card card-roomfood story-card-1col" aria-labelledby="proj-room-title">
+            <!-- Room & Food — Column Brief (Spans 1 column) -->
+            <article class="project-card card-roomfood" data-tech="react,next.js,node.js,mongodb,docker,javascript,typescript" aria-labelledby="proj-room-title">
               <div class="story-layout-1col">
                 <span class="story-kicker">FILED UNDER: HYPERLOCAL · WEB PLATFORM</span>
                 <h3 class="proj-title" id="proj-room-title">Room &amp; Food Marketplace</h3>
@@ -348,8 +404,8 @@
               </div>
             </article>
 
-            <!-- Amazon ML Challenge — Column Brief (1 column wide) -->
-            <article class="project-card card-amazon story-card-1col" aria-labelledby="proj-amazon-title">
+            <!-- Amazon ML Challenge — Column Brief (Spans 1 column) -->
+            <article class="project-card card-amazon" data-tech="python,xgboost,ml,machine learning,scikit-learn,analytics" aria-labelledby="proj-amazon-title">
               <div class="story-layout-1col">
                 <span class="story-kicker">FILED UNDER: COMPETITIVE ML · DATA SCIENCE</span>
                 <h3 class="proj-title" id="proj-amazon-title">Regression Ensemble Top Finish</h3>
@@ -369,33 +425,57 @@
               </div>
             </article>
 
-          </div><!-- /bento-grid -->
+            <!-- Experience Desk (Spans 2 columns) -->
+            <article class="project-card card-experience" aria-labelledby="exp-desk-title">
+              <div class="story-layout-1col">
+                <span class="story-kicker">FILED UNDER: CAREER &amp; INDUSTRY RECORD</span>
+                <h3 class="proj-title" id="exp-desk-title">Engineering Experience &amp; Positions</h3>
+                <p class="story-byline">Ecovis RKCA &nbsp;·&nbsp; Amazon ML Summer School &nbsp;·&nbsp; Computer Engineering</p>
+                <div class="story-divider" aria-hidden="true"></div>
+                
+                <div class="exp-dual-grid">
+                  <div class="exp-entry">
+                    <h4 class="exp-title">Ecovis RKCA</h4>
+                    <p class="exp-role">Software Development Engineer &nbsp;·&nbsp; 2024–Present</p>
+                    <p class="exp-body">Built PIMS pharmacy management system and Pinecone+Gemini RAG engine on GCP. Complete full-stack ownership across model, API, and cloud infrastructure.</p>
+                  </div>
+                  <div class="exp-entry">
+                    <h4 class="exp-title">Amazon ML Summer School</h4>
+                    <p class="exp-role">Selected Trainee &nbsp;·&nbsp; 2025</p>
+                    <p class="exp-body">Intensive ML program by Amazon scientists. Supervised learning, deep learning, large-scale ML. Built price-prediction ensemble on 150K+ records.</p>
+                  </div>
+                </div>
 
-          <!-- Experience Sidebar -->
-          <div class="experience-sidebar">
-
-            <p class="sidebar-label">Experience</p>
-
-            <article class="exp-entry" aria-labelledby="exp-ecovis">
-              <h3 class="exp-title" id="exp-ecovis">Ecovis RKCA</h3>
-              <p class="exp-role">Software Development Engineer &nbsp;·&nbsp; 2024–Present</p>
-              <p class="exp-body">PIMS pharmacy management system. RAG engine with Pinecone and Gemini. Full-stack ownership across model, API, and GCP infrastructure.</p>
+                <div class="story-sidebar-inset">
+                  <span class="sidebar-title">ACADEMIC CREDENTIAL</span>
+                  <p class="inset-note-body">Bachelor of Engineering in Computer Engineering. Core specialization in ML pipelines and production data systems.</p>
+                </div>
+              </div>
             </article>
 
-            <div class="exp-rule" aria-hidden="true"></div>
-
-            <article class="exp-entry" aria-labelledby="exp-amazon">
-              <h3 class="exp-title" id="exp-amazon">Amazon ML Summer School</h3>
-              <p class="exp-role">Selected Participant &nbsp;·&nbsp; 2025</p>
-              <p class="exp-body">Month-long intensive by Amazon scientists. Supervised learning, deep learning, large-scale ML. Built a price-prediction ensemble on 150K+ records.</p>
+            <!-- Cheeky Vintage Newspaper Classified / Engineering Bulletin (Spans 2 columns) -->
+            <article class="project-card card-classified-ad" aria-labelledby="classified-title">
+              <div class="story-layout-1col classified-dispatch-bg">
+                <div class="classified-header-row">
+                  <span class="story-kicker story-kicker--red">★ CLASSIFIED DISPATCH &nbsp;·&nbsp; VOL. I</span>
+                  <span class="exp-role">SPECIAL EDITION</span>
+                </div>
+                <h3 class="proj-title" id="classified-title">WANTED: Complex ML &amp; Cloud Architecture Problems</h3>
+                <p class="story-byline">Inquire Within &nbsp;·&nbsp; Abhijeet Kadu Engineering Desk</p>
+                <div class="story-divider" aria-hidden="true"></div>
+                <p class="story-lede"><span class="drop-cap">A</span>vailable for high-impact Software Development Engineer &amp; Machine Learning Systems roles.</p>
+                <p class="proj-body">
+                  Specialized in bridging the gap between raw models and high-concurrency production applications. Proficient in Python 3.11, FastAPI, Vector Databases (Pinecone/FAISS), Next.js, and GCP/AWS cloud orchestration.
+                </p>
+                <div class="proj-links">
+                  <a href="mailto:abhijeetkadu85@gmail.com" class="proj-link proj-link--primary">Direct Inquiry →</a>
+                  <button class="proj-link" id="copy-email-btn-2" data-email="abhijeetkadu85@gmail.com" onclick="navigator.clipboard.writeText('abhijeetkadu85@gmail.com')">Copy Email</button>
+                  <a href="https://linkedin.com/in/abhijeet-kadu" target="_blank" rel="noopener" class="proj-link">LinkedIn Profile →</a>
+                </div>
+              </div>
             </article>
 
-            <div class="exp-inset">
-              <span class="exp-inset-label">Currently</span>
-              <p class="exp-inset-body">Computer Engineering student. Focus on ML pipelines and production machine learning infrastructure.</p>
-            </div>
-
-          </div><!-- /experience-sidebar -->
+          </div><!-- /projects-broadsheet-grid -->
 
         </div><!-- /projects-layout -->
       </div>
@@ -419,46 +499,90 @@
           
           <!-- Correspondent's Note -->
           <div class="correspondent-note">
-            <p class="eyebrow-red">Correspondent's Note</p>
+            <div class="note-header-row">
+              <p class="eyebrow-red">Correspondent's Note</p>
+              <button id="rotate-quote-btn" class="rotate-quote-btn" aria-label="Rotate engineering quote">Refresh Quote 🔄</button>
+            </div>
             <blockquote class="note-quote">
-              <p>"I default to GCP for ML workloads and Next.js for anything client-facing. A technical stack is a product liability to be minimized, not a badge of honor. Choose tools strictly for operational stability, maintainability, and latency constraints."</p>
+              <p id="note-quote-text">"I default to GCP for ML workloads and Next.js for client-facing systems. A stack is chosen strictly for operational stability, maintainability, and latency constraints."</p>
             </blockquote>
             <p class="note-byline">— Abhijeet Kadu, Engineering Desk</p>
+          </div>
+
+          <!-- Active Tech Filter Chip Bar -->
+          <div id="tech-filter-banner" class="tech-filter-banner" hidden>
+            <span class="filter-chip-text">EDITION FILTER: <strong id="tech-filter-name">PYTHON</strong></span>
+            <span class="filter-chip-count" id="tech-filter-count">3 stories matching</span>
+            <button id="reset-tech-filter" class="reset-tech-btn" aria-label="Reset technology filter">Clear Filter ✕</button>
           </div>
 
           <!-- Classifieds -->
           <div class="classifieds-grid">
             <div class="classified-ad">
               <span class="classified-cat">LANGUAGES</span>
-              <p class="classified-body">Python, TypeScript, JavaScript.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="python">Python</button>, 
+                <button class="tech-tag" data-tech="typescript">TypeScript</button>, 
+                <button class="tech-tag" data-tech="javascript">JavaScript</button>.
+              </p>
             </div>
             <div class="classified-ad">
               <span class="classified-cat">MACHINE LEARNING</span>
-              <p class="classified-body">XGBoost, PyTorch, Scikit-Learn.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="xgboost">XGBoost</button>, 
+                <button class="tech-tag" data-tech="pytorch">PyTorch</button>, 
+                <button class="tech-tag" data-tech="scikit-learn">Scikit-Learn</button>.
+              </p>
             </div>
             <div class="classified-ad">
               <span class="classified-cat">DATA ENGINEERING</span>
-              <p class="classified-body">RAG, Pinecone, FAISS, PySpark.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="rag">RAG</button>, 
+                <button class="tech-tag" data-tech="pinecone">Pinecone</button>, 
+                <button class="tech-tag" data-tech="faiss">FAISS</button>, 
+                <button class="tech-tag" data-tech="pyspark">PySpark</button>.
+              </p>
             </div>
             <div class="classified-ad">
               <span class="classified-cat">ANALYTICS</span>
-              <p class="classified-body">Microsoft Fabric, Power BI, DAX.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="microsoft fabric">Microsoft Fabric</button>, 
+                <button class="tech-tag" data-tech="power bi">Power BI</button>, 
+                <button class="tech-tag" data-tech="dax">DAX</button>.
+              </p>
             </div>
             <div class="classified-ad">
-              <span class="classified-cat">WEB DEVELOMENT</span>
-              <p class="classified-body">React, Next.js, FastAPI, Node.js.</p>
+              <span class="classified-cat">WEB DEVELOPMENT</span>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="react">React</button>, 
+                <button class="tech-tag" data-tech="next.js">Next.js</button>, 
+                <button class="tech-tag" data-tech="fastapi">FastAPI</button>, 
+                <button class="tech-tag" data-tech="node.js">Node.js</button>.
+              </p>
             </div>
             <div class="classified-ad">
               <span class="classified-cat">STORAGE SYSTEMS</span>
-              <p class="classified-body">PostgreSQL, MongoDB.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="postgresql">PostgreSQL</button>, 
+                <button class="tech-tag" data-tech="mongodb">MongoDB</button>.
+              </p>
             </div>
             <div class="classified-ad">
               <span class="classified-cat">CLOUD ARCHITECTURE</span>
-              <p class="classified-body">GCP, AWS, Azure, Vertex AI.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="gcp">GCP</button>, 
+                <button class="tech-tag" data-tech="aws">AWS</button>, 
+                <button class="tech-tag" data-tech="azure">Azure</button>, 
+                <button class="tech-tag" data-tech="vertex ai">Vertex AI</button>.
+              </p>
             </div>
             <div class="classified-ad">
               <span class="classified-cat">DEVOPS &amp; PIPELINES</span>
-              <p class="classified-body">Docker, CI/CD, Serverless.</p>
+              <p class="classified-body">
+                <button class="tech-tag" data-tech="docker">Docker</button>, 
+                <button class="tech-tag" data-tech="ci/cd">CI/CD</button>, 
+                <button class="tech-tag" data-tech="serverless">Serverless</button>.
+              </p>
             </div>
           </div>
 
@@ -478,14 +602,14 @@
           </div>
           <div class="bulletin-divider"></div>
           <div class="bulletin-inner">
-            <h2 class="bulletin-headline" id="bulletin-headline">Now Accepting Engineering &amp; ML Inquiries</h2>
+            <h2 class="bulletin-headline" id="bulletin-headline">Open to Software &amp; ML Engineering Roles</h2>
             <p class="bulletin-body">
-              For project collaborations, system architecture reviews, or full-time opportunities, contact the engineering desk directly. Available for select mandates immediately.
+              <span class="drop-cap">C</span>urrently open to full-time Software Development Engineer &amp; ML Systems roles, as well as select technical advisory projects. Let's discuss how I can add value to your engineering team.
             </p>
             <div class="bulletin-links">
-              <a href="mailto:abhijeetkadu85@gmail.com" class="bulletin-btn bulletin-btn--primary">Email Direct →</a>
+              <a href="mailto:abhijeetkadu85@gmail.com" class="bulletin-btn bulletin-btn--primary">Get In Touch →</a>
               <a href="https://linkedin.com/in/abhijeet-kadu" target="_blank" rel="noopener" class="bulletin-btn">LinkedIn →</a>
-              <a href="https://github.com/Abhiii47" target="_blank" rel="noopener" class="bulletin-btn">GitHub Repo →</a>
+              <a href="https://github.com/Abhiii47" target="_blank" rel="noopener" class="bulletin-btn">GitHub Repositories →</a>
             </div>
           </div>
         </div>
@@ -563,8 +687,54 @@
           </div>
 
           <div class="dialog-col-side">
-            <h3 class="dialog-section-title">Visual Pipeline Schematic</h3>
+            <h3 class="dialog-section-title">⚡ Live Retrieval Latency Benchmark</h3>
             
+            <div class="rag-benchmark-widget" id="rag-benchmark-widget">
+              <div class="rag-bench-header">
+                <span class="rag-bench-status" id="rag-bench-status">Status: Ready to benchmark</span>
+                <button id="run-rag-bench-btn" class="rag-bench-btn">Run Pipeline Test ▶</button>
+              </div>
+
+              <div class="rag-steps-container">
+                <div class="rag-step" id="rag-step-1">
+                  <div class="rag-step-info">
+                    <span class="rag-step-num">01</span>
+                    <span class="rag-step-name">Document Chunking &amp; SHA Hash</span>
+                  </div>
+                  <div class="rag-step-timer" id="rag-time-1">-- ms</div>
+                </div>
+
+                <div class="rag-step" id="rag-step-2">
+                  <div class="rag-step-info">
+                    <span class="rag-step-num">02</span>
+                    <span class="rag-step-name">Pinecone Vector Search (k=5)</span>
+                  </div>
+                  <div class="rag-step-timer" id="rag-time-2">-- ms</div>
+                </div>
+
+                <div class="rag-step" id="rag-step-3">
+                  <div class="rag-step-info">
+                    <span class="rag-step-num">03</span>
+                    <span class="rag-step-name">Context Payload &amp; VPC Gateway</span>
+                  </div>
+                  <div class="rag-step-timer" id="rag-time-3">-- ms</div>
+                </div>
+
+                <div class="rag-step" id="rag-step-4">
+                  <div class="rag-step-info">
+                    <span class="rag-step-num">04</span>
+                    <span class="rag-step-name">Gemini Pro SSE Token Stream</span>
+                  </div>
+                  <div class="rag-step-timer" id="rag-time-4">-- ms</div>
+                </div>
+              </div>
+
+              <div class="rag-bench-summary">
+                <span>Total Latency: <strong id="rag-total-latency">2.07s</strong></span>
+                <span class="rag-pass-badge" id="rag-pass-badge">Goal: &lt;3.00s PASSED</span>
+              </div>
+            </div>
+
             <div class="rag-diagram-wrap">
               <img src="halftone_rag.png" alt="RAG Ingestion and Stream Generation Schematic" class="halftone-print-img" />
             </div>
@@ -581,6 +751,65 @@
         <div class="dialog-footer-rule"></div>
         <p class="dialog-footer-copy">All System Data Verified &nbsp;·&nbsp; Ecovis RKCA Engineering Desk</p>
       </footer>
+    </div>
+  </dialog>
+
+  <!-- ═══════════════════════════════════════════════════
+       EDITORIAL COMMAND PALETTE (CMD+K)
+  ═══════════════════════════════════════════════════ -->
+  <dialog id="command-palette" class="command-dialog" aria-labelledby="cmd-dialog-title">
+    <div class="cmd-inner">
+      <div class="cmd-header">
+        <span class="cmd-kicker">THE ENGINEERING TIMES · EDITION COMMAND DESK</span>
+        <input type="text" id="cmd-input" class="cmd-input" placeholder="Type a command or search (e.g. 'RAG', 'Projects', 'Print', 'Night', 'Email')..." aria-label="Search portfolio commands" autocomplete="off" />
+      </div>
+      <div class="cmd-body">
+        <ul id="cmd-list" class="cmd-list" role="listbox">
+          <li class="cmd-item" data-action="goto" data-target="#profile" role="option">
+            <span class="cmd-icon">📄</span>
+            <div class="cmd-text"><span class="cmd-title">Profile &amp; Biography</span><span class="cmd-desc">Jump to editorial profile, bio, and key stats</span></div>
+            <kbd class="cmd-kbd">Jump</kbd>
+          </li>
+          <li class="cmd-item" data-action="goto" data-target="#projects" role="option">
+            <span class="cmd-icon">🚀</span>
+            <div class="cmd-text"><span class="cmd-title">Projects &amp; Systems</span><span class="cmd-desc">Explore SmartResume, RAG assistant, and marketplaces</span></div>
+            <kbd class="cmd-kbd">Jump</kbd>
+          </li>
+          <li class="cmd-item" data-action="goto" data-target="#stack" role="option">
+            <span class="cmd-icon">⚙️</span>
+            <div class="cmd-text"><span class="cmd-title">Technical Stack &amp; Classifieds</span><span class="cmd-desc">View languages, frameworks, cloud platforms</span></div>
+            <kbd class="cmd-kbd">Jump</kbd>
+          </li>
+          <li class="cmd-item" data-action="open-rag" role="option">
+            <span class="cmd-icon">⚡</span>
+            <div class="cmd-text"><span class="cmd-title">Launch RAG Architecture Spec &amp; Simulator</span><span class="cmd-desc">Run live retrieval benchmark &amp; view system schematics</span></div>
+            <kbd class="cmd-kbd">Run Spec</kbd>
+          </li>
+          <li class="cmd-item" data-action="open-ats" role="option">
+            <span class="cmd-icon">🧠</span>
+            <div class="cmd-text"><span class="cmd-title">Run SmartResume XGBoost ATS Scorer</span><span class="cmd-desc">Test real-time candidate ranking inference</span></div>
+            <kbd class="cmd-kbd">Run Demo</kbd>
+          </li>
+          <li class="cmd-item" data-action="toggle-theme" role="option">
+            <span class="cmd-icon">🌙</span>
+            <div class="cmd-text"><span class="cmd-title">Toggle Night Edition (Theme)</span><span class="cmd-desc">Switch between Newsprint Light and Sepia Night</span></div>
+            <kbd class="cmd-kbd">Theme</kbd>
+          </li>
+          <li class="cmd-item" data-action="copy-email" role="option">
+            <span class="cmd-icon">📧</span>
+            <div class="cmd-text"><span class="cmd-title">Copy Email Address</span><span class="cmd-desc">Copy abhijeetkadu85@gmail.com to clipboard</span></div>
+            <kbd class="cmd-kbd">Copy</kbd>
+          </li>
+          <li class="cmd-item" data-action="print-cv" role="option">
+            <span class="cmd-icon">⎙</span>
+            <div class="cmd-text"><span class="cmd-title">Print Broadsheet CV / Export PDF</span><span class="cmd-desc">Generate single-page print edition resume</span></div>
+            <kbd class="cmd-kbd">Print</kbd>
+          </li>
+        </ul>
+      </div>
+      <div class="cmd-footer">
+        <span>Use <kbd>↑</kbd> <kbd>↓</kbd> to navigate, <kbd>Enter</kbd> to select, <kbd>Esc</kbd> to close</span>
+      </div>
     </div>
   </dialog>
 

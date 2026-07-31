@@ -1,75 +1,33 @@
-# Abhiii47's Portfolio
+# The Engineering Times — Abhijeet Kadu
 
-A high-performance, immersive developer portfolio built with the latest web technologies. This project showcases my skills, experience, and selected works through fluid animations and a modern, minimalist design.
+Editorial-style developer portfolio. A single-page newspaper layout with GSAP motion and Lenis smooth scrolling.
 
+## Tech
 
-## 🚀 Tech Stack
+- **HTML / CSS / JS** — static site, no build step
+- **GSAP + ScrollTrigger** — masthead and scroll animations
+- **Lenis** — smooth scroll
 
-Unleashing the power of the modern React ecosystem:
+## Run locally
 
-- **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
-- **Library:** [React 19](https://react.dev/)
-- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
-- **Animations:** [GSAP (GreenSock)](https://gsap.com/) & [ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/)
-- **Smooth Scrolling:** [Lenis](https://lenis.darkroom.engineering/)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **Font:** [Geist](https://vercel.com/font)
+Open `index.html` in a browser, or use a local server:
 
-## ✨ Key Features
-
-- **Immersive Animations:** complex, timeline-based animations using GSAP.
-- **Inertia Scrolling:** Buttery smooth scroll experience powered by Lenis.
-- **Responsive Design:** Fully fluid layouts that look great on any device.
-- **Performance First:** Built on Next.js 16 with React Server Components for optimal speed and SEO.
-- **Modern UI Patterns:** Glassmorphism, parallax effects, and micro-interactions.
-
-## 🛠️ Getting Started
-
-To run this project locally:
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/Abhiii47/abhijeet-portfolio.git
-    cd abhijeet-portfolio
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or
-    yarn install
-    # or
-    pnpm install
-    ```
-
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-
-4.  **Open in Browser:**
-    Navigate to [http://localhost:3000](http://localhost:3000).
-
-## 📂 Project Structure
-
-```
-├── src/
-│   ├── app/           # Next.js App Router pages and layouts
-│   ├── components/    # Reusable UI components (Hero, Projects, etc.)
-│   └── styles/        # Global styles and Tailwind configuration
-├── public/            # Static assets (images, fonts)
-├── next.config.ts     # Next.js configuration
-└── tailwind.config.ts # Tailwind CSS configuration
+```bash
+npm run dev
 ```
 
-## 🚢 Deployment
+Then visit [http://localhost:3000](http://localhost:3000) (or the port shown by `serve`).
 
-This project is optimized for deployment on [Vercel](https://vercel.com).
+## Structure
 
-1.  Push your code to a GitHub repository.
-2.  Import the project into Vercel.
-3.  Vercel will automatically detect Next.js and build your application.
+```
+├── index.html              # Page structure & editorial content
+├── style.css               # Newsprint design system & typography
+├── main.js                 # GSAP animations, Lenis scroll & interactive modules
+├── halftone_ats_chart.png  # SmartResume architecture diagram
+└── halftone_rag.png        # RAG System architecture graphic
+```
 
-## 📄 License
+## Deploy
 
-This project is open source and available under the [MIT License](LICENSE).
+Deploy the repo root to any static host (Vercel, Netlify, GitHub Pages). No build command required.
