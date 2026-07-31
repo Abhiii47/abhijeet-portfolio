@@ -161,14 +161,17 @@ body::before {
 .news-graphic {
   border: 1px solid var(--ink);
   background: var(--paper);
-  margin: 16px 0;
+  margin: 14px auto;
+  max-width: 360px;
   overflow: hidden;
   position: relative;
 }
 
 .halftone-img {
   width: 100%;
-  height: auto;
+  max-height: 160px;
+  object-fit: cover;
+  object-position: center;
   display: block;
   filter: contrast(115%) grayscale(100%);
   mix-blend-mode: multiply;
